@@ -17,7 +17,7 @@ def youtube(events, path):
     images = []
     events = events.to(torch.uint8)
     events *= 255
-    for i in range(time):
+    for i in range(events.shape[0]):
         p_ = torchvision.transforms.functional.to_pil_image(events[i,:,:])
         images.append(p_)
     images[0].save(path, duration = 100, save_all=True, append_images=images[1:], loop = 50)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     path_list = []
     youtube_dir = "youtube"
     dataset_dir = "dataset"
-    csv_path = f"dataset/info.csv"
+    csv_path = "info.csv"
 
     if os.path.exists(youtube_dir):
         shutil.rmtree(youtube_dir)
