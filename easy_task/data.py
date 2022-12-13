@@ -23,10 +23,12 @@ class LoadDataset(Dataset):
         self.dir = dir
         self.all_files = glob.glob(f"{self.dir}/*")
         self.divide = int((len(self.all_files)*0.8))
+        
         if train:
             self.file_lst = self.all_files[:self.divide]
         else:
             self.file_lst = self.all_files[self.divide:]
+            self.num_lst = [i for i in range(self.divide, len(self.all_files))]
     def __len__(self):
         return len(self.file_lst)
 
@@ -40,10 +42,11 @@ class LoadDataset(Dataset):
 if __name__ == "__main__":
     dataset_path = "dataset/"
     youtube_path = "gomibako/h5.gif"
-    a = LoadDataset(dir=dataset_path, train=True)
+    a = LoadDataset(dir=dataset_path, train=False)
     input, label = a[6]
     print(input)
     print(label)
     print(input.shape[0])
+    print(a.file_lst[6], a.num_lst[6])
     make_data.youtube(input, youtube_path)
     
