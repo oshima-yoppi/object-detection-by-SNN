@@ -7,7 +7,7 @@ import torchvision
 import random
 import pandas as pd
 import os, shutil
-
+from tqdm import tqdm
 
 def draw_circle(center, radius,time=10, pixel=128):
     img = np.zeros((pixel, pixel, 3), dtype=np.uint8)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     pixel = 64
     time = 10
     noize_rate = 0.1
-    number_of_data = 300
+    number_of_data = 1000
     numer_list = []
     radius_list, x_list, y_list = [],[],[]
     label_list = []
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     if os.path.exists(dataset_dir):
         shutil.rmtree(dataset_dir)
         os.makedirs(dataset_dir)
-    for i in range(number_of_data):
+    for i in tqdm(range(number_of_data)):
         x, y, r, label = None, None, None, 0
         youtube_path = os.path.join(youtube_dir, f"{str(i).zfill(4)}.gif")
         dataset_path = os.path.join(dataset_dir, f"{str(i).zfill(4)}.h5")
