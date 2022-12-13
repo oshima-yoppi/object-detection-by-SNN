@@ -1,150 +1,156 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import snntorch as snn
+from snntorch import spikeplot as splt
+from snntorch import spikegen
+from snntorch import utils
+from snntorch import functional as SF
+from snntorch import surrogate
+
 import torch
-import torchvision
-from torch import nn, optim
-from torch.nn import functional as F
-from torch.utils.data import TensorDataset, DataLoader
-from data import LoadDataset
-import os 
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+from tonic import DiskCachedDataset
+import tonic
+
+import matplotlib.pyplot as plt
+import numpy as np
+import itertools
 from tqdm import tqdm
-import datetime
-# from rectangle_builder import rectangle,test_img
-import traceback
-from model import snu_layer
-from model import network
-from model import loss
-#from mp4_rec import record, rectangle_record
-import pandas as pd
-# import scipy.io
-# from torchsummary import summary
-import argparse
-import time
 
-start_time = time.time()
-parser = argparse.ArgumentParser()
-parser.add_argument('--batch', '-b', type=int, default=8)
-parser.add_argument('--epoch', '-e', type=int, default=15)
-parser.add_argument('--time', '-t', type=int, default=10,
-                        help='Total simulation time steps.')
-parser.add_argument('--rec', '-r', action='store_true' ,default=False)  # -r付けるとTrue                  
-parser.add_argument('--forget', '-f', action='store_true' ,default=False) 
-parser.add_argument('--dual', '-d', action='store_true' ,default=False)
-parser.add_argument('--tau',  type=float ,default=0.8)
-args = parser.parse_args()
+from data import LoadDataset
+import model
 
+import matplotlib.pyplot as plt
+from IPython.display import HTML
 
-print("***************************")
+from collections import defaultdict
+# Network Architecture
+num_inputs = 28*28
+num_hidden = 1000
+num_outputs = 10
+dtype = torch.float
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+# Temporal Dynamics
+num_steps = 10
+beta = 0.95
 dataset_path = "dataset/"
+batch_size = 16
+
 train_dataset = LoadDataset(dir = dataset_path, train=True)
 test_dataset = LoadDataset(dir = dataset_path,  train=False)
-data_id = 2
 # print(train_dataset[data_id][0]) #(784, 100) 
-train_iter = DataLoader(train_dataset, batch_size=args.batch, shuffle=True)
-test_iter = DataLoader(test_dataset, batch_size=1, shuffle=True)
-# print(train_iter.shape)
-# ネットワーク設計
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# 畳み込みオートエンコーダー　リカレントSNN　
-model = network.NetGpu(num_time=args.time,l_tau=args.tau, soft =False, rec=args.rec, forget=args.forget, dual=args.dual, gpu=True, batch_size=args.batch)
-model = model.to(device)
-# model = network.Conv4Regression(num_time=args.time,l_tau=args.tau, soft =False, rec=args.rec, forget=args.forget, dual=args.dual, gpu=True, batch_size=args.batch)
-# model = network.RSNU(num_time=args.time,l_tau=0.8, soft =False, rec=args.rec, forget=args.forget, dual=args.dual, gpu=True, batch_size=args.batch, bias=True)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=False,)
+
+
+def print_batch_accuracy(data, label, train=False):
+    output, _ = net(data.view(batch_size, -1))
+    _, idx = output.sum(dim=0).max(1)
+    acc = np.mean((label == idx).detach().cpu().numpy())
+
+    if train:
+        print(f"Train set accuracy for a single minibatch: {acc*100:.2f}%")
+    else:
+        print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
 
 
 
-model = model.to(device)
-print("building model")
-print(model.state_dict().keys())
-# lr = 1e-4
-lr = 4e-4
-optimizer = optim.Adam(model.parameters(), lr=lr)
-epochs = args.epoch
-before_loss = None
+
+
+
+spike_grad = surrogate.atan()
+net = model.cnn(beta=beta, spike_grad=spike_grad).to(device)
+
+
+def forward_pass(net, data):
+    spk_rec = []
+    utils.reset(net)  # resets hidden states for all LIF neurons in net
+
+    for step in range(data.size(0)):  # data.size(0) = number of time steps
+        spk_out, mem_out = net(data[step])
+        spk_rec.append(spk_out)
+
+    return torch.stack(spk_rec)
+
+optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
+loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
+
+num_epochs = 100
+num_iters = 50
+pixel = 64
 loss_hist = []
-test_hist = []
-try:
+acc_hist = defaultdict(list)
 
-    for epoch in tqdm(range(epochs), desc='epoch',):
-        running_loss = 0.0
-        local_loss = []
-        test_loss = []
-        print("EPOCH",epoch)
-        
-        # print(f'train_iter len{len(train_iter)}')
-        print(f'before_loss:{before_loss}') ## 一個前のepoch loss
-        for i ,(inputs, labels) in enumerate(tqdm(train_iter, desc='train')):
-            optimizer.zero_grad()
-            inputs = inputs.to(device)
-            labels = labels.to(device)
-            torch.cuda.memory_summary(device=None, abbreviated=False)
-            output= model(inputs, labels)
-            los = loss.compute_loss(output, labels)
-            
-            # print(output)
-            # print(f'label:{labels[:,0]}')
-            print(f'epoch:{epoch+1}  loss:{los}') # 
-            print(f'before_loss:{before_loss}') ## 一個前のepoch loss 
-            torch.autograd.set_detect_anomaly(True)
-            los.backward(retain_graph=True)
-            running_loss += los.item()
-            local_loss.append(los.item())
-            del los
-            optimizer.step()
-            
+# training loop
+for epoch in tqdm(range(num_epochs)):
+    for i, (data, label) in enumerate(iter(train_loader)):
+        data = data.to(device)
+        label = label.to(device)
+        batch = len(data[0])
+        data = data.reshape(num_steps, batch, 1, pixel, pixel)
 
-            # # print statistics
-                
+        net.train()
+        spk_rec = forward_pass(net, data)
+        loss_val = loss_fn(spk_rec, label)
 
-        
-        with torch.no_grad():
-            for i,(inputs, labels) in enumerate(tqdm(test_iter, desc='test')):
-                # print(i)
-                inputs = inputs.to(device)
-                labels = labels.to(device)
-                output = model(inputs, labels)
-                los = loss.compute_loss(output, labels)
-                test_loss.append(los.item())
-                del los
-                
-                
-        
+        # Gradient calculation + weight update
+        optimizer.zero_grad()
+        loss_val.backward()
+        optimizer.step()
 
-    
-        
-        
-        mean_loss = np.mean(local_loss) 
-        before_loss = mean_loss
-        print("mean loss",mean_loss)
-        loss_hist.append(mean_loss)
-        test_mean_loss = np.mean(test_loss) 
-        test_hist.append(test_mean_loss)
-except:
-    traceback.print_exc()
-    pass
-end_time = time.time()
+        # Store loss history for future plotting
+        loss_hist.append(loss_val.item())
 
+        # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-# ログファイル二セーブ
-path_w = 'loss_hist.txt'
-with open(path_w, mode='w') as f:
-    now = datetime.datetime.now()
-    f.write(f'{now}\n')
-    for i , x in enumerate(loss_hist):
-        f.write(f"{i}: {x}\n")
+        acc = SF.accuracy_rate(spk_rec, label)
+        acc_hist['train'].append(acc)
+        # print(f"Accuracy: {acc * 100:.2f}%/n")
+        # break
 
+    with torch.no_grad():
+        net.eval()
+        for i, (data, label) in enumerate(iter(test_loader)):
+            data = data.to(device)
+            label = label.to(device)
+            batch = len(data[0])
+            data = data.reshape(num_steps, batch, 1, pixel, pixel)
+            spk_rec = forward_pass(net, data)
+            loss_val = loss_fn(spk_rec, label)
+            acc = SF.accuracy_rate(spk_rec, label)
+            acc_hist['test'].append(acc)
+# Plot Loss
+fig = plt.figure(facecolor="w")
+ax1 = fig.add_subplot(1, 2, 1)
+ax2 = fig.add_subplot(1, 2, 2)
+ax1.plot(acc_hist['train'], label="train")
+ax1.set_title("Train Set Accuracy")
+ax1.set_xlabel("Iteration")
+ax1.set_ylabel("Accuracy")
+ax2.plot(acc_hist['test'], label='test')
+ax2.set_title("Train Set Accuracy")
+ax2.set_xlabel("epoch")
+ax2.set_ylabel("Accuracy")
+fig.tight_layout()
 
-##　最後の出力結果の確認用
-print(output)
+plt.show()
+
 
 ## save model
-enddir = "models/models_state_dict_end.pth"
-torch.save(model.state_dict(), enddir)
+enddir = "models/model1.pth"
+torch.save(net.state_dict(), enddir)
 print("success model saving")
 
+# idx = 0
 
-## analysis
+# fig, ax = plt.subplots(facecolor='w', figsize=(12, 7))
+# labels=['0', '1']
+# print(f"The target label is: {label[idx]}")
+# plt.rcParams['animation.ffmpeg_path'] = r'C:/Users/oosim/Downloads/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin'
+# #  Plot spike count histogram
+# # print(spk_rec.shape) #torch.Size([time, batch label])
+# anim = splt.spike_count(spk_rec[:, idx].detach().cpu(), fig, ax, labels=labels,
+#                         animate=True, interpolate=1)
 
-analyze(model=model, device=device, test_iter=test_iter, loss_hist=loss_hist,
-        test_hist=test_hist, start_time=start_time, end_time=end_time, epoch=epoch,
-        lr=lr, tau=args.tau)
+# HTML(anim.to_html5_video())
+# anim.save("spike_bar.mp4")
