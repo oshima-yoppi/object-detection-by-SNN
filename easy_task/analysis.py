@@ -122,17 +122,18 @@ if __name__ == "__main__":
 
     plt.show()
 
-    # idx = 0
+    idx = 0
 
-    # fig, ax = plt.subplots(facecolor='w', figsize=(12, 7))
-    # labels=['0', '1']
-    # print(f"The target label is: {label[idx]}")
-    # plt.rcParams['animation.ffmpeg_path'] = r'C:/Users/oosim/Downloads/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin'
-    # #  Plot spike count histogram
-    # # print(spk_rec.shape) #torch.Size([time, batch label])
-    # anim = splt.spike_count(spk_rec[:, idx].detach().cpu(), fig, ax, labels=labels,
-    #                         animate=True, interpolate=1)
+    fig, ax = plt.subplots(facecolor='w', figsize=(12, 7))
+    labels=['0', '1']
+    print(f"The target label is: {label[idx]}")
+    plt.rcParams['animation.ffmpeg_path'] = r'C:/Users/oosim/Downloads/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin'
+    #  Plot spike count histogram
+    # print(spk_rec.shape) #torch.Size([time, batch label])
+    anim = splt.spike_count(spk_rec[:, idx].detach().cpu(), fig, ax, labels=labels,
+                            animate=True, interpolate=10)
 
     # HTML(anim.to_html5_video())
-    # anim.save("spike_bar.mp4")
+    plt.show()
+    anim.save("spike_bar.gif", writer="pillow")
 
