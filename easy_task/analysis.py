@@ -81,6 +81,7 @@ if __name__ == "__main__":
     loss_hist = []
     acc_hist = defaultdict(list)
     wrong_num_lst = []
+    tf_dict = defaultdict(list)
     tn_lst, tp_lst = [], []
     fn_lst, fp_lst = [], []
 
@@ -97,15 +98,14 @@ if __name__ == "__main__":
             
             loss_val = loss_fn(spk_rec, label)
             acc = SF.accuracy_rate(spk_rec, label)
-            if acc and label: tp_lst.append(data_num)
-            elif acc and label == 0: tn_lst.append(data_num)
-            elif label:fn_lst.append(data_num)
-            elif label == 0 : fp_lst.append(data_num)
+            if acc and label: tf_dict['tp'].append(data_num)
+            elif acc and label == 0: tf_dict['tn'].append(data_num)
+            elif label: tf_dict['fn'].append(data_num)
+            elif label == 0 : tf_dict['fp'].append(data_num)
             # print(acc)
             acc_hist['test'].append(acc)
     
-    print(tn_lst, tn_lst)
-    print(fn_lst, fp_lst)
+    print(tf_dict)
     # Plot Loss
     fig = plt.figure(facecolor="w")
     ax1 = fig.add_subplot(1, 2, 1)
