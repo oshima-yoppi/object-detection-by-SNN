@@ -21,10 +21,9 @@ from data import LoadDataset
 import model
 
 import matplotlib.pyplot as plt
-from IPython.display import HTML
-
+# from IPython.display import HTML
+import pandas as pd
 from collections import defaultdict
-
 
 
 def print_batch_accuracy(data, label, train=False):
@@ -45,6 +44,21 @@ def forward_pass(net, data):
         spk_rec.append(spk_out)
 
     return torch.stack(spk_rec)
+
+
+
+
+def write_result(info_csv_path, new_csv_path):
+    info_df = pd.read_csv(info_csv_path)
+    info_df['result'] = None
+    for key in tf_dict.keys():
+        for number in tf_dict[key]:
+            info_df.at[number, 'result'] = key
+    info_df.to_csv(new_csv_path)
+    return info_df
+
+
+
 if __name__ == "__main__":
     # Network Architecture
     num_inputs = 28*28
@@ -59,8 +73,7 @@ if __name__ == "__main__":
     batch_size = 16
 
     train_dataset = LoadDataset(dir = dataset_path, train=True)
-    test_dataset = LoadDataset(dir = dataset_path,  train=False)
-    # print(train_dataset[data_id][0]) #(784, 100) 
+    test_dataset = LoadDataset(dir = dataset_path,  train=False) 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=1, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=False,)
 
@@ -88,7 +101,7 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         net.eval()
-        for i, (data, label) in enumerate(iter(test_loader)):
+        for i, (data, label) in enumerate(tqdm(iter(test_loader))):
             data_num = test_dataset.num_lst[i]
             data = data.to(device)
             label = label.to(device)
@@ -106,34 +119,77 @@ if __name__ == "__main__":
             acc_hist['test'].append(acc)
     
     print(tf_dict)
-    # Plot Loss
-    fig = plt.figure(facecolor="w")
-    ax1 = fig.add_subplot(1, 2, 1)
-    ax2 = fig.add_subplot(1, 2, 2)
-    ax1.plot(acc_hist['train'], label="train")
-    ax1.set_title("Train Set Accuracy")
-    ax1.set_xlabel("Iteration")
-    ax1.set_ylabel("Accuracy")
-    ax2.plot(acc_hist['test'], label='test')
-    ax2.set_title("Train Set Accuracy")
-    ax2.set_xlabel("epoch")
-    ax2.set_ylabel("Accuracy")
-    fig.tight_layout()
-
-    plt.show()
+    for key in tf_dict.keys():
+        print(key, len(tf_dict[key]))
+        print(key, len(tf_dict[key])/300)
+    
 
     idx = 0
 
     fig, ax = plt.subplots(facecolor='w', figsize=(12, 7))
     labels=['0', '1']
     print(f"The target label is: {label[idx]}")
-    plt.rcParams['animation.ffmpeg_path'] = r'C:/Users/oosim/Downloads/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin'
-    #  Plot spike count histogram
-    # print(spk_rec.shape) #torch.Size([time, batch label])
     anim = splt.spike_count(spk_rec[:, idx].detach().cpu(), fig, ax, labels=labels,
                             animate=True, interpolate=10)
 
     # HTML(anim.to_html5_video())
-    plt.show()
+    # plt.show()
     anim.save("spike_bar.gif", writer="pillow")
 
+    info_csv_path = 'info.csv'
+    new_csv_path = 'result/result_info.csv'
+    new_df = write_result(info_csv_path, new_csv_path)
+    print(new_df.head())
+
+    pixel = 64
+    # https://stackoverflow.com/questions/13784201/how-to-have-one-colorbar-for-all-subplots
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    for i, ax in enumerate(axes):
+        if i == 0:
+            key = 'tp'
+            title = 'True Positive'
+        elif i == 1:
+            key = 'fn'
+            title = 'False Negative'
+        x, y, r = [],[],[]
+        for number in tf_dict[key]:
+            x.append(new_df.at[number, 'x'])
+            y.append(new_df.at[number, 'y'])
+            r.append(new_df.at[number, 'radius'])
+        display_radius = list(map(lambda x:x * 2, r))
+        im = ax.scatter(x, y, s=display_radius, c=r, cmap='jet')
+    
+        ax.set_title(title)
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.set_xlim(0, pixel)
+        ax.set_ylim(0, pixel)
+    fig.subplots_adjust(right=0.8)
+    # cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+    fig.colorbar(im, )
+    # fig.colorbar(im, cax=cbar_ax)
+    fig.tight_layout()
+    plt.show()
+    # fig, axes = plt.subplots(nrows=1, ncols=2)
+    # for i, ax in enumerate(axes):
+    #     if i == 0:
+    #         key = 'tp'
+    #         title = 'True Positive'
+    #     elif i == 1:
+    #         key = 'fn'
+    #         title = 'False Negative'
+    #     x, y, r = [],[],[]
+    #     for number in tf_dict[key]:
+    #         x.append(new_df.at[number, 'x'])
+    #         y.append(new_df.at[number, 'y'])
+    #         r.append(new_df.at[number, 'radius'])
+    #         ax.scatter(x, y, s=r, c=r, cmap='jet')
+        
+    #     # plt.colorbar(ax=ax)
+    #     ax.set_title(title)
+    #     ax.set_xlabel("x")
+    #     ax.set_ylabel("y")
+    #     ax.set_xlim(0, pixel)
+    #     ax.set_ylim(0, pixel)
+    # fig.tight_layout()
+    # plt.show()
