@@ -90,7 +90,7 @@ for epoch in tqdm(range(num_epochs)):
         data = data.reshape(num_steps, batch, 1, pixel, pixel)
 
         net.train()
-        spk_rec = forward_pass(net, data)
+        spk_rec = forward_pass(net, data)# time batch neuron ???
         loss_val = loss_fn(spk_rec, label)
 
         # Gradient calculation + weight update
