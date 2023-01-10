@@ -126,7 +126,8 @@ if __name__ == "__main__":
 
     idx = 0
 
-    fig, ax = plt.subplots(facecolor='w', figsize=(12, 7))
+    # fig, ax = plt.subplots(facecolor='w', figsize=(12, 7))
+    fig, ax = plt.subplots(facecolor='w' )
     labels=['0', '1']
     print(f"The target label is: {label[idx]}")
     anim = splt.spike_count(spk_rec[:, idx].detach().cpu(), fig, ax, labels=labels,
