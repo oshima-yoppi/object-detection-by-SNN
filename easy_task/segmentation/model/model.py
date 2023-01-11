@@ -17,7 +17,6 @@ import numpy as np
 import itertools
 from tqdm import tqdm
 
-from data import LoadDataset
 
 import matplotlib.pyplot as plt
 from IPython.display import HTML
@@ -35,9 +34,9 @@ def cnn(beta, spike_grad):
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     nn.Flatten(),
-                    nn.Linear(5408, 1024),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
-                    nn.Linear(1024, 2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True)
+                    nn.Linear(5408, 64*64),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True),
+                    # nn.Linear(1024, 2),
+                    # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True)
                     )
     return net
