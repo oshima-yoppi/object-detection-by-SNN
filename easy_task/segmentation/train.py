@@ -75,7 +75,7 @@ def forward_pass(net, data):
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
 
-num_epochs = 100
+num_epochs = 200
 num_iters = 50
 pixel = 64
 correct_rate = 0.8
@@ -103,7 +103,7 @@ for epoch in tqdm(range(num_epochs)):
 
         # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-        acc = SF.accuracy_rate(spk_rec, label)
+        acc = compute_loss.culc_iou(spk_rec, label)
         acc_hist['train'].append(acc)
         # print(f"Accuracy: {acc * 100:.2f}%/n")
         # break
@@ -117,9 +117,10 @@ for epoch in tqdm(range(num_epochs)):
             data = data.reshape(num_steps, batch, 1, pixel, pixel)
             spk_rec = forward_pass(net, data)
             loss_val = compute_loss.spike_mse_loss(spk_rec, label)
-            acc = SF.accuracy_rate(spk_rec, label)
+            acc = compute_loss.culc_iou(spk_rec, label)
             acc_hist['test'].append(acc)
 # Plot Loss
+print(acc_hist)
 fig = plt.figure(facecolor="w")
 ax1 = fig.add_subplot(1, 2, 1)
 ax2 = fig.add_subplot(1, 2, 2)

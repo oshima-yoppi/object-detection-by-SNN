@@ -6,7 +6,6 @@
 # print(b * 5)
 
 import torch
-a = torch.tensor([1.234, 2.345, 3.456], dtype=torch.float)
-b = torch.floor(a) # 1, 2, 3になる
-c = torch.ceil(a)  # 2, 3, 4になる
-print(b, type(b), b.dtype)
+a = torch.tensor([1, 0,0])
+b =  torch.tensor([1, 1,0])
+print(torch.logical_or(a,b))
