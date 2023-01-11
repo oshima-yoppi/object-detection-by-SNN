@@ -39,14 +39,24 @@ class LoadDataset(Dataset):
         input = torch.from_numpy(input.astype(np.float32)).clone()
         label = torch.from_numpy(label.astype(np.float32)).clone()
         return input, label
+def custom_collate(batch):
+    """
+    batchをどの引数に持っていくかを決める関数。入力はbatchを2つ目。ラベルは1つ目に設定。
+    """
+    input_lst = []
+    target_lst = []
+    for input, target in batch:
+        input_lst.append(input)
+        target_lst.append(target)
+    return torch.stack(input_lst, dim=1), torch.stack(target_lst, dim=0)
 
 if __name__ == "__main__":
     dataset_path = "dataset/"
     youtube_path = "gomibako/h5.gif"
     a = LoadDataset(dir=dataset_path, train=False)
     input, label = a[6]
-    print(input)
-    print(label)
+    print(input.shape)
+    print(label.shape)
     print(input.shape[0])
     print(a.file_lst[6], a.num_lst[6])
     make_data.youtube(input, youtube_path)
