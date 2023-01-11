@@ -18,7 +18,7 @@ import itertools
 from tqdm import tqdm
 
 from data import LoadDataset
-import model
+from model import model
 
 import matplotlib.pyplot as plt
 from IPython.display import HTML
