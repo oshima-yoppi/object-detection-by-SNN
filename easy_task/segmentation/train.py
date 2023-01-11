@@ -17,8 +17,9 @@ import numpy as np
 import itertools
 from tqdm import tqdm
 
-from data import LoadDataset
-from model import model
+from custom_data import LoadDataset
+import custom_data
+from model import model, compute_loss
 
 import matplotlib.pyplot as plt
 from IPython.display import HTML
@@ -38,9 +39,9 @@ batch_size = 16
 
 train_dataset = LoadDataset(dir = dataset_path, train=True)
 test_dataset = LoadDataset(dir = dataset_path,  train=False)
-# print(train_dataset[data_id][0]) #(784, 100) 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=False,)
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=custom_data.custom_collate, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=custom_data.custom_collate, shuffle=False,)
 
 
 def print_batch_accuracy(data, label, train=False):
@@ -52,7 +53,6 @@ def print_batch_accuracy(data, label, train=False):
         print(f"Train set accuracy for a single minibatch: {acc*100:.2f}%")
     else:
         print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
-
 
 
 
@@ -73,14 +73,14 @@ def forward_pass(net, data):
     return torch.stack(spk_rec)
 
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
-loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
+# loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
 
 num_epochs = 100
 num_iters = 50
 pixel = 64
+correct_rate = 0.8
 loss_hist = []
 acc_hist = defaultdict(list)
-
 # training loop
 for epoch in tqdm(range(num_epochs)):
     for i, (data, label) in enumerate(iter(train_loader)):
@@ -91,7 +91,7 @@ for epoch in tqdm(range(num_epochs)):
 
         net.train()
         spk_rec = forward_pass(net, data)# time batch neuron ???
-        loss_val = loss_fn(spk_rec, label)
+        loss_val = compute_loss.spike_mse_loss(spk_rec, label, rate=correct_rate)
 
         # Gradient calculation + weight update
         optimizer.zero_grad()
@@ -116,7 +116,7 @@ for epoch in tqdm(range(num_epochs)):
             batch = len(data[0])
             data = data.reshape(num_steps, batch, 1, pixel, pixel)
             spk_rec = forward_pass(net, data)
-            loss_val = loss_fn(spk_rec, label)
+            loss_val = compute_loss.spike_mse_loss(spk_rec, label)
             acc = SF.accuracy_rate(spk_rec, label)
             acc_hist['test'].append(acc)
 # Plot Loss
