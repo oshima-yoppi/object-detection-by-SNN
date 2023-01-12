@@ -40,31 +40,35 @@ def cnn(beta, spike_grad):
                     # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True)
                     )
     return net
-def fcn(beta, spike_grad):
+def fcn(beta, spike_grad,pixel=64):
     c0 = 1
     c1 = 16
     c2 = 32
-    net = nn.Sequential(nn.Conv2d(c0, c1, 4),
+    n_class=2
+    encode_factor = 3
+    decode_factor = 2
+    net = nn.Sequential(nn.Conv2d(c0, c1, encode_factor),
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     
-                    nn.Conv2d(c1, c2, 4),
+                    nn.Conv2d(c1, c2, encode_factor),
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     
-                    nn.Conv2d(c2, c2, 4),
+                    nn.Conv2d(c2, c2, encode_factor),
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     
-                    nn.Upsample(scale_factor=2),
-                    nn.Conv2d(c2, c1, 4),
+                    nn.Upsample(scale_factor=3),
+                    nn.Conv2d(c2, c1, decode_factor),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     
-                    nn.Upsample(scale_factor=2),
-                    nn.Conv2d(c1, c0, 4),
+                    nn.Upsample(scale_factor=3),
+                    nn.Conv2d(c1, c0, decode_factor),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     
-                    nn.Conv2d(c0, c0, 2),
+                    nn.Upsample((pixel, pixel), mode='nearest'),
+                    nn.Conv2d(c0, n_class, 1),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True),
                     )
     return net

@@ -25,6 +25,8 @@ import matplotlib.pyplot as plt
 from IPython.display import HTML
 
 from collections import defaultdict
+
+
 # Network Architecture
 num_inputs = 28*28
 num_hidden = 1000
@@ -70,9 +72,12 @@ def forward_pass(net, data):
         spk_out, mem_out = net(data[step])
         spk_rec.append(spk_out)
 
-    return torch.stack(spk_rec)
+    spk_rec = torch.stack(spk_rec)
+    spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
+    pred_pro = torch.sigmoid(spk_cnt)# batch channel(n_class) pixel pixel
+    return pred_pro
 
-optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.parameters(), lr=10e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
 criterion = nn.CrossEntropyLoss()
 
@@ -86,18 +91,15 @@ hist = defaultdict(list)
 for epoch in tqdm(range(num_epochs)):
     for i, (data, label) in enumerate(iter(train_loader)):
         data = data.to(device)
+        # label = torch.tensor(label, dtype=torch.int64)
+        label = label.type(torch.int64)
         label = label.to(device)
         batch = len(data[0])
         data = data.reshape(num_steps, batch, 1, pixel, pixel)
-
+        # print(data.shape)
         net.train()
-        spk_rec = forward_pass(net, data)# time batch channel pixel pixel 
-        spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
-        pred_pro = torch.sigmoid(spk_cnt)# batch channel(n_class) pixel pixel
-        pred_pro = torch.permute(0, 2, 3, 1) # https://www.kaggle.com/code/hsankesara/unet-image-segmentation
-        pred_pro = torch.reshape(-1, 2)
-        loss_val = criterion(pred_pro, label.reshape(-1))
-        # loss_val = compute_loss.spike_mse_loss(spk_rec, label, rate=correct_rate)
+        pred_pro = forward_pass(net, data)# batch, channel, pixel ,pixel
+        loss_val = criterion(pred_pro, label)
 
         # Gradient calculation + weight update
         optimizer.zero_grad()
@@ -109,25 +111,26 @@ for epoch in tqdm(range(num_epochs)):
 
         # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-        acc = compute_loss.culc_iou(spk_rec, label, correct_rate)
+        acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
         hist['train'].append(acc)
+
         # print(f"Accuracy: {acc * 100:.2f}%/n")
         # spk_count_batch = (spk_rec==1).sum().item()
         # spk_count_batch /= batch
         # tqdm.write(f'{spk_count_batch}')
-    spk_count = (spk_rec==1).sum()
-    tqdm.write(f'{spk_count}')
+    
     tqdm.write(f'{acc=}')
     with torch.no_grad():
         net.eval()
         for i, (data, label) in enumerate(iter(test_loader)):
             data = data.to(device)
             label = label.to(device)
+            label = label.type(torch.int64)
             batch = len(data[0])
             data = data.reshape(num_steps, batch, 1, pixel, pixel)
-            spk_rec = forward_pass(net, data)
-            loss_val = compute_loss.spike_mse_loss(spk_rec, label)
-            acc = compute_loss.culc_iou(spk_rec, label, correct_rate)
+            pred_pro = forward_pass(net, data)
+            loss_val = criterion(pred_pro, label)
+            acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
             hist['test'].append(acc)
 
 ## save model
