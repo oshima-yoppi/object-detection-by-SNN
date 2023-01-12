@@ -22,12 +22,12 @@ class LoadDataset(Dataset):
     def __init__(self, train:bool, dir):
         self.dir = dir
         self.all_files = glob.glob(f"{self.dir}/*")
-        self.divide = int((len(self.all_files)*0.8))
+        self.divide = int((len(self.all_files)*0.2))
         
         if train:
-            self.file_lst = self.all_files[:self.divide]
-        else:
             self.file_lst = self.all_files[self.divide:]
+        else:
+            self.file_lst = self.all_files[:self.divide]
             self.num_lst = [i for i in range(self.divide, len(self.all_files))]
     def __len__(self):
         return len(self.file_lst)
