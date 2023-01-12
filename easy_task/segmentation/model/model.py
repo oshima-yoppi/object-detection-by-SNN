@@ -9,8 +9,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-from tonic import DiskCachedDataset
-import tonic
+# from tonic import DiskCachedDataset
+# import tonic
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -30,7 +30,7 @@ def cnn(beta, spike_grad):
     net = nn.Sequential(nn.Conv2d(1, 12, 5),
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
-                    nn.Conv2d(12, 32, 5),
+                    nn.Conv2d(12, c2, 5),
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     nn.Flatten(),
@@ -38,5 +38,33 @@ def cnn(beta, spike_grad):
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True),
                     # nn.Linear(1024, 2),
                     # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True)
+                    )
+    return net
+def fcn(beta, spike_grad):
+    c0 = 1
+    c1 = 16
+    c2 = 32
+    net = nn.Sequential(nn.Conv2d(c0, c1, 4),
+                    nn.MaxPool2d(2),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
+                    
+                    nn.Conv2d(c1, c2, 4),
+                    nn.MaxPool2d(2),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
+                    
+                    nn.Conv2d(c2, c2, 4),
+                    nn.MaxPool2d(2),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
+                    
+                    nn.Upsample(scale_factor=2),
+                    nn.Conv2d(c2, c1, 4),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
+                    
+                    nn.Upsample(scale_factor=2),
+                    nn.Conv2d(c1, c0, 4),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
+                    
+                    nn.Conv2d(c0, c0, 4),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True),
                     )
     return net

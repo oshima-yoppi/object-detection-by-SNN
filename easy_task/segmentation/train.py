@@ -59,7 +59,7 @@ def print_batch_accuracy(data, label, train=False):
 
 
 spike_grad = surrogate.atan()
-net = model.cnn(beta=beta, spike_grad=spike_grad).to(device)
+net = model.fcn(beta=beta, spike_grad=spike_grad).to(device)
 
 
 def forward_pass(net, data):
