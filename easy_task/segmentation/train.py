@@ -74,10 +74,11 @@ def forward_pass(net, data):
 
     spk_rec = torch.stack(spk_rec)
     spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
-    pred_pro = torch.sigmoid(spk_cnt)# batch channel(n_class) pixel pixel
+    # pred_pro = torch.sigmoid(spk_cnt)# batch channel(n_class) pixel pixel
+    pred_pro = torch.tanh(spk_cnt)# batch channel(n_class) pixel pixel
     return pred_pro
 
-optimizer = torch.optim.Adam(net.parameters(), lr=10e-4, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.parameters(), lr=100e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
 criterion = nn.CrossEntropyLoss()
 
@@ -111,7 +112,7 @@ for epoch in tqdm(range(num_epochs)):
 
         # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-        acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
+        acc = compute_loss.culc_iou(pred_pro, label, correct_rate-0.2)
         hist['train'].append(acc)
 
         # print(f"Accuracy: {acc * 100:.2f}%/n")
