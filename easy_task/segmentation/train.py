@@ -72,10 +72,10 @@ def forward_pass(net, data):
 
     return torch.stack(spk_rec)
 
-optimizer = torch.optim.Adam(net.parameters(), lr=100e-4, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
 
-num_epochs = 100
+num_epochs = 50
 num_iters = 50
 pixel = 64
 correct_rate = 0.8
