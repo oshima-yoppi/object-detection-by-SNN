@@ -30,7 +30,7 @@ def cnn(beta, spike_grad):
     net = nn.Sequential(nn.Conv2d(1, 12, 5),
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
-                    nn.Conv2d(12, c2, 5),
+                    nn.Conv2d(12, 32, 5),
                     nn.MaxPool2d(2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     nn.Flatten(),
@@ -64,7 +64,7 @@ def fcn(beta, spike_grad):
                     nn.Conv2d(c1, c0, 4),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     
-                    nn.Conv2d(c0, c0, 4),
+                    nn.Conv2d(c0, c0, 2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True),
                     )
     return net

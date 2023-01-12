@@ -74,6 +74,7 @@ def forward_pass(net, data):
 
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
+criterion = nn.CrossEntropyLoss()
 
 num_epochs = 50
 num_iters = 50
@@ -90,8 +91,13 @@ for epoch in tqdm(range(num_epochs)):
         data = data.reshape(num_steps, batch, 1, pixel, pixel)
 
         net.train()
-        spk_rec = forward_pass(net, data)# time batch neuron ???
-        loss_val = compute_loss.spike_mse_loss(spk_rec, label, rate=correct_rate)
+        spk_rec = forward_pass(net, data)# time batch channel pixel pixel 
+        spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
+        pred_pro = torch.sigmoid(spk_cnt)# batch channel(n_class) pixel pixel
+        pred_pro = torch.permute(0, 2, 3, 1) # https://www.kaggle.com/code/hsankesara/unet-image-segmentation
+        pred_pro = torch.reshape(-1, 2)
+        loss_val = criterion(pred_pro, label.reshape(-1))
+        # loss_val = compute_loss.spike_mse_loss(spk_rec, label, rate=correct_rate)
 
         # Gradient calculation + weight update
         optimizer.zero_grad()

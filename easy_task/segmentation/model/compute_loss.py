@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 def spike_mse_loss(input, target, rate=0.8):
-    # input shape:[time, batch, neuron]?
+    # input shape:[time, batch, channel, pixel, pixel]?
     # print(target.shape)
     batch = target.shape[0]
     target = target.reshape(batch, -1)
@@ -15,6 +15,25 @@ def spike_mse_loss(input, target, rate=0.8):
     loss = criterion(input_spike_count, target_spike_count)
     return loss
 
+def spike_count(spk_rec :torch.Tensor, channel=False):
+    if channel==False:
+        spk_rec = spk_rec.squeeze()
+    count = torch.sum(spk_rec, dim =0)
+    count = 0
+    return count
+
+def spike_sigmoid_loss(input, target, rate=0.8):
+    # input shape:[time, batch, channel, pixel, pixel]?
+    # print(target.shape)
+    batch = target.shape[0]
+    target = target.reshape(batch, -1)
+    criterion = nn.MSELoss()
+    num_steps = input.shape[0]
+    input_spike_count = torch.sum(input, dim=0)
+    target_spike_count = num_steps*rate * target
+    target_spike_count = torch.round(target_spike_count)
+    loss = criterion(input_spike_count, target_spike_count)
+    return loss
 def show_pred(spike_train, rate=0.8):
     num_steps = spike_train.shape[0]
     batch = spike_train.shape[1]
