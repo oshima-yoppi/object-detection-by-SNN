@@ -72,15 +72,15 @@ def forward_pass(net, data):
 
     return torch.stack(spk_rec)
 
-optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.parameters(), lr=100e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
 
-num_epochs = 200
+num_epochs = 100
 num_iters = 50
 pixel = 64
 correct_rate = 0.8
 loss_hist = []
-acc_hist = defaultdict(list)
+hist = defaultdict(list)
 # training loop
 for epoch in tqdm(range(num_epochs)):
     for i, (data, label) in enumerate(iter(train_loader)):
@@ -99,15 +99,19 @@ for epoch in tqdm(range(num_epochs)):
         optimizer.step()
 
         # Store loss history for future plotting
-        loss_hist.append(loss_val.item())
+        hist['loss'].append(loss_val.item())
 
         # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-        acc = compute_loss.culc_iou(spk_rec, label)
-        acc_hist['train'].append(acc)
+        acc = compute_loss.culc_iou(spk_rec, label, correct_rate)
+        hist['train'].append(acc)
         # print(f"Accuracy: {acc * 100:.2f}%/n")
-        # break
-
+        # spk_count_batch = (spk_rec==1).sum().item()
+        # spk_count_batch /= batch
+        # tqdm.write(f'{spk_count_batch}')
+    spk_count = (spk_rec==1).sum()
+    tqdm.write(f'{spk_count}')
+    tqdm.write(f'{acc=}')
     with torch.no_grad():
         net.eval()
         for i, (data, label) in enumerate(iter(test_loader)):
@@ -117,30 +121,37 @@ for epoch in tqdm(range(num_epochs)):
             data = data.reshape(num_steps, batch, 1, pixel, pixel)
             spk_rec = forward_pass(net, data)
             loss_val = compute_loss.spike_mse_loss(spk_rec, label)
-            acc = compute_loss.culc_iou(spk_rec, label)
-            acc_hist['test'].append(acc)
-# Plot Loss
-print(acc_hist)
-fig = plt.figure(facecolor="w")
-ax1 = fig.add_subplot(1, 2, 1)
-ax2 = fig.add_subplot(1, 2, 2)
-ax1.plot(acc_hist['train'], label="train")
-ax1.set_title("Train Set Accuracy")
-ax1.set_xlabel("Iteration")
-ax1.set_ylabel("Accuracy")
-ax2.plot(acc_hist['test'], label='test')
-ax2.set_title("Train Set Accuracy")
-ax2.set_xlabel("epoch")
-ax2.set_ylabel("Accuracy")
-fig.tight_layout()
-
-plt.show()
-
+            acc = compute_loss.culc_iou(spk_rec, label, correct_rate)
+            hist['test'].append(acc)
 
 ## save model
 enddir = "models/model1.pth"
 torch.save(net.state_dict(), enddir)
 print("success model saving")
+# Plot Loss
+print(hist)
+fig = plt.figure(facecolor="w")
+ax1 = fig.add_subplot(1, 3, 1)
+ax2 = fig.add_subplot(1, 3, 2)
+ax3 = fig.add_subplot(1, 3, 3)
+ax1.plot(hist['loss'], label="train")
+ax1.set_title("Train Set IoU")
+ax1.set_xlabel("Iteration")
+ax1.set_ylabel("MSE Loss(spike count)")
+ax2.plot(hist['train'], label="train")
+ax2.set_title("Train Set IoU")
+ax2.set_xlabel("Iteration")
+ax2.set_ylabel("Accuracy")
+ax3.plot(hist['test'], label='test')
+ax3.set_title("Train Set IoU")
+ax3.set_xlabel("epoch")
+ax3.set_ylabel("Accuracy")
+fig.tight_layout()
+
+plt.show()
+
+
+
 
 # idx = 0
 
