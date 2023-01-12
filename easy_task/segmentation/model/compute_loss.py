@@ -15,15 +15,21 @@ def spike_mse_loss(input, target, rate=0.8):
     loss = criterion(input_spike_count, target_spike_count)
     return loss
 
-def culc_iou(spike_train, target, rate=0.8):
+def show_pred(spike_train, rate=0.8):
     num_steps = spike_train.shape[0]
-    batch = target.shape[0]
-    target = target.reshape(batch, -1)
+    batch = spike_train.shape[1]
     th_count = round(num_steps*rate)
     spike_train = spike_train.reshape(num_steps, batch, -1)
     spike_count = torch.sum(spike_train, dim=0)
-
     pred = torch.where(spike_count >= th_count, 1 ,0)
+    return pred
+def culc_iou(spike_train, target, rate=0.8):
+    
+    pred = show_pred(spike_train, rate)
+    
+    batch = target.shape[0]
+    target = target.reshape(batch, -1)
+
     
     union  = torch.logical_or(pred, target)
     intersection = torch.logical_and(pred, target)
