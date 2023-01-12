@@ -1,4 +1,5 @@
 easy_task/classification/dataset/
-easy_task/segmentation/dataset/
-easy_task/segmentation/result_img/
+easy_task/segmentation/dataset/.h5
+easy_task/segmentation/youtube/*.gif
+easy_task/segmentation/result_img/*.png
 dem
