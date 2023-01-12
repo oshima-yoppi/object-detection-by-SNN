@@ -6,6 +6,5 @@
 # print(b * 5)
 
 import torch
-a = torch.tensor([1, 0,0])
-b =  torch.tensor([1, 1,0])
-print(torch.logical_or(a,b))
+a = torch.rand((2,3))
+print(torch.sigmoid(a))
