@@ -35,7 +35,7 @@ if __name__ == "__main__":
     pixel = 64
     time = 10
     noize_rate = 0.05#0.1
-    number_of_data = 1000
+    number_of_data = 5000
     numer_list = []
     radius_list, x_list, y_list = [],[],[]
     label_list = []
@@ -91,7 +91,7 @@ if __name__ == "__main__":
             'radius':radius_list,
             'x':x_list,
             'y':y_list,
-            'label':label_list,
+            # 'label':label_list,
             'path':path_list
         }
     )
