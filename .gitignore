@@ -2,4 +2,5 @@ easy_task/classification/dataset/
 easy_task/segmentation/dataset/.h5
 easy_task/segmentation/youtube/*.gif
 easy_task/segmentation/result_img/*.png
+easy_task/segmentation/models/*.pth
 dem
