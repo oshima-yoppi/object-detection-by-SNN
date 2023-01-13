@@ -20,7 +20,7 @@ from tqdm import tqdm
 
 from custom_data import LoadDataset
 import custom_data
-from model import model, compute_loss
+from module import network, compute_loss
 
 import matplotlib.pyplot as plt
 from IPython.display import HTML
@@ -62,7 +62,7 @@ def print_batch_accuracy(data, label, train=False):
 
 
 spike_grad = surrogate.atan()
-net = model.fcn2(beta=beta, spike_grad=spike_grad).to(device)
+net = network.fcn2(beta=beta, spike_grad=spike_grad).to(device)
 
 
 def forward_pass(net, data):
