@@ -7,6 +7,7 @@ from snntorch import surrogate
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from tonic import DiskCachedDataset
@@ -61,10 +62,11 @@ def print_batch_accuracy(data, label, train=False):
 
 
 spike_grad = surrogate.atan()
-net = model.fcn(beta=beta, spike_grad=spike_grad).to(device)
+net = model.fcn2(beta=beta, spike_grad=spike_grad).to(device)
 
 
 def forward_pass(net, data):
+    soft = nn.Softmax2d()
     spk_rec = []
     utils.reset(net)  # resets hidden states for all LIF neurons in net
 
@@ -73,19 +75,37 @@ def forward_pass(net, data):
         spk_rec.append(spk_out)
 
     spk_rec = torch.stack(spk_rec)
+    # print(spk_rec.shape)
     spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
-    # pred_pro = torch.sigmoid(spk_cnt)# batch channel(n_class) pixel pixel
-    pred_pro = torch.tanh(spk_cnt)# batch channel(n_class) pixel pixel
+    spk_cnt_ = spk_cnt[0,0,:,:].reshape(pixel,pixel).to('cpu').detach().numpy().copy()
+    # plt.figure()
+    # plt.imshow(spk_cnt_)
+    # plt.show()
+    print(np.sum(spk_cnt_.reshape(-1)))
+    # pred_pro = soft(spk_cnt)
+    pred_pro = F.softmax(spk_cnt, dim=1)
+    pred_pro_ = pred_pro[0,0,:,:].reshape(pixel,pixel).to('cpu').detach().numpy().copy()
+    pred_pro__ = pred_pro[0,1,:,:].reshape(pixel,pixel).to('cpu').detach().numpy().copy()
+    
+    # plt.figure()
+    # ax1 = plt.subplot(1,2,1)
+    # ax2 = plt.subplot(1,2,2)
+    # ax1.imshow(pred_pro_)
+    # ax1.set_title('not safe')
+    # ax2.imshow(pred_pro__)
+    # ax2.set_title('safe')
+    # plt.show()
     return pred_pro
 
-optimizer = torch.optim.Adam(net.parameters(), lr=100e-4, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.parameters(), lr=10e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
-criterion = nn.CrossEntropyLoss()
+weights = torch.tensor([1.0, 3.0]).cuda()
+criterion = nn.CrossEntropyLoss(weight=weights)
 
-num_epochs = 50
+num_epochs = 30
 num_iters = 50
 pixel = 64
-correct_rate = 0.8
+correct_rate = 0.5
 loss_hist = []
 hist = defaultdict(list)
 # training loop
@@ -100,7 +120,10 @@ for epoch in tqdm(range(num_epochs)):
         # print(data.shape)
         net.train()
         pred_pro = forward_pass(net, data)# batch, channel, pixel ,pixel
-        loss_val = criterion(pred_pro, label)
+        # print(pred_pro.shape)
+        # loss_val = criterion(pred_pro, label)
+        loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
+        # loss_val = 1 - acc
 
         # Gradient calculation + weight update
         optimizer.zero_grad()
@@ -109,17 +132,20 @@ for epoch in tqdm(range(num_epochs)):
 
         # Store loss history for future plotting
         hist['loss'].append(loss_val.item())
+        acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
 
         # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-        acc = compute_loss.culc_iou(pred_pro, label, correct_rate-0.2)
+        
         hist['train'].append(acc)
 
         # print(f"Accuracy: {acc * 100:.2f}%/n")
         # spk_count_batch = (spk_rec==1).sum().item()
         # spk_count_batch /= batch
         # tqdm.write(f'{spk_count_batch}')
-    
+        # plt.figure()
+        # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
+        # plt.show()
     tqdm.write(f'{acc=}')
     with torch.no_grad():
         net.eval()
