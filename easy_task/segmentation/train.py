@@ -62,47 +62,16 @@ def print_batch_accuracy(data, label, train=False):
 
 
 spike_grad = surrogate.atan()
-net = network.fcn2(beta=beta, spike_grad=spike_grad).to(device)
+net= network.ConvDense1(beta=beta, spike_grad=spike_grad, device=device)
 
 
-def forward_pass(net, data):
-    soft = nn.Softmax2d()
-    spk_rec = []
-    utils.reset(net)  # resets hidden states for all LIF neurons in net
 
-    for step in range(data.size(0)):  # data.size(0) = number of time steps
-        spk_out, mem_out = net(data[step])
-        spk_rec.append(spk_out)
-
-    spk_rec = torch.stack(spk_rec)
-    # print(spk_rec.shape)
-    spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
-    spk_cnt_ = spk_cnt[0,0,:,:].reshape(pixel,pixel).to('cpu').detach().numpy().copy()
-    # plt.figure()
-    # plt.imshow(spk_cnt_)
-    # plt.show()
-    print(np.sum(spk_cnt_.reshape(-1)))
-    # pred_pro = soft(spk_cnt)
-    pred_pro = F.softmax(spk_cnt, dim=1)
-    pred_pro_ = pred_pro[0,0,:,:].reshape(pixel,pixel).to('cpu').detach().numpy().copy()
-    pred_pro__ = pred_pro[0,1,:,:].reshape(pixel,pixel).to('cpu').detach().numpy().copy()
-    
-    # plt.figure()
-    # ax1 = plt.subplot(1,2,1)
-    # ax2 = plt.subplot(1,2,2)
-    # ax1.imshow(pred_pro_)
-    # ax1.set_title('not safe')
-    # ax2.imshow(pred_pro__)
-    # ax2.set_title('safe')
-    # plt.show()
-    return pred_pro
-
-optimizer = torch.optim.Adam(net.parameters(), lr=10e-4, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.network.parameters(), lr=1e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
 weights = torch.tensor([1.0, 3.0]).cuda()
 criterion = nn.CrossEntropyLoss(weight=weights)
 
-num_epochs = 30
+num_epochs = 100
 num_iters = 50
 pixel = 64
 correct_rate = 0.5
@@ -118,8 +87,8 @@ for epoch in tqdm(range(num_epochs)):
         batch = len(data[0])
         data = data.reshape(num_steps, batch, 1, pixel, pixel)
         # print(data.shape)
-        net.train()
-        pred_pro = forward_pass(net, data)# batch, channel, pixel ,pixel
+        net.network.train()
+        pred_pro = net(data)# batch, channel, pixel ,pixel
         # print(pred_pro.shape)
         # loss_val = criterion(pred_pro, label)
         loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
@@ -148,21 +117,21 @@ for epoch in tqdm(range(num_epochs)):
         # plt.show()
     tqdm.write(f'{acc=}')
     with torch.no_grad():
-        net.eval()
+        net.network.eval()
         for i, (data, label) in enumerate(iter(test_loader)):
             data = data.to(device)
             label = label.to(device)
             label = label.type(torch.int64)
             batch = len(data[0])
             data = data.reshape(num_steps, batch, 1, pixel, pixel)
-            pred_pro = forward_pass(net, data)
+            pred_pro = net(data)
             loss_val = criterion(pred_pro, label)
             acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
             hist['test'].append(acc)
 
 ## save model
 enddir = "models/model1.pth"
-torch.save(net.state_dict(), enddir)
+torch.save(net.network.state_dict(), enddir)
 print("success model saving")
 # Plot Loss
 print(hist)
@@ -187,18 +156,3 @@ fig.tight_layout()
 plt.show()
 
 
-
-
-# idx = 0
-
-# fig, ax = plt.subplots(facecolor='w', figsize=(12, 7))
-# labels=['0', '1']
-# print(f"The target label is: {label[idx]}")
-# plt.rcParams['animation.ffmpeg_path'] = r'C:/Users/oosim/Downloads/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin'
-# #  Plot spike count histogram
-# # print(spk_rec.shape) #torch.Size([time, batch label])
-# anim = splt.spike_count(spk_rec[:, idx].detach().cpu(), fig, ax, labels=labels,
-#                         animate=True, interpolate=1)
-
-# HTML(anim.to_html5_video())
-# anim.save("spike_bar.mp4")
