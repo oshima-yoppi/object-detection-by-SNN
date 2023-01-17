@@ -9,3 +9,11 @@ a = [i for i in range(5)]
 a
 
 # %%
+try:
+    a = b
+except Exception as e:
+    import traceback
+    print('--------error--------')
+    traceback.print_exc()
+    print('--------error--------')
+print(99999)
