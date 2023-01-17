@@ -54,11 +54,51 @@ class BaseFunction:
         
        
         return pred_pro
+    
+class FullyConv(BaseFunction):
+    def __init__(self, beta, spike_grad, device,pixel=64,  reshape_bool = True,parm_learn=True, ):
+        self.parm_learn = True
+        self.reshape_bool = reshape_bool
+        self.pixel = pixel
+        c0 = 1
+        c1 = 16
+        c2 = 16
+        n_class=2
+        encode_kernel = 3
+        decode_kernel = 3
+        n_neuron = 4096
+        self.network = nn.Sequential(nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel//2),
+                    nn.MaxPool2d(2, stride=2),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
+                    
+
+                    # nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel//2),
+                    # nn.MaxPool2d(2, stride=2),
+                    # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
+                    
+                    nn.Conv2d(c2, c2, encode_kernel, padding=encode_kernel//2),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
+                    
+                    # nn.Upsample(scale_factor=2),
+                    # nn.Conv2d(c2, c1, decode_kernel, padding=encode_kernel//2),
+                    # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
+                    
+                    nn.Upsample(scale_factor=2),
+                    nn.Conv2d(c2, c0, decode_kernel, padding=decode_kernel//2),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
+                    
+                    
+                    nn.Conv2d(c0, n_class, 1,),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True, learn_beta=parm_learn, learn_threshold=parm_learn),
+                    ).to(device)
+
+
+
 class ConvDense1(BaseFunction):
     """
     
     """
-    def __init__(self, beta, spike_grad, device,pixel=64,  reshape_bool = True,parm_lean=True, ):
+    def __init__(self, beta, spike_grad, device,pixel=64,  reshape_bool = True,parm_learn=True, ):
         self.parm_learn = True
         self.reshape_bool = reshape_bool
         self.pixel = pixel
@@ -72,7 +112,7 @@ class ConvDense1(BaseFunction):
         self.network = nn.Sequential(
             nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel//2),
             nn.MaxPool2d(2, stride=2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
 
             # nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel//2),
@@ -80,7 +120,7 @@ class ConvDense1(BaseFunction):
             # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
             
             nn.Conv2d(c2, c2, encode_kernel, padding=encode_kernel//2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             # nn.Upsample(scale_factor=2),
             # nn.Conv2d(c2, c1, decode_kernel, padding=encode_kernel//2),
@@ -88,23 +128,23 @@ class ConvDense1(BaseFunction):
             
             nn.Upsample(scale_factor=2),
             nn.Conv2d(c2, c0, decode_kernel, padding=decode_kernel//2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             
             nn.Conv2d(c0, n_class, 1,),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             nn.Flatten(),
             nn.Linear(pixel*pixel*2, n_neuron),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             nn.Linear(n_neuron, pixel*pixel*2),
             # nn.Linear(pixel*pixel*2, pixel*pixel*2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output = True,learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output = True,learn_beta=parm_learn, learn_threshold=parm_learn),
         ).to(device)
     
 class ConvDense0(BaseFunction):
-    def __init__(self, beta, spike_grad, device,pixel=64,  reshape_bool = True,parm_lean=True, ):
+    def __init__(self, beta, spike_grad, device,pixel=64,  reshape_bool = True,parm_learn=True, ):
         self.parm_learn = True
         self.reshape_bool = reshape_bool
         self.pixel = pixel
@@ -118,7 +158,7 @@ class ConvDense0(BaseFunction):
         self.network = nn.Sequential(
             nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel//2),
             nn.MaxPool2d(2, stride=2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
 
             # nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel//2),
@@ -126,7 +166,7 @@ class ConvDense0(BaseFunction):
             # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
             
             nn.Conv2d(c2, c2, encode_kernel, padding=encode_kernel//2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             # nn.Upsample(scale_factor=2),
             # nn.Conv2d(c2, c1, decode_kernel, padding=encode_kernel//2),
@@ -134,19 +174,19 @@ class ConvDense0(BaseFunction):
             
             nn.Upsample(scale_factor=2),
             nn.Conv2d(c2, c0, decode_kernel, padding=decode_kernel//2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             
             nn.Conv2d(c0, n_class, 1,),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             nn.Flatten(),
             # nn.Linear(pixel*pixel*2, n_neuron),
-            # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+            # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
             
             # nn.Linear(n_neuron, pixel*pixel*2),
             nn.Linear(pixel*pixel*2, pixel*pixel*2),
-            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output = True,learn_beta=parm_lean, learn_threshold=parm_lean),
+            snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output = True,learn_beta=parm_learn, learn_threshold=parm_learn),
         ).to(device)
 # spike_grad = surrogate.atan()
 def cnn(beta, spike_grad):
@@ -165,50 +205,9 @@ def cnn(beta, spike_grad):
                     )
     return net, reshape_bool
 
-def ConvDense(beta, spike_grad,pixel=64, parm_lean=True):
-    c0 = 1
-    c1 = 16
-    c2 = 16
-    n_class=2
-    encode_kernel = 3
-    decode_kernel = 3
-    n_neuron = 4096
-    reshape_bool = True
-    net = nn.Sequential(nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel//2),
-                    nn.MaxPool2d(2, stride=2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
-                    
 
-                    # nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel//2),
-                    # nn.MaxPool2d(2, stride=2),
-                    # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
-                    
-                    nn.Conv2d(c2, c2, encode_kernel, padding=encode_kernel//2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
-                    
-                    # nn.Upsample(scale_factor=2),
-                    # nn.Conv2d(c2, c1, decode_kernel, padding=encode_kernel//2),
-                    # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
-                    
-                    nn.Upsample(scale_factor=2),
-                    nn.Conv2d(c2, c0, decode_kernel, padding=decode_kernel//2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
-                    
-                    
-                    nn.Conv2d(c0, n_class, 1,),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
-                    
-                    nn.Flatten(),
-                    # nn.Linear(pixel*pixel*2, n_neuron),
-                    # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
-                    
-                    # nn.Linear(n_neuron, pixel*pixel*2),
-                    nn.Linear(pixel*pixel*2, pixel*pixel*2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output = True,learn_beta=parm_lean, learn_threshold=parm_lean),
-                    )
-    return net,reshape_bool
 
-def fcn2(beta, spike_grad,pixel=64, parm_lean=True):
+def fcn2(beta, spike_grad,pixel=64, parm_learn=True):
     c0 = 1
     c1 = 16
     c2 = 16
@@ -218,7 +217,7 @@ def fcn2(beta, spike_grad,pixel=64, parm_lean=True):
     reshape_bool = False
     net = nn.Sequential(nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel//2),
                     nn.MaxPool2d(2, stride=2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
                     
 
                     # nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel//2),
@@ -226,7 +225,7 @@ def fcn2(beta, spike_grad,pixel=64, parm_lean=True):
                     # snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True),
                     
                     nn.Conv2d(c2, c2, encode_kernel, padding=encode_kernel//2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
                     
                     # nn.Upsample(scale_factor=2),
                     # nn.Conv2d(c2, c1, decode_kernel, padding=encode_kernel//2),
@@ -234,11 +233,11 @@ def fcn2(beta, spike_grad,pixel=64, parm_lean=True):
                     
                     nn.Upsample(scale_factor=2),
                     nn.Conv2d(c2, c0, decode_kernel, padding=decode_kernel//2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn),
                     
                     
                     nn.Conv2d(c0, n_class, 1,),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True, learn_beta=parm_lean, learn_threshold=parm_lean),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True, learn_beta=parm_learn, learn_threshold=parm_learn),
                     )
     return net, reshape_bool
 def fcn1(beta, spike_grad,pixel=64):
