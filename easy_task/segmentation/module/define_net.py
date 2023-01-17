@@ -14,4 +14,5 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 beta = 0.95
 parm_learn = False
 spike_grad = surrogate.atan()
-net= network.ConvDense0(beta=beta, spike_grad=spike_grad, device=device, parm_lean=parm_learn)
+# net= network.ConvDense0(beta=beta, spike_grad=spike_grad, device=device, parm_learn=parm_learn)
+net= network.FullyConv(beta=beta, spike_grad=spike_grad, device=device, parm_learn=parm_learn)
