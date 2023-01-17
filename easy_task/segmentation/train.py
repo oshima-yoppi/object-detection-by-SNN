@@ -63,10 +63,10 @@ def print_batch_accuracy(data, label, train=False):
 
 optimizer = torch.optim.Adam(net.network.parameters(), lr=10e-4, betas=(0.9, 0.999))
 # loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
-weights = torch.tensor([1.0, 3.0]).cuda()
-criterion = nn.CrossEntropyLoss(weight=weights)
+# weights = torch.tensor([1.0, 3.0]).cuda()
+# criterion = nn.CrossEntropyLoss(weight=weights)
 
-num_epochs = 300
+num_epochs = 50
 num_iters = 50
 pixel = 64
 correct_rate = 0.5
@@ -122,10 +122,16 @@ try:
                 batch = len(data[0])
                 data = data.reshape(num_steps, batch, 1, pixel, pixel)
                 pred_pro = net(data)
-                loss_val = criterion(pred_pro, label)
+                # loss_val = criterion(pred_pro, label)
                 acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
                 hist['test'].append(acc)
-except:pass
+except Exception as e:
+    import traceback
+    print('--------error--------')
+    traceback.print_exc()
+    print('--------error--------')
+    pass
+    # print(e)
 ## save model
 enddir = "models/model1.pth"
 torch.save(net.network.state_dict(), enddir)
