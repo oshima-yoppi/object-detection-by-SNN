@@ -12,7 +12,7 @@ from . import network
 # import yaml
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 beta = 0.95
-parm_learn = False
+parm_learn = True
 spike_grad = surrogate.atan()
 # net= network.ConvDense0(beta=beta, spike_grad=spike_grad, device=device, parm_learn=parm_learn)
-net= network.FullyConv(beta=beta, spike_grad=spike_grad, device=device, parm_learn=parm_learn)
+net= network.FullyConv3(beta=beta, spike_grad=spike_grad, device=device, parm_learn=parm_learn)
