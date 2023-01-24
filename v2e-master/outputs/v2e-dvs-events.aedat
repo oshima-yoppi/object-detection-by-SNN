@@ -1,0 +1,7 @@
+#!AER-DAT2.0
+# This is a raw AE data file created by AEDat2Output in v2e (see https://github.com/SensorsINI/v2e) as specified at https://inivation.com/support/software/fileformat/#aedat-20
+# Data format is int32 address, int32 timestamp (8 bytes total), repeated for each event
+# Timestamps tick is 1 us
+# Creation time: 04:50PM January 20 2023
+# Creation time: System.currentTimeMillis() 1674201059252
+# User name: oosim

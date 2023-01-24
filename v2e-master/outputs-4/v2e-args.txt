@@ -1,0 +1,84 @@
+
+*** arguments:
+auto_timestamp_resolution:	True
+avi_frame_rate:	30
+batch_size:	8
+crop:	None
+cs_lambda_pixels:	None
+cs_tau_p_ms:	None
+cutoff_hz:	300
+ddd_output:	False
+disable_slomo:	True
+dvs1024:	False
+dvs128:	False
+dvs240:	False
+dvs346:	True
+dvs640:	False
+dvs_aedat2:	v2e-dvs-events.aedat
+dvs_emulator_seed:	0
+dvs_exposure:	['duration', '0.01']
+dvs_h5:	None
+dvs_params:	None
+dvs_text:	None
+dvs_vid:	dvs-video.avi
+dvs_vid_full_scale:	2
+hdr:	False
+input:	None
+input_frame_rate:	None
+input_slowmotion_factor:	1.0
+leak_jitter_fraction:	0.1
+leak_rate_hz:	0.01
+neg_thres:	0.8
+no_preview:	False
+noise_rate_cov_decades:	0.1
+output_folder:	C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\outputs
+output_height:	None
+output_in_place:	False
+output_width:	None
+overwrite:	False
+photoreceptor_noise:	False
+pos_thres:	0.8
+refractory_period:	0.0005
+save_dvs_model_state:	False
+scidvs:	False
+shot_noise_rate_hz:	0.001
+show_dvs_model_state:	None
+sigma_thres:	0.03
+skip_video_output:	False
+slomo_model:	C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\input\SuperSloMo39.ckpt
+slomo_stats_plot:	False
+start_time:	None
+stop_time:	None
+synthetic_input:	None
+timestamp_resolution:	None
+unique_output_folder:	True
+vid_orig:	video_orig.avi
+vid_slomo:	video_slomo.avi
+
+**** extra other arguments:
+
+*** command line:
+ v2e.py -o outputs/ --dvs346 --disable_slomo --pos_thres 0.8 --neg_thres 0.82023-01-20 17:04:17,695 - __main__ - [1;34mINFO[1;0m - opening video input file C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\0000-0010.avi
+2023-01-20 17:04:17,697 - __main__ - [1;31mWARNING[1;0m - slomo interpolation disabled by command line option; output DVS timestamps will have source frame interval resolution
+2023-01-20 17:04:17,698 - __main__ - [1;34mINFO[1;0m - Source video C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\0000-0010.avi has total 11 frames with total duration 200ms. 
+Source video is 50fps with slowmotion_factor 1 (frame interval 20ms),
+Will convert 11 frames 0 to 10
+(From 0.0s to 0.2s, duration 0.2s)
+2023-01-20 17:04:17,699 - __main__ - [1;34mINFO[1;0m - v2e DVS video will have constant-duration frames 
+at 100fps (accumulation time 10ms), 
+DVS video will have 20 frames with duration 200ms and playback duration 666.67ms
+
+2023-01-20 17:04:17,705 - __main__ - [1;34mINFO[1;0m - processing frames 0 to 10 from video input
+2023-01-20 17:04:17,706 - __main__ - [1;34mINFO[1;0m - Input video C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\0000-0010.avi has W=346 x H=260 frames each with 3 channels
+2023-01-20 17:04:17,706 - __main__ - [1;34mINFO[1;0m - *** Stage 1/3: Resizing 11 input frames to output size (with possible RGB to luma conversion)
+2023-01-20 17:04:17,709 - __main__ - [1;34mINFO[1;0m - 
+Converting input frames from RGB color to luma
+2023-01-20 17:04:17,729 - __main__ - [1;34mINFO[1;0m - *** Stage 2/3:turning npy frame files to png from C:\Users\oosim\AppData\Local\Temp\tmp95_8p59k
+2023-01-20 17:04:17,751 - __main__ - [1;34mINFO[1;0m - *** Stage 3/3: emulating DVS events from 11 frames
+2023-01-20 17:04:19,652 - __main__ - [1;34mINFO[1;0m - generated total 9.72k events (5.78k on, 3.93k off)
+2023-01-20 17:04:19,652 - __main__ - [1;34mINFO[1;0m - Avg event rate for N=89960 px and total time =0.200 s
+	Total: 48.60kHz (28.92kHz on, 19.67kHz off)
+	Per pixel:  540.18mHz (321.53mHz on, 218.65mHz off)
+2023-01-20 17:04:19,653 - __main__ - [1;34mINFO[1;0m - showing C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\outputs-4 in desktop
+2023-01-20 17:04:19,673 - __main__ - [1;34mINFO[1;0m - done processing 22 frames in 1.96s (11.23fr/s)
+ **************** see output folder C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\outputs-4
