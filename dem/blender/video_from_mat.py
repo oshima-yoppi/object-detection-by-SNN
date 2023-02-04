@@ -115,8 +115,8 @@ def remove(name):
 
 if __name__ == "__main__":
     filepath = bpy.data.filepath
-    DIR_DIR = os.path.dirname(filepath)
-    SAVE_DIR = os.path.join(DIR_DIR,'video')
+    SAVE_DIR = os.path.dirname(filepath)
+    SAVE_DIR = os.path.join(SAVE_DIR,'video')
     init(theta = 10, save_dir=SAVE_DIR)
 
 
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     object_name = "dem"
     for i in range(DATA_NUM):
         path = f"dem/dem_{i}.npy" 
-        path = os.path.join(DIR_DIR, path)
+        path = os.path.join(SAVE_DIR, path)
         img2plot(path)
 
         save_path = os.path.join(SAVE_DIR, f'{i}.avi')
