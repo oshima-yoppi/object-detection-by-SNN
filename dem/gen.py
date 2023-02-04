@@ -37,7 +37,8 @@ def resize_bilinear(src, hd, wd):
             dy = y - oy
 
             # 出力画像の画素値を計算
-            dst[yd][xd] = src[oy][ox] 
+            # dst[yd][xd] = src[oy][ox] 
+            dst[yd][xd] = max(src[oy][ox],src[oy+1][ox], src[oy-1][ox], src[oy][ox+1], src[oy][ox-1], )  
 
     return dst
 
@@ -50,25 +51,16 @@ def img2plot(path, all_pixel, partial_pixel, reshape):
     data = resize_bilinear(data, reshape, reshape)
     return data
 
-def interporate(verts, lower_bound, upper_bound=None):
+def interporate(verts, ):
     # global df
     ERROR = -9999
     df = pd.DataFrame(data=verts)
     # df = df.fillna(ERROR)
     for col in tqdm(df.columns):
-        df.loc[df[col] <= lower_bound, col] = np.nan
+        df.loc[df[col] <= ERROR, col] = np.nan
     df = df.interpolate(limit_direction='both', )
     return df.values
 
-def detect_outliers(data):
-    """
-    異常検知を行う。
-    """
-    q1, q3 = np.percentile(data, [5, 95])
-    iqr = q3 - q1
-    lower_bound = q1 - (1.5 * iqr)
-    upper_bound = q3 + (1.5 * iqr)
-    return lower_bound, upper_bound
 #%%
 #path = "C:/Users/oosim/Desktop/object-detection-by-SNN/dem/blender/kaguya/1.img"
 path = "//kaguya/0.img" # 相対パスはスラッシュ二つにする必要があるらしい
@@ -77,7 +69,8 @@ path = "blender/kaguya/1.img" # 相対パスはスラッシュ二つにする必
 RATE = 0.001
 pixel = 12288
 partial_pixel = pixel
-reshape = 1000
+reshape = pixel
+# reshape = 500
 meter_pixel = 7.403
 meter_pixel *= RATE
 verts = img2plot(path, pixel, partial_pixel, reshape)
@@ -86,18 +79,14 @@ verts = img2plot(path, pixel, partial_pixel, reshape)
 ERROR = -9999
 verts = np.nan_to_num(verts, nan=ERROR)
 #%%
-lower_bound, upper_bound = detect_outliers(verts)
-verts = interporate(verts, lower_bound)
+verts = interporate(verts)
 
 plt.imshow(verts, cmap='gray')
 
 plt.show()
 
-np.save('blender/kaguya/np.npy', verts)
+np.save('blender/kaguya/np_all.npy', verts)
 
-lower_bound
+
 
 # %%
-plt.boxplot(verts.reshape(-1))
-plt.show()
-
