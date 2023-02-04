@@ -2,14 +2,14 @@
 clear all
 close all
 clc
-pix = 64;
+pix = 128;
 max_angle = 5;
 angle = 3;
 
 is_boulder = true;
 
-addpath(' C:\Users\aki\Documents\GitHub\deep\DEM\terrain_generation');
-addpath(' C:\Users\hp731\Documents\GitHub\deep\DEM\terrain_generation');
+% addpath(' C:\Users\aki\Documents\GitHub\deep\DEM\terrain_generation');
+addpath('terrain_generation');
 
 is_mixangle = 0;
 is_noise = 1;
@@ -42,7 +42,7 @@ mkdir(folder_name,'image')
 mkdir(folder_name,'label');
 mkdir(folder_name,'model');
 % 7680:1:16640
-for i=0:1:16640
+for i=0:1:3000
    if is_double_terrain
        evaluate_angle=0
         double_terrain_generation(i,0,pix,evaluate_angle,folder_name,is_noise,is_boulder);

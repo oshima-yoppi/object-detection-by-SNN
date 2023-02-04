@@ -36,12 +36,12 @@ function f = double_terrain_generation(k,mode,pix,angle,folder_name,is_noise,is_
 
    for crater = 1:1:crater_num
        R(crater) = 3 + (-3 + 15)*rand(1); 
-       x_cord = 3 + (3 + 64)*rand(1);
-       y_cord = 3 + (3 + 64)*rand(1);
+       x_cord = 3 + (3 + pix)*rand(1);
+       y_cord = 3 + (3 + pix)*rand(1);
        center_x_list(crater) = round(x_cord);
        center_y_list(crater) = round(y_cord);
    end
-   %% ƒ{ƒ‹ƒ_[
+   %% ï¿½{ï¿½ï¿½ï¿½_ï¿½[
 
     boulder_num = round(5*rand(1)); 
     boulder_center_x_list =  zeros(boulder_num,1); 
@@ -52,8 +52,8 @@ function f = double_terrain_generation(k,mode,pix,angle,folder_name,is_noise,is_
    
    if is_boulder
    for boulder = 1:1:boulder_num
-       x_cord = 3 + (3 + 64)*rand(1);
-       y_cord = 3 + (3 + 64)*rand(1);
+       x_cord = 3 + (3 + pix)*rand(1);
+       y_cord = 3 + (3 + pix)*rand(1);
        boulder_center_x_list(boulder) = round(x_cord);
        boulder_center_y_list(boulder) = round(y_cord);
        xr = abs(5*rand(1));
@@ -71,7 +71,7 @@ function f = double_terrain_generation(k,mode,pix,angle,folder_name,is_noise,is_
     true_DEM = DEM_0;    
     DEM = round(DEM_0,0);
 
-   %% ‰Â‹‚©
+   %% ï¿½Âï¿½ï¿½ï¿½
     if mode==2
         figure(1)
         s = surf(DEM);

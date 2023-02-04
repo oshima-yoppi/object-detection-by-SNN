@@ -37,8 +37,8 @@ function f = fractal_terrain_generation(k,mode,pix,angle,folder_name,is_noise,is
 
    for crater = 1:1:crater_num
        R(crater) = 3 + (-3 + 15)*rand(1); %クレータ半径(3~10)
-       x_cord = 3 + (3 + 64)*rand(1);
-       y_cord = 3 + (3 + 64)*rand(1);
+       x_cord = 3 + (3 + pix)*rand(1);
+       y_cord = 3 + (3 + pix)*rand(1);
        center_x_list(crater) = round(x_cord);
        center_y_list(crater) = round(y_cord);
    end
@@ -54,8 +54,8 @@ function f = fractal_terrain_generation(k,mode,pix,angle,folder_name,is_noise,is
    if is_boulder
    for boulder = 1:1:boulder_num
        % 座標
-       x_cord = 3 + (3 + 64)*rand(1);
-       y_cord = 3 + (3 + 64)*rand(1);
+       x_cord = 3 + (3 + pix)*rand(1);
+       y_cord = 3 + (3 + pix)*rand(1);
        boulder_center_x_list(boulder) = round(x_cord);
        boulder_center_y_list(boulder) = round(y_cord);
        % 大きさ
@@ -79,7 +79,7 @@ function f = fractal_terrain_generation(k,mode,pix,angle,folder_name,is_noise,is
  %% true_DEM
     true_DEM = DEM;    
  %% 
-    Lidar_noised_DEM = true_DEM + 0.1*randn(64);
+    Lidar_noised_DEM = true_DEM + 0.1*randn(pix);
     DEM = round(Lidar_noised_DEM,0);
 
     %% 動画 v open
