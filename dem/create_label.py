@@ -38,6 +38,7 @@ class Dem2Img():
         label : torch.tensor
             スクリーン座標系のラベル
         """
+        # https://qiita.com/S-Kaito/items/ace10e742227fd63bd4c
         self.dem_height, self.dem_width = dem_label.shape
         label = np.zeros((240, 360)) 
         for x_world in range(self.dem_height):
