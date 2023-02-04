@@ -10,6 +10,9 @@ dem/blender/video/*.avi
 dem/blender/*.blend
 dem/blender/*.blend1
 
+dem/DEM/128pix_(0-3deg)_dem(lidar_noisy)_boulder
+dem/DEM/64pix_(0-3deg)_dem(lidar_noisy)_boulder
+
 
 
 
