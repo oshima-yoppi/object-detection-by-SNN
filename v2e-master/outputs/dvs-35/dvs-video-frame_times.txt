@@ -1,0 +1,6 @@
+# frame times for dvs-video.avi
+# frame# time(s)
+0	  0.302500
+1	  0.502500
+2	  0.702500
+3	  0.902500

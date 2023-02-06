@@ -275,7 +275,7 @@ class EventEmulator(object):
                 # add new code by yoppi
                 path = self.output_file_path
                 logger.info('opening event output dataset file ' + path)
-                self.dvs_h5 = h5py.File(path, "w")
+                self.dvs_h5 = h5py.File(path, "a")
 
                 # for events
                 self.dvs_h5_dataset = self.dvs_h5.create_dataset(

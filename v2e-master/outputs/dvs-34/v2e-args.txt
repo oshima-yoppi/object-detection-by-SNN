@@ -1,0 +1,61 @@
+
+*** arguments:
+auto_timestamp_resolution:	True
+avi_frame_rate:	30
+batch_size:	8
+crop:	None
+cs_lambda_pixels:	None
+cs_tau_p_ms:	None
+cutoff_hz:	300
+ddd_output:	False
+disable_slomo:	True
+dvs1024:	False
+dvs128:	False
+dvs240:	False
+dvs346:	True
+dvs640:	False
+dvs_aedat2:	v2e-dvs-events.aedat
+dvs_emulator_seed:	0
+dvs_exposure:	['0.2']
+dvs_h5:	None
+dvs_params:	None
+dvs_text:	None
+dvs_vid:	dvs-video.avi
+dvs_vid_full_scale:	2
+hdr:	False
+input:	None
+input_frame_rate:	None
+input_slowmotion_factor:	1.0
+leak_jitter_fraction:	0.1
+leak_rate_hz:	0.01
+neg_thres:	0.1
+no_preview:	False
+noise_rate_cov_decades:	0.1
+output_folder:	C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\outputs\dvs
+output_height:	None
+output_in_place:	False
+output_width:	None
+overwrite:	False
+photoreceptor_noise:	False
+pos_thres:	0.1
+refractory_period:	0.0005
+save_dvs_model_state:	False
+scidvs:	False
+shot_noise_rate_hz:	0.001
+show_dvs_model_state:	None
+sigma_thres:	0.03
+skip_video_output:	False
+slomo_model:	C:\Users\oosim\Desktop\object-detection-by-SNN\v2e-master\input\SuperSloMo39.ckpt
+slomo_stats_plot:	False
+start_time:	None
+stop_time:	None
+synthetic_input:	None
+timestamp_resolution:	None
+unique_output_folder:	True
+vid_orig:	video_orig.avi
+vid_slomo:	video_slomo.avi
+
+**** extra other arguments:
+
+*** command line:
+ v2e.py -o outputs/dvs --disable --dvs346 --neg_thres 0.1 --pos_thres 0.1 --dvs_exposure 0.2
