@@ -23,7 +23,7 @@ class Dem2Img():
         self.focal = 0.050
         self.img_height, self.img_width = 240, 360
         self.sensor_height, self.sensor_width = 0.024, 0.036
-        self.cam_x, self.cam_y, self.cam_z = 64, 64, 300
+        self.cam_x, self.cam_y, self.cam_z = 64, 64, 164
     def __call__(self, dem_label):
         """
         dem座標系のラベルをカメラのスクリーン座標系のラベルに変換
