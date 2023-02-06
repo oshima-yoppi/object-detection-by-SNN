@@ -7,7 +7,8 @@ from mpl_toolkits import mplot3d
 import cv2
 import os
 from ransac import *
-from sklearn.preprocessing import MinMaxScaler
+# from sklearn.preprocessing import MinMaxScaler
+from tqdm import tqdm
 import time
 #
 
@@ -265,7 +266,7 @@ if __name__ == '__main__':
                         # 切り抜く。
                     cropped = cv2.getRectSubPix(DEM2, size, center)
 
-                    """
+                    
                     fig = plt.figure()
                     ax1 = fig.add_subplot(1,3,1)
                     ax2 = fig.add_subplot(1,3,2)
@@ -275,7 +276,7 @@ if __name__ == '__main__':
                     ax3.imshow(cropped)
                     plt.show()
                     
-                    """
+                    
                    # suiheido, m = Get_Slope_alhat(cropped)
                     suiheido = Get_Slope(cropped)
                     if suiheido > S[row][col]: # ワーストケースを記録
