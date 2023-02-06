@@ -14,7 +14,7 @@ import time
 
 from DEM.ransac import *
 from module.const import *
-from module import convert_label
+from module import convert_label, cmd
 # from sklearn.preprocessing import MinMaxScaler
 
 
@@ -311,7 +311,7 @@ if __name__ == '__main__':
     os.mkdir(SAVE_DIR)
 
 
-    data_num = 3000
+    data_num = 3
     converter = convert_label.Dem2Img(focal=focal, img_height=img_height, img_width=img_width, sensor_heitght=sensor_height,
     sensor_width=sensor_width, cam_x=cam_x, cam_y=cam_y, cam_z=cam_z)
 
@@ -333,6 +333,10 @@ if __name__ == '__main__':
         savefile_path = os.path.join(SAVE_DIR, savefile_path)
         with h5py.File(savefile_path, 'a') as f:
             f.create_dataset("label", data=hazard_reshape)
+        
+        cmd.v2e_cmd(file_num)
+        
+
         
 
         
