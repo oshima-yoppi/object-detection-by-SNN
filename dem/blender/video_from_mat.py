@@ -3,7 +3,7 @@ import numpy as np
 import math
 import mathutils
 import time
-import math
+# import math
 import os
 import shutil
 import pathlib
@@ -24,18 +24,19 @@ def init(theta, save_dir):
     camera.data.sensor_height = 24
     camera.data.clip_end = 400
     camera.location = (64, 64, 300)
-    camera.rotation_euler = (0, 0, 0)
+    camera.rotation_euler = (0, 0, math.radians(90))
 
-    # アニメーションのフレーム設定
-    fram_start = 0
-    frame_finish = 10
-    frame_num = frame_finish - fram_start
+    
     # カメラの標高座標の始点ト終点を定義
     z_start = 164
-    z_finish = 144
+    z_finish = 154
     z_length = z_start - z_finish
-    velocity = 20 # 速度m/s
-    video_fps =  int(velocity*frame_num/z_length)
+    velocity = 10 # 速度m/s
+    video_fps =  100#int(velocity*frame_num/z_length)
+    # アニメーションのフレーム設定
+    fram_start = 0
+    frame_finish = int(z_length*video_fps/velocity)
+    frame_num = frame_finish - fram_start
     frame_lst = [fram_start,frame_finish]
     z_lst = [z_start, z_finish]
     bpy.context.scene.render.fps = video_fps
@@ -115,8 +116,8 @@ def remove(name):
 
 if __name__ == "__main__":
     filepath = bpy.data.filepath
-    SAVE_DIR = os.path.dirname(filepath)
-    SAVE_DIR = os.path.join(SAVE_DIR,'video')
+    NOW_DIR = os.path.dirname(filepath)
+    SAVE_DIR = os.path.join(NOW_DIR,'video')
     init(theta = 10, save_dir=SAVE_DIR)
 
 
@@ -125,7 +126,7 @@ if __name__ == "__main__":
     object_name = "dem"
     for i in range(DATA_NUM):
         path = f"dem/dem_{i}.npy" 
-        path = os.path.join(SAVE_DIR, path)
+        path = os.path.join(NOW_DIR, path)
         img2plot(path)
 
         save_path = os.path.join(SAVE_DIR, f'{i}.avi')
