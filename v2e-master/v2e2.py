@@ -536,7 +536,7 @@ def main():
         noise_rate_cov_decades=args.noise_rate_cov_decades,
         refractory_period_s=args.refractory_period,
         seed=args.dvs_emulator_seed,
-        output_folder=output_folder, dvs_h5=dvs_h5, dvs_aedat2=dvs_aedat2,
+        output_folder=output_folder, output_file_path=output_file_path, dvs_h5=dvs_h5, dvs_aedat2=dvs_aedat2,
         dvs_text=dvs_text, show_dvs_model_state=args.show_dvs_model_state,
         save_dvs_model_state=args.save_dvs_model_state,
         output_width=output_width, output_height=output_height,
@@ -554,7 +554,7 @@ def main():
         emulator.set_dvs_params(args.dvs_params)
 
     eventRenderer = EventRenderer(
-        output_path=output_folder,
+        output_path=output_folder, output_file_path=output_file_path,
         dvs_vid=dvs_vid, preview=preview, full_scale_count=dvs_vid_full_scale,
         exposure_mode=exposure_mode,
         exposure_value=exposure_val,

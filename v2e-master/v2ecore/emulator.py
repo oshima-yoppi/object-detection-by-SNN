@@ -92,6 +92,7 @@ class EventEmulator(object):
             noise_rate_cov_decades: float = 0.1,
             seed: int = 0,
             output_folder: str = None,
+            output_file_path: str = None,
             dvs_h5: str = None,
             dvs_aedat2: str = None,
             dvs_text: str = None,
@@ -198,6 +199,7 @@ class EventEmulator(object):
 
         # output properties
         self.output_folder = output_folder
+        self.output_file_path = output_file_path
         self.output_width = output_width
         self.output_height = output_height  # set on first frame
         self.show_dvs_model_state = show_dvs_model_state
@@ -268,8 +270,10 @@ class EventEmulator(object):
 
         try:
             if dvs_h5:
-                path = os.path.join(self.output_folder, dvs_h5)
-                path = checkAddSuffix(path, '.h5')
+                # path = os.path.join(self.output_folder, dvs_h5)
+                # path = checkAddSuffix(path, '.h5')
+                # add new code by yoppi
+                path = self.output_file_path
                 logger.info('opening event output dataset file ' + path)
                 self.dvs_h5 = h5py.File(path, "w")
 

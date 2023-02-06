@@ -76,6 +76,9 @@ def v2e_args(parser):
         "-o", "--output_folder", type=expandpath, default='v2e-output',
         help="folder to store outputs.")
     outGroupGeneral.add_argument(
+        "--output_file_path", type=str, 
+        help="")
+    outGroupGeneral.add_argument(
         "--avi_frame_rate", type=int, default=30,
         help="frame rate of output AVI video files; "
              "only affects playback rate. ")

@@ -38,6 +38,7 @@ class EventRenderer(object):
             self,
             full_scale_count=3,
             output_path=None,
+            output_file_path=None,
             dvs_vid=None,
             preview=False,
             exposure_mode=ExposureMode.DURATION,  # 'count', 'area-count'
@@ -69,6 +70,7 @@ class EventRenderer(object):
         self.exposure_mode = exposure_mode
         self.exposure_value = exposure_value
         self.output_path = output_path
+        self.output_file_path = output_file_path
         # must be set by specific renderers,
         # which might only know it once they have data
         self.width = None
