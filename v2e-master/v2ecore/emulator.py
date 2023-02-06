@@ -274,6 +274,7 @@ class EventEmulator(object):
                 # path = checkAddSuffix(path, '.h5')
                 # add new code by yoppi
                 path = self.output_file_path
+                print(888888888888888888888, path)
                 logger.info('opening event output dataset file ' + path)
                 self.dvs_h5 = h5py.File(path, "a")
 
