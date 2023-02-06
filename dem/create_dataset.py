@@ -199,9 +199,9 @@ def make_hazard(DEM):
 
     # rotate_list = [0.0] # simple label 適用時
     # rotate_list = [0.0,30.0,60.0,90.0,120.0,150.0,180.0]# ALHAT 適用時
-    rotate_list = [0.0,90.0,180.0,270.0,360.0]
+    rotate_list = [0.0,45]
 
-    V = np.zeros((height,width)) # safety for each pixel
+    # V = np.zeros((height,width)) # safety for each pixel
     S = np.zeros((height,width)) # slope for each pixel
     R = np.zeros((height,width)) # roughness for each pixel
     size = (F,F)
@@ -251,16 +251,16 @@ def make_hazard(DEM):
     #np.set_printoptions(threshold=np.inf)
     #print("S:",S)
     #print("R:",R)
-    fig = plt.figure()
-    ax1 = fig.add_subplot(2,3,1)
-    ax2 = fig.add_subplot(2,3,2)
-    ax3 = fig.add_subplot(2,3,3)
-    ax1.set_title('original')
-    ax1.imshow(DEM)
-    ax2.set_title('slope'+str(np.mean(S)))
-    ax2.imshow(S,cmap='jet') 
-    ax3.set_title('roughness'+str(np.mean(R)))
-    ax3.imshow(R,cmap='jet')
+    # fig = plt.figure()
+    # ax1 = fig.add_subplot(2,3,1)
+    # ax2 = fig.add_subplot(2,3,2)
+    # ax3 = fig.add_subplot(2,3,3)
+    # ax1.set_title('original')
+    # ax1.imshow(DEM)
+    # ax2.set_title('slope'+str(np.mean(S)))
+    # ax2.imshow(S,cmap='jet') 
+    # ax3.set_title('roughness'+str(np.mean(R)))
+    # ax3.imshow(R,cmap='jet')
     
 
     # Vthm = np.mean(S)
@@ -311,7 +311,7 @@ if __name__ == '__main__':
     os.mkdir(SAVE_DIR)
 
 
-    data_num = 3
+    data_num = 3001
     converter = convert_label.Dem2Img(focal=focal, img_height=img_height, img_width=img_width, sensor_heitght=sensor_height,
     sensor_width=sensor_width, cam_x=cam_x, cam_y=cam_y, cam_z=cam_z)
 
@@ -329,7 +329,7 @@ if __name__ == '__main__':
         # ax2.imshow(hazard_reshape)
         # plt.show()
 
-        savefile_path = f'{file_num}'
+        savefile_path = f'{file_num}.h5'
         savefile_path = os.path.join(SAVE_DIR, savefile_path)
         with h5py.File(savefile_path, 'a') as f:
             f.create_dataset("label", data=hazard_reshape)
