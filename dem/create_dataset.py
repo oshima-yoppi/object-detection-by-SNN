@@ -130,7 +130,7 @@ def Get_Slope(roi):
     # fy = ((NW-SW+np.sqrt(2))*(N-S)+NE-SE)/(4+2*np.sqrt(2))
     fx = (SE-SW+np.sqrt(2)*(E-W)+NE-NW)/(4+2*np.sqrt(2))
     fy = (NW-SW+np.sqrt(2)*(N-S)+NE-SE)/(4+2*np.sqrt(2))
-    theta = np.arctan(fx**2+fy**2)
+    theta = np.arctan(math.sqrt((fx**2+fy**2)))
 
 
     """
@@ -300,9 +300,6 @@ def make_hazard(DEM):
     
     # print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
     return hazard
-# Get_roughness内の計算用配列
-#x_ary = np.array([range(i,i+8) for i in [0,1,2,3,4,5,6,7]])
-#y_ary = np.array([range(i,i+8) for i in [0,1,2,3,4,5,6,7]])
 
 
 
@@ -325,12 +322,12 @@ if __name__ == '__main__':
 
 
         hazard_reshape = converter(hazard)
-        fig = plt.figure()
-        ax1 = fig.add_subplot(121)
-        ax2 = fig.add_subplot(122)
-        ax1.imshow(DEM)
-        ax2.imshow(hazard_reshape)
-        plt.show()
+        # fig = plt.figure()
+        # ax1 = fig.add_subplot(121)
+        # ax2 = fig.add_subplot(122)
+        # ax1.imshow(DEM)
+        # ax2.imshow(hazard_reshape)
+        # plt.show()
 
         savefile_path = f'{file_num}'
         savefile_path = os.path.join(SAVE_DIR, savefile_path)
