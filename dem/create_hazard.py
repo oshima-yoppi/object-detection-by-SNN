@@ -126,8 +126,10 @@ def Get_Slope(roi):
     SW = roi[0,4]
     NE = roi[4,0]
     NW = roi[0,0]
-    fx = ((SE-SW+np.sqrt(2))*(E-W)+NE-NW)/(4+2*np.sqrt(2))
-    fy = ((NW-SW+np.sqrt(2))*(N-S)+NE-SE)/(4+2*np.sqrt(2))
+    # fx = ((SE-SW+np.sqrt(2))*(E-W)+NE-NW)/(4+2*np.sqrt(2))
+    # fy = ((NW-SW+np.sqrt(2))*(N-S)+NE-SE)/(4+2*np.sqrt(2))
+    fx = (SE-SW+np.sqrt(2)*(E-W)+NE-NW)/(4+2*np.sqrt(2))
+    fy = (NW-SW+np.sqrt(2)*(N-S)+NE-SE)/(4+2*np.sqrt(2))
     theta = np.arctan(fx**2+fy**2)
 
 
@@ -323,12 +325,12 @@ if __name__ == '__main__':
 
 
         hazard_reshape = converter(hazard)
-        # fig = plt.figure()
-        # ax1 = fig.add_subplot(121)
-        # ax2 = fig.add_subplot(122)
-        # ax1.imshow(DEM)
-        # ax2.imshow(hazard_reshape)
-        # plt.show()
+        fig = plt.figure()
+        ax1 = fig.add_subplot(121)
+        ax2 = fig.add_subplot(122)
+        ax1.imshow(DEM)
+        ax2.imshow(hazard_reshape)
+        plt.show()
 
         savefile_path = f'{file_num}'
         savefile_path = os.path.join(SAVE_DIR, savefile_path)
