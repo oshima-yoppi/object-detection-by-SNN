@@ -31,23 +31,16 @@ def SaveEvents(path, ebents, label):
 
 
 if __name__ == "__main__":
-    pixel = 64
-    time = 10
-    noize_rate = 0.1
-    number_of_data = 10
-    numer_list = []
-    radius_list, x_list, y_list = [],[],[]
-    label_list = []
-    path_list = []
-    h5py_path = f"dataset/0009.h5"
+    h5py_path = f"data/0.h5"
     youtube_path = f"0.gif"
-
-    with h5py.File(h5py_path, "r") as f:
-        label = f['label'][()]
-        events = f['input'][()]
+    ee = h5py.File(h5py_path, 'r')
+    print(ee.keys())
+    # with h5py.File(h5py_path, "r") as f:
+    #     label = f['label'][()]
+    #     events = f['input'][()]
   
-    events =  torch.from_numpy(events.astype(np.float32)).clone()
-    youtube(events, youtube_path)
+    # events =  torch.from_numpy(events.astype(np.float32)).clone()
+    # youtube(events, youtube_path)
 
     
         
