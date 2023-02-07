@@ -15,8 +15,8 @@ def init(theta, save_dir):
     """
 
     # カメラの詳細設定
-    bpy.context.scene.render.resolution_x = 360
-    bpy.context.scene.render.resolution_y = 240
+    bpy.context.scene.render.resolution_x = 346
+    bpy.context.scene.render.resolution_y = 260
     camera = bpy.data.objects['Camera']
     camera.data.lens = 50
     camera.data.sensor_fit = 'HORIZONTAL'

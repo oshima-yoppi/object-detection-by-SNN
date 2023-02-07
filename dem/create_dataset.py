@@ -311,7 +311,7 @@ if __name__ == '__main__':
     os.mkdir(SAVE_DIR)
 
 
-    data_num = 1 #3001
+    data_num = 2 #3001
     converter = convert_label.Dem2Img(focal=focal, img_height=img_height, img_width=img_width, sensor_heitght=sensor_height,
     sensor_width=sensor_width, cam_x=cam_x, cam_y=cam_y, cam_z=cam_z)
 

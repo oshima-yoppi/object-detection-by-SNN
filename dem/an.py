@@ -4,19 +4,20 @@ import h5py
 import numpy as np
 import tonic.transforms as transforms
 import time
+from module import const
 #%%
 
 # dataset = tonic.datasets.NMNIST(save_to='data_', train=True)
 
 
-# dataset = tonic.datasets.NMNIST(save_to='data_', train=False)
+dataset = tonic.datasets.NMNIST(save_to='data_', train=False)
 # events_, target = dataset[0]
 # print(type(events_.shape))
 # print(type(events_))
 # tonic.utils.plot_event_grid(events_)
 # %%
 
-h5py_path = f"data/0.h5"
+h5py_path = f"data/1.h5"
 youtube_path = f"0.gif"
 with h5py.File(h5py_path, "r") as f:
     label = f['label'][()]
@@ -33,11 +34,12 @@ for i, (key , _) in enumerate(dtype):
     print(max(events[:,i]))
 print(events_change, events_change.shape)
 print(time.time()-start)
-transform = transforms.ToFrame(sensor_size=(361, 360, 2), time_window= 100000)
+SENSOR_SIZE = (const.img_width, const.img_height, 2)
+transform = transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window= 100000)
 # transform = transforms.ToFrame(time_window= 1000)
 new = transform(events_change)
 new.shape
-# tonic.utils.plot_event_grid(events_change, axis_array=(2,5))
+tonic.utils.plot_event_grid(events_change, axis_array=(1,3))
 # %%
 # time =  events['t']
 # time.shape
