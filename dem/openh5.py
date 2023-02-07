@@ -6,6 +6,8 @@ import pandas as pd
 import torchvision
 import random
 import pandas as pd
+import tonic
+import tonic.transforms as transforms
 import os
 
 
@@ -33,12 +35,13 @@ def SaveEvents(path, ebents, label):
 if __name__ == "__main__":
     h5py_path = f"data/0.h5"
     youtube_path = f"0.gif"
-    ee = h5py.File(h5py_path, 'r')
-    print(ee.keys())
-    # with h5py.File(h5py_path, "r") as f:
-    #     label = f['label'][()]
-    #     events = f['input'][()]
-  
+    with h5py.File(h5py_path, "r") as f:
+        label = f['label'][()]
+        events = f['events'][()]
+    print(label)
+    print(events)
+    print(events.shape)
+    tonic.utils.plot_event_grid(events)
     # events =  torch.from_numpy(events.astype(np.float32)).clone()
     # youtube(events, youtube_path)
 
