@@ -18,43 +18,46 @@ import h5py
 import glob
 import numpy as np
 import tonic
-import tonic.tranfsorms import transforms
+import tonic.transforms as transforms
 from tqdm import tqdm
+# from .module import const
 from . import const
 
 
 
 def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
-    SENSOR_SIZE = (const.img_width, const.img_height, 2) # (WHP)
+    SENSOR_SIZE = (const.IMG_WIDTH, const.IMG_HEIGHT, 2) # (WHP)
     converter = transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time)
     os.makedirs(new_dir)
     h5py_allfile = glob.glob(f'{events_raw_dir}/*.h5')
     dtype = [('t', '<i4'), ('x', '<i4'), ('y', '<i4'), ('p', '<i4')]
+    # print(h5py_allfile)
     for i, file in enumerate(tqdm(h5py_allfile)):
         with h5py.File(file, "r") as f:
             label = f['label'][()]
             raw_events = f['events'][()]
         raw_event_len = raw_events.shape[0]
-        acc_events = converter(raw_events)
         processed_events = np.zeros(raw_event_len, dtype=dtype)
         for idx, (key , _) in enumerate(dtype):
-            processed_events[key] = acc_events[:,idx]
-        
+            processed_events[key] = raw_events[:,idx]
+        acc_events = converter(processed_events)
         file_name = f'{str(i).zfill(5)}.h5'
         new_file_path = os.path.join(new_dir, file_name)
         with h5py.File(new_file_path, "w") as f :
             f.create_dataset('label', data=label)
-            f.create_dataset('events', data=processed_events)
+            f.create_dataset('events', data=acc_events)
     return 
 class LoadDataset(Dataset):
-    def __init__(self, train:bool, dir, accumulate_time):
+    def __init__(self, dir, raw_event_dir,accumulate_time : int,  train:bool, ):
         self.dir = dir
         self.accumulate_time = accumulate_time
-        self.data_dir = os.path.join(self.dir, str(self.accumulate_time))
-        if os.path.dir(self.data_dir):
-            convert_raw_event(self.data_dir, self.accumulate_time)
+        self.raw_evnet_dir = os.path.join(self.dir, str(self.accumulate_time))
+        if os.path.isdir(self.raw_evnet_dir):
+            pass
+        else:
+            convert_raw_event(events_raw_dir=raw_event_dir, new_dir=self.raw_evnet_dir, accumulate_time=self.accumulate_time)
 
-        self.all_files = glob.glob(f"{self.data_dir}/*")
+        self.all_files = glob.glob(f"{self.raw_evnet_dir}/*")
         self.divide = int((len(self.all_files)*0.2))
 
         if train:
@@ -83,13 +86,15 @@ def custom_collate(batch):
     return torch.stack(input_lst, dim=1), torch.stack(target_lst, dim=0)
 
 if __name__ == "__main__":
-    dataset_path = "dataset/"
-    youtube_path = "gomibako/h5.gif"
-    a = LoadDataset(dir=dataset_path, train=False)
-    input, label = a[6]
+    print(os.getcwd())
+    dataset_path = "../dataset/"
+    raw_event_dir = '../data'
+    # youtube_path = "gomibako/h5.gif"
+    a = LoadDataset(dir=dataset_path, raw_event_dir=raw_event_dir,accumulate_time=100000 ,train=True)
+    input, label = a[0]
     print(input.shape)
     print(label.shape)
     print(input.shape[0])
-    print(a.file_lst[6], a.num_lst[6])
+    # print(a.file_lst[6], a.num_lst[6])
     # make_data.youtube(input, youtube_path)
     
