@@ -311,9 +311,9 @@ if __name__ == '__main__':
     os.mkdir(SAVE_DIR)
 
 
-    data_num = 2 #3001
-    converter = convert_label.Dem2Img(focal=focal, img_height=img_height, img_width=img_width, sensor_heitght=sensor_height,
-    sensor_width=sensor_width, cam_x=cam_x, cam_y=cam_y, cam_z=cam_z)
+    data_num = 3001
+    converter = convert_label.Dem2Img(focal=FOCAL, img_height=IMG_HEIGHT, img_width=IMG_WIDTH, sensor_heitght=SENSOR_HEIGHT,
+    sensor_width=SENSOR_WIDTH, cam_x=CAM_X, cam_y=CAM_Y, cam_z=CAM_Z)
 
     for file_num in tqdm(range( data_num)):
         dem_path = f"blender/dem/dem_{file_num}.npy"
@@ -329,7 +329,7 @@ if __name__ == '__main__':
         # ax2.imshow(hazard_reshape)
         # plt.show()
 
-        savefile_path = f'{file_num}.h5'
+        savefile_path = f'{str(file_num).zfill(5)}.h5'
         savefile_path = os.path.join(SAVE_DIR, savefile_path)
         with h5py.File(savefile_path, 'a') as f:
             f.create_dataset("label", data=hazard_reshape)
