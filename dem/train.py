@@ -19,9 +19,8 @@ import itertools
 from tqdm import tqdm
 
 from module.custom_data import LoadDataset
-from module import custom_data
-from module import network, compute_loss, define_net
-
+from module import custom_data, compute_loss, network
+from module.const import *
 import matplotlib.pyplot as plt
 from IPython.display import HTML
 
@@ -29,28 +28,8 @@ from collections import defaultdict
 
 import yaml
 
-
-# Network Architecture
-num_inputs = 28*28
-num_hidden = 1000
-num_outputs = 10
-dtype = torch.float
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-# Temporal Dynamics
-num_steps = 10
-beta = 0.95
-dataset_path = "dataset/"
-batch_size = 16
-
-train_dataset = LoadDataset(dir = dataset_path, train=True)
-test_dataset = LoadDataset(dir = dataset_path,  train=False)
-
-train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=custom_data.custom_collate, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=custom_data.custom_collate, shuffle=False,)
-
-net = define_net.net
 def print_batch_accuracy(data, label, train=False):
-    output, _ = net(data.view(batch_size, -1))
+    output, _ = net(data.view(BATCH_SIZE, -1))
     _, idx = output.sum(dim=0).max(1)
     acc = np.mean((label == idx).detach().cpu().numpy())
 
@@ -59,16 +38,28 @@ def print_batch_accuracy(data, label, train=False):
     else:
         print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
 
+# Network Architecture
+# num_inputs = 28*28
+# num_hidden = 1000
+# num_outputs = 10
+# dtype = torch.float
 
+train_dataset = LoadDataset(dataset_dir=DATASET_PATH, dataset_accevent_dir=DATASET_ACCEVENT_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True)
+test_dataset = LoadDataset(dataset_dir=DATASET_PATH, dataset_accevent_dir=DATASET_ACCEVENT_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
 
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
+
+net = NET
+
+events, _ = train_dataset[0]
+num_steps = events.shape[0]
 optimizer = torch.optim.Adam(net.network.parameters(), lr=10e-4, betas=(0.9, 0.999))
-# loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
-# weights = torch.tensor([1.0, 3.0]).cuda()
-# criterion = nn.CrossEntropyLoss(weight=weights)
+
 
 num_epochs = 50
 num_iters = 50
-pixel = 64
+# pixel = 64
 correct_rate = 0.5
 loss_hist = []
 hist = defaultdict(list)
@@ -77,12 +68,12 @@ try:
 
     for epoch in tqdm(range(num_epochs)):
         for i, (data, label) in enumerate(iter(train_loader)):
-            data = data.to(device)
+            data = data.to(DEVICE)
             # label = torch.tensor(label, dtype=torch.int64)
             label = label.type(torch.int64)
-            label = label.to(device)
+            label = label.to(DEVICE)
             batch = len(data[0])
-            data = data.reshape(num_steps, batch, 1, pixel, pixel)
+            data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             # print(data.shape)
             net.network.train()
             pred_pro = net(data)# batch, channel, pixel ,pixel
@@ -116,11 +107,11 @@ try:
         with torch.no_grad():
             net.network.eval()
             for i, (data, label) in enumerate(iter(test_loader)):
-                data = data.to(device)
-                label = label.to(device)
+                data = data.to(DEVICE)
+                label = label.to(DEVICE)
                 label = label.type(torch.int64)
                 batch = len(data[0])
-                data = data.reshape(num_steps, batch, 1, pixel, pixel)
+                data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                 pred_pro = net(data)
                 # loss_val = criterion(pred_pro, label)
                 acc = compute_loss.culc_iou(pred_pro, label, correct_rate)

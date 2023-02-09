@@ -32,35 +32,38 @@ class BaseFunction:
         soft = nn.Softmax2d()
         spk_rec = []
         utils.reset(self.network)  # resets hidden states for all LIF neurons in net
+        # print(data.shape)
 
         for step in range(data.size(0)):  # data.size(0) = number of time steps
             spk_out, mem_out = self.network(data[step])
+            # print(spk_out.shape)
             if self.reshape_bool:
                 batch = len(spk_out)
-                spk_out = spk_out.reshape(batch, 2, self.pixel, self.pixel)
+                spk_out = spk_out.reshape(batch, 2, self.input_height, self.input_width)
 
             spk_rec.append(spk_out)
 
         spk_rec = torch.stack(spk_rec)
         # print(spk_rec.shape)
         spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
-        spk_cnt_ = spk_cnt[0,0,:,:].reshape(self.pixel, self.pixel).to('cpu').detach().numpy().copy()
+        spk_cnt_ = spk_cnt[0,0,:,:].reshape(self.input_height, self.input_width).to('cpu').detach().numpy().copy()
         
         # print(np.sum(spk_cnt_.reshape(-1)))
        
         pred_pro = F.softmax(spk_cnt, dim=1)
-        pred_pro_ = pred_pro[0,0,:,:].reshape(self.pixel, self.pixel).to('cpu').detach().numpy().copy()
-        pred_pro__ = pred_pro[0,1,:,:].reshape(self.pixel, self.pixel).to('cpu').detach().numpy().copy()
+        pred_pro_ = pred_pro[0,0,:,:].reshape(self.input_height, self.input_width).to('cpu').detach().numpy().copy()
+        pred_pro__ = pred_pro[0,1,:,:].reshape(self.input_height, self.input_width).to('cpu').detach().numpy().copy()
         
        
         return pred_pro
 
 class FullyConv3(BaseFunction):
-    def __init__(self, beta, spike_grad, device,pixel=64,  reshape_bool = True,parm_learn=True, ):
+    def __init__(self, beta, spike_grad, input_channel, device, input_height, input_width,  reshape_bool = True,parm_learn=True):
         self.parm_learn = True
         self.reshape_bool = reshape_bool
-        self.pixel = pixel
-        c0 = 1
+        self.input_height = input_height
+        self.input_width = input_width
+        c0 = input_channel
         c1 = 16
         c2 = 32
         c3 = 64
@@ -99,7 +102,9 @@ class FullyConv3(BaseFunction):
                     
                     
                     nn.Conv2d(c0, n_class, 1,),
+                    nn.AdaptiveMaxPool2d((self.input_height, self.input_width)),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True, learn_beta=parm_learn, learn_threshold=parm_learn),
+                    
                     ).to(device)
 
 

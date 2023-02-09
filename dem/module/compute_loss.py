@@ -24,7 +24,9 @@ def spike_count(spk_rec :torch.Tensor, channel=False):
 
 def loss_dice(pred_pro, target, rate=0.8):
     #https://qiita.com/4Ui_iUrz1/items/4c0efd9c50e344c66665
+    
     batch = len(target)
+    # print(target.shape)# torch.Size([12, 1, 100, 100])
     smooth = 1e-5
     # print(pred_pro.shape) #batch, channel , pixel, pixel
     pred_pro = pred_pro[:, 1, :, :]
