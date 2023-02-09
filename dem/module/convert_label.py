@@ -40,7 +40,7 @@ class Dem2Img():
         """
         # https://qiita.com/S-Kaito/items/ace10e742227fd63bd4c
         self.dem_height, self.dem_width = dem_label.shape
-        label = np.zeros((240, 360)) 
+        label = np.zeros((self.img_height, self.img_width)) 
         for x_world in range(self.dem_height):
             for y_world in range(self.dem_width):
                 if dem_label[x_world, y_world]:
@@ -51,10 +51,10 @@ class Dem2Img():
                     
                     x_img += self.sensor_height/2
                     y_img += self.sensor_width / 2
-                    x_pix = int(x_img /0.024* self.img_height)
-                    y_pix = int(y_img /0.036 * self.img_width)
+                    x_pix = int(x_img /self.sensor_height* self.img_height)
+                    y_pix = int(y_img /self.sensor_width * self.img_width)
              
-                    if 0 <= x_pix < 240 and 0 <= y_pix < 360:
+                    if 0 <= x_pix < self.img_height and 0 <= y_pix < self.img_width:
                         label[x_pix, y_pix] = 1
         return label
 
