@@ -9,41 +9,50 @@ import pandas as pd
 import tonic
 import tonic.transforms as transforms
 import os
+from PIL import Image
+from module import custom_data
 
-
-def draw_circle(center, radius,time=10, pixel=128):
-    img = np.zeros((pixel, pixel, 3), dtype=np.uint8)
-    cv2.circle(img, center, radius, color=(255, 255, 255), thickness=1, lineType=cv2.LINE_8, shift=0)
-    return img
-def youtube(events, path):
+def youtube(events, path, bool_split):
+    
     images = []
-    events = events.to(torch.uint8)
-    events *= 255
-    for i in range(time):
-        p_ = torchvision.transforms.functional.to_pil_image(events[i,:,:])
-        images.append(p_)
-    images[0].save(path, duration = 100, save_all=True, append_images=images[1:], loop = 50)
+    time = events.shape[0]
+    x = events.shape[2]
+    y = events.shape[3]
+
+    if bool_split:
+        img_arr = torch.zeros(time, 3, x, y)
+        img_arr[:,0] = events[:,0]
+        img_arr[:,1] = events[:,1]
+        for i in range(time):
+            
+            p_ = torchvision.transforms.functional.to_pil_image(img_arr[i])
+            images.append(p_)
+        images[0].save(path, duration = 100, save_all=True, append_images=images[1:], loop = 50)   
+    else:
+    
+        events = torch.logical_or(events[:,0,:,:], events[:,1,:,:]).float()
+        for i in range(time):
+            # p_ = Image.fromarray(events[i, :,:])
+        
+            p_ = torchvision.transforms.functional.to_pil_image(events[i,:,:])
+            images.append(p_)
+        images[0].save(path, duration = 100, save_all=True, append_images=images[1:], loop = 50)
 
 
-def SaveEvents(path, ebents, label):
-    with h5py.File(path, 'w') as f:
-        f.create_dataset('label', data = label)
-        f.create_dataset('input', data = ebents)
-    return
 
 
 if __name__ == "__main__":
-    h5py_path = f"data/0.h5"
-    youtube_path = f"0.gif"
-    with h5py.File(h5py_path, "r") as f:
-        label = f['label'][()]
-        events = f['events'][()]
-    print(label)
-    print(events)
+    dataset_path = "dataset"
+    raw_event_dir = 'data'
+    youtube_path = "gomibako/h5.gif"
+    a = custom_data.LoadDataset(dir=dataset_path, raw_event_dir=raw_event_dir,accumulate_time=100000 ,train=False)
+    number = 5
+    events, label = a[number]
+    
+
     print(events.shape)
-    tonic.utils.plot_event_grid(events)
-    # events =  torch.from_numpy(events.astype(np.float32)).clone()
-    # youtube(events, youtube_path)
+
+    youtube(events, youtube_path, True)
 
     
         
