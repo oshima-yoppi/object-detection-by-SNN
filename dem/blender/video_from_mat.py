@@ -15,13 +15,15 @@ def init(theta, save_dir):
     """
 
     # カメラの詳細設定
-    bpy.context.scene.render.resolution_x = 346
-    bpy.context.scene.render.resolution_y = 260
+    camera_x = 346
+    camera_y = 260
+    bpy.context.scene.render.resolution_x = camera_x
+    bpy.context.scene.render.resolution_y = camera_y
     camera = bpy.data.objects['Camera']
     camera.data.lens = 50
     camera.data.sensor_fit = 'HORIZONTAL'
-    camera.data.sensor_width = 36
-    camera.data.sensor_height = 24
+    camera.data.sensor_width = camera_x/10
+    camera.data.sensor_height = camera_y/10
     camera.data.clip_end = 400
     camera.location = (64, 64, 300)
     camera.rotation_euler = (0, 0, math.radians(90))
@@ -129,7 +131,7 @@ if __name__ == "__main__":
         path = os.path.join(NOW_DIR, path)
         img2plot(path)
 
-        save_path = os.path.join(SAVE_DIR, f'{i}.avi')
+        save_path = os.path.join(SAVE_DIR, f'{str(i).zfill(5)}.avi')
         render(save_path)
 
 
