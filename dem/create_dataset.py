@@ -15,6 +15,7 @@ import time
 from DEM.ransac import *
 from module.const import *
 from module import convert_label, cmd
+from module.const import *
 # from sklearn.preprocessing import MinMaxScaler
 
 
@@ -305,10 +306,9 @@ def make_hazard(DEM):
 
 if __name__ == '__main__':
 
-    SAVE_DIR = 'data'
-    if os.path.exists(SAVE_DIR):
-        shutil.rmtree(SAVE_DIR)
-    os.mkdir(SAVE_DIR)
+    if os.path.exists(RAW_EVENT_PATH):
+        shutil.rmtree(RAW_EVENT_PATH)
+    os.mkdir(RAW_EVENT_PATH)
 
 
     data_num = 3001
@@ -330,7 +330,7 @@ if __name__ == '__main__':
         # plt.show()
 
         savefile_path = f'{str(file_num).zfill(5)}.h5'
-        savefile_path = os.path.join(SAVE_DIR, savefile_path)
+        savefile_path = os.path.join(RAW_EVENT_PATH, savefile_path)
         with h5py.File(savefile_path, 'a') as f:
             f.create_dataset("label", data=hazard_reshape)
         

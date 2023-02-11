@@ -25,10 +25,10 @@ ACCUMULATE_EVENT_MICROTIME= ACCUMULATE_EVENT_MILITIME*1000 #[us]
 DATASET_PATH = 'dataset' # datasetのパス
 DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIME)) # dataset/〇〇  ←何秒ためるかを表す
 RAW_EVENT_PATH = 'data' # v2eから出力されたイベント生データ
+EVENT_TH = 0.3# イベントカメラの閾値
+RAW_EVENT_PATH = f'data/th:{str(EVENT_TH)}' # v2eから出力されたイベント生データ
 MODEL_PATH = 'models/model1.pth'
 
-# イベントカメラの閾値
-EVENT_TH = 0.3
 
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
