@@ -27,7 +27,8 @@ DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIM
 RAW_EVENT_PATH = 'data' # v2eから出力されたイベント生データ
 MODEL_PATH = 'models/model1.pth'
 
-
+# イベントカメラの閾値
+EVENT_TH = 0.3
 
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
