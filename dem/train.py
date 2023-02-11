@@ -54,10 +54,10 @@ net = NET
 
 events, _ = train_dataset[0]
 num_steps = events.shape[0]
-optimizer = torch.optim.Adam(net.network.parameters(), lr=10e-4, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.network.parameters(), lr=1e-5, betas=(0.9, 0.999))
 
 
-num_epochs = 50
+num_epochs = 300
 num_iters = 50
 # pixel = 64
 correct_rate = 0.5
