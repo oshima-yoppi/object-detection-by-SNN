@@ -7,7 +7,9 @@ import time
 import os
 import shutil
 import pathlib
+# from ..module.const import * 
 # aaa
+# https://suzulang.com/%E5%88%A5%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AEblender-python%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%82%92import%E3%81%97%E3%81%A6%E4%BD%BF%E3%81%84%E5%9B%9E%E3%81%99/
 
 def init(theta, save_dir):
     """
