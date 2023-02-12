@@ -44,7 +44,7 @@ def youtube(events, path, bool_split):
 
 if __name__ == "__main__":
     youtube_path = "gomibako/h5.gif"
-    a= LoadDataset(dataset_accevent_dir=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
+    a= LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
     number = int(input('何番を読み込む？'))
     events, label = a[number]
     
