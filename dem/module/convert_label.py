@@ -40,10 +40,10 @@ class Dem2Img2():
         """
         # https://qiita.com/S-Kaito/items/ace10e742227fd63bd4c
         self.dem_height, self.dem_width = dem_label.shape
-        initial_value = 10
+        initial_value = 100
         label = np.full((self.img_height, self.img_width), initial_value) 
-        for x_world in range(self.dem_height):
-            for y_world in range(self.dem_width):
+        for x_can in range(self.img_height):
+            for y_cam in range(self.img_height):
                 x_cam = x_world - self.cam_x
                 y_cam = y_world - self.cam_y
                 x_img = self.focal*x_cam/self.cam_z # 個々のZを高度に変更すること

@@ -312,7 +312,7 @@ if __name__ == '__main__':
 
 
     data_num = 3001
-    converter = convert_label.Dem2Img(focal=FOCAL, img_height=IMG_HEIGHT, img_width=IMG_WIDTH, sensor_heitght=SENSOR_HEIGHT,
+    converter = convert_label.Dem2Img2(focal=FOCAL, img_height=IMG_HEIGHT, img_width=IMG_WIDTH, sensor_heitght=SENSOR_HEIGHT,
     sensor_width=SENSOR_WIDTH, cam_x=CAM_X, cam_y=CAM_Y, cam_z=CAM_Z)
 
     for file_num in tqdm(range( data_num)):
