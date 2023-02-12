@@ -74,18 +74,18 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
         exit()
     return 
 class LoadDataset(Dataset):
-    def __init__(self, dataset_dir, dataset_accevent_dir, raw_event_dir,accumulate_time : int, input_height, input_width, train:bool, ):
-        self.dir = dataset_dir
+    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, train:bool, ):
+        
         self.accumulate_time = accumulate_time
         self.input_height = input_height
         self.input_width = input_width
-        self.dataset_accevent_dir = f'{dataset_accevent_dir}_({input_height},{input_width})'
-        if os.path.isdir(self.dataset_accevent_dir):
+        
+        if os.path.isdir(processed_event_dataset_path):
             pass
         else:
-            convert_raw_event(events_raw_dir=raw_event_dir, new_dir=self.dataset_accevent_dir, accumulate_time=self.accumulate_time)
+            convert_raw_event(events_raw_dir=raw_event_dir, new_dir=processed_event_dataset_path, accumulate_time=self.accumulate_time)
 
-        self.all_files = glob.glob(f"{self.dataset_accevent_dir}/*")
+        self.all_files = glob.glob(f"{processed_event_dataset_path}/*")
         self.divide = int((len(self.all_files)*0.2))
 
         if train:
