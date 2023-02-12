@@ -43,7 +43,7 @@ class Dem2Img2():
         initial_value = 100
         label = np.full((self.img_height, self.img_width), initial_value) 
         for x_pix in range(self.img_height):
-            for y_pix in range(self.img_height):
+            for y_pix in range(self.img_width):
                 x_cam = (x_pix - self.img_height/2)*self.sensor_height/self.img_height# 座標を求める
                 y_cam = (y_pix - self.img_width/2)*self.sensor_width/self.img_width
 
