@@ -42,20 +42,18 @@ class Dem2Img2():
         self.dem_height, self.dem_width = dem_label.shape
         initial_value = 100
         label = np.full((self.img_height, self.img_width), initial_value) 
-        for x_can in range(self.img_height):
-            for y_cam in range(self.img_height):
-                x_cam = x_world - self.cam_x
-                y_cam = y_world - self.cam_y
-                x_img = self.focal*x_cam/self.cam_z # 個々のZを高度に変更すること
-                y_img = self.focal*y_cam/self.cam_z
+        for x_pix in range(self.img_height):
+            for y_pix in range(self.img_height):
+                x_cam = (x_pix - self.img_height/2)*self.sensor_height/self.img_height# 座標を求める
+                y_cam = (y_pix - self.img_width/2)*self.sensor_width/self.img_width
+
+                dem_x = x_cam*self.cam_z/self.focal
+                dem_y = y_cam*self.cam_z/self.focal
+
+                dem_pix_x = int(dem_x + self.dem_height/2)
+                dem_pix_y = int(dem_y + self.dem_width/2)
                 
-                x_img += self.sensor_height/2
-                y_img += self.sensor_width / 2
-                x_pix = int(x_img /self.sensor_height* self.img_height)
-                y_pix = int(y_img /self.sensor_width * self.img_width)
-            
-                if 0 <= x_pix < self.img_height and 0 <= y_pix < self.img_width:
-                    label[x_pix, y_pix] = dem_label[x_world, y_world]
+                label[x_pix, y_pix] = dem_label[dem_pix_x, dem_pix_y]
         return label
 
 
