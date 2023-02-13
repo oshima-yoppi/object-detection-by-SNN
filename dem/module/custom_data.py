@@ -31,7 +31,17 @@ class num2torch():
         return
     def __call__(self, arr):
         return torch.from_numpy(arr)
-
+class Fill0_Tensor():
+    def __init__(self, true_shape) -> None:
+        self.true_shape = true_shape
+    def __call__(self, arr):
+        shape_time = arr.shape[0]
+        if arr.shape == self.true_shape:
+            return arr
+        arr_reshape = torch.zeros_like(self.true_shape)
+        arr_reshape[:shape_time] = arr_reshape[:shape_time] + arr
+        
+        return arr_reshape
 
 def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
     SENSOR_SIZE = (IMG_WIDTH, IMG_HEIGHT, 2) # (WHP)
@@ -50,6 +60,28 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
         h5py_allfile = glob.glob(f'{events_raw_dir}/*.h5')
         dtype = [('t', '<i4'), ('x', '<i4'), ('y', '<i4'), ('p', '<i4')]
         # print(h5py_allfile)
+
+        # 0梅するための対策
+        with h5py.File(file, "r") as f:
+            label = f['label'][()]
+            raw_events = f['events'][()]
+        raw_event_len = raw_events.shape[0]
+        processed_events = np.zeros(raw_event_len, dtype=dtype)
+        for idx, (key , _) in enumerate(dtype):
+            processed_events[key] = raw_events[:,idx]
+        acc_events = converter(processed_events)
+        processed_event_len = acc_events.shape[0]
+
+        converter_event = transforms.Compose(
+        [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+        num2torch(),
+        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)],
+        Fill0_Tensor(processed_event_len)
+        )
+        converter_label = transforms.Compose(
+        [transforms_.ToTensor(),
+        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
+        )
         for i, file in enumerate(tqdm(h5py_allfile)):
             with h5py.File(file, "r") as f:
                 label = f['label'][()]
