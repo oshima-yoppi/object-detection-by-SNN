@@ -12,6 +12,7 @@ import os
 from PIL import Image
 from module.const import *
 from module.custom_data import LoadDataset
+import time
 
 def youtube(events, path, bool_split):
     
@@ -44,14 +45,27 @@ def youtube(events, path, bool_split):
 
 if __name__ == "__main__":
     youtube_path = "gomibako/h5.gif"
-    a= LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
-    number = int(input('何番を読み込む？'))
-    events, label = a[number]
+    # a= LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
+    # number = int(input('何番を読み込む？'))
+    # events, label = a[number]
+    
+
+    # print(events.shape)
+
+    # youtube(events, youtube_path, True)
+
+    a= LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=True)
+    # number = int(input('何番を読み込む？'))
+    for idx, (events, label) in enumerate(iter(a)):
+        if events.shape[0] == 9:
+            pass
+        else:
+            print(a.file_lst[idx])
+            print(events.shape[0] == 9, idx)
+            break
     
 
     print(events.shape)
 
     youtube(events, youtube_path, True)
-
-    
         
