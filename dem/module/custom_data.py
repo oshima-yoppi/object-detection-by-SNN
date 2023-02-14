@@ -31,14 +31,19 @@ class num2torch():
         return
     def __call__(self, arr):
         return torch.from_numpy(arr)
+class Number2one():
+    def __init__(self) :
+        return
+    def __call__(self, arr):
+        return torch.where(arr>= 1, 1,0)
 class Fill0_Tensor():
-    def __init__(self, true_shape) -> None:
+    def __init__(self, true_shape):
         self.true_shape = true_shape
     def __call__(self, arr):
         shape_time = arr.shape[0]
         if arr.shape == self.true_shape:
             return arr
-        arr_reshape = torch.zeros_like(self.true_shape)
+        arr_reshape = torch.zeros(self.true_shape)
         arr_reshape[:shape_time] = arr_reshape[:shape_time] + arr
         
         return arr_reshape
@@ -49,6 +54,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
     converter = transforms.Compose(
         [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
         num2torch(),
+        Number2one(),
         transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
     )
     converter_label = transforms.Compose(
@@ -62,7 +68,8 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
         # print(h5py_allfile)
 
         # 0梅するための対策
-        with h5py.File(file, "r") as f:
+        example_file = h5py_allfile[0]
+        with h5py.File(example_file, "r") as f:
             label = f['label'][()]
             raw_events = f['events'][()]
         raw_event_len = raw_events.shape[0]
@@ -70,13 +77,14 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
         for idx, (key , _) in enumerate(dtype):
             processed_events[key] = raw_events[:,idx]
         acc_events = converter(processed_events)
-        processed_event_len = acc_events.shape[0]
+        processed_events_shape = acc_events.shape
 
         converter_event = transforms.Compose(
         [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
         num2torch(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)],
-        Fill0_Tensor(processed_event_len)
+        Number2one(),
+        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+        Fill0_Tensor(processed_events_shape)]
         )
         converter_label = transforms.Compose(
         [transforms_.ToTensor(),
@@ -90,7 +98,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
             processed_events = np.zeros(raw_event_len, dtype=dtype)
             for idx, (key , _) in enumerate(dtype):
                 processed_events[key] = raw_events[:,idx]
-            acc_events = converter(processed_events)
+            acc_events = converter_event(processed_events)
 
             label = converter_label(label)
             file_name = f'{str(i).zfill(5)}.h5'
