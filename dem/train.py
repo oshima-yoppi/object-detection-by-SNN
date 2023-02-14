@@ -54,10 +54,10 @@ net = NET
 
 events, _ = train_dataset[0]
 num_steps = events.shape[0]
-optimizer = torch.optim.Adam(net.network.parameters(), lr=1e-5, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.network.parameters(), lr=LR, betas=(0.9, 0.999))
 
 
-num_epochs = 300
+num_epochs = 100
 num_iters = 50
 # pixel = 64
 correct_rate = 0.5
@@ -124,9 +124,10 @@ except Exception as e:
     pass
     # print(e)
 ## save model
-enddir = "models/model1.pth"
+enddir = MODEL_PATH
 torch.save(net.network.state_dict(), enddir)
 print("success model saving")
+print(MODEL_NAME)
 # Plot Loss
 # print(hist)
 fig = plt.figure(facecolor="w")
@@ -146,7 +147,7 @@ ax3.set_title("Test IoU")
 ax3.set_xlabel("epoch")
 ax3.set_ylabel("Accuracy(IoU)")
 fig.tight_layout()
-
+fig.suptitle(f"ModelName:{MODEL_NAME}")
 plt.show()
 
 
