@@ -128,6 +128,7 @@ enddir = MODEL_PATH
 torch.save(net.network.state_dict(), enddir)
 print("success model saving")
 print(MODEL_NAME)
+print(f'{acc=}')
 # Plot Loss
 # print(hist)
 fig = plt.figure(facecolor="w")
@@ -146,8 +147,8 @@ ax3.plot(hist['test'], label='test')
 ax3.set_title("Test IoU")
 ax3.set_xlabel("epoch")
 ax3.set_ylabel("Accuracy(IoU)")
-fig.tight_layout()
 fig.suptitle(f"ModelName:{MODEL_NAME}")
+fig.tight_layout()
 plt.show()
 
 
