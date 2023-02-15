@@ -15,5 +15,5 @@ dem/DEM/64pix_(0-3deg)_dem(lidar_noisy)_boulder
 
 dem/data/
 dem/dataset/*
-dem/result_img/*.png
+dem/result_img/*
 
