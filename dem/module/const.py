@@ -16,7 +16,7 @@ FOCAL = 0.050# 焦点距離
 IMG_HEIGHT, IMG_WIDTH = 260, 346 # カメラの大きさ[pix]
 SENSOR_HEIGHT, SENSOR_WIDTH = 0.026, 0.0346 # イメージセンサの大きさ [m]
 CAM_X, CAM_Y, CAM_Z = 64, 64, 164 # カメラの初期位置[m,m,m]
-
+METER_PER_GRID = 0.1
 
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
@@ -43,7 +43,7 @@ ACCUMULATE_EVENT_MILITIME = 100 #[ms] # 何msイベントをためるか
 ACCUMULATE_EVENT_MICROTIME= ACCUMULATE_EVENT_MILITIME*1000 #[us]
 DATASET_PATH = 'dataset' # datasetのパス
 # DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIME)) # dataset/〇〇  ←何秒ためるかを表す
-EVENT_TH = 0.3# イベントカメラの閾値
+EVENT_TH = 0.075# イベントカメラの閾値
 RAW_EVENT_PATH = f'data/th-{str(EVENT_TH)}' # v2eから出力されたイベント生データ
 PROCESSED_EVENT_DATASET_PATH = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
 
