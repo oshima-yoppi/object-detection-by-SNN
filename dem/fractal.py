@@ -5,10 +5,10 @@ class CalcSigma():
         self.sigma0 = sigma
         self.harst = h
     def __call__(self, n):
-        sigma_n = self.sigma0*(1-2**(2*self.harst-2))/(2**self.harst)**(2*self.harst)
+        sigma_n = self.sigma0*(1-2**(2*self.harst-2))/(2**n)**(2*self.harst)
         return sigma_n
 # The array must be square with edge length 2**n + 1
-n = 8
+n = 7
 N = 2**n + 1
 # f scales the random numbers at each stage of the algorithm
 f = 1.0
@@ -20,7 +20,7 @@ arr[0::N-1,0::N-1] = np.random.uniform(-1, 1, (2,2))
 side = N-1
 
 HARST = 0.5
-SIGMA0 = 0.1
+SIGMA0 = 5
 sigma = CalcSigma(SIGMA0, HARST)
 nsquares = 1
 while side > 1:
@@ -35,7 +35,7 @@ while side > 1:
             # a random offset.
             arr[yc,xc] = (arr[y0,x0] + arr[y0,x1] + arr[y1,x0] + arr[y1,x1])/4
             # arr[yc,xc] += f * np.random.uniform(-1,1)
-            arr[yc,xc] += np.random.normal(0, sigma(step))
+            # arr[yc,xc] += np.random.normal(0, sigma(step))
     step += 1
     # Square step: NB don't do this step until the pixels from the preceding
     # diamond step have been set.
@@ -56,12 +56,12 @@ while side > 1:
                     tot += arr[ys, xs]
                     ntot += 1
             arr[yc, xc] += tot / ntot 
-            arr[yc,xc] += np.random.normal(0, sigma(step))
+            # arr[yc,xc] += np.random.normal(0, sigma(step))
     side = sideo2
     nsquares *= 2
     f /= 2
     step += 1
-np.save(f'blender/kaguya/np_fractal_{HARST}_{SIGMA0}.npy', arr)
+# np.save(f'blender/kaguya/np_fractal_{HARST}_{SIGMA0}.npy', arr)
 plt.imshow(arr, cmap='gray')
 # plt.axis('off')
 plt.show()

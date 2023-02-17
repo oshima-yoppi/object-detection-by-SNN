@@ -7,6 +7,7 @@ import math
 import os
 import shutil
 import pathlib
+import sys
 # aaa
 
 
@@ -22,7 +23,7 @@ def img2plot(np_path):
     verts = []
     for x in range(pix):
         for y in range(pix):
-            verts.append(mathutils.Vector([x, y, (data[x, y])]))
+            verts.append(mathutils.Vector([x*METER_PER_GRID, y*METER_PER_GRID, (data[x, y]*METER_PER_GRID)]))
     fIndexes = []
     for x in range(0, pix - 1):
         for y in range(0, pix - 1):
@@ -44,14 +45,18 @@ def img2plot(np_path):
 if __name__ == "__main__":
     filepath = bpy.data.filepath
     NOW_DIR = os.path.dirname(filepath)
-    SAVE_DIR = os.path.join(NOW_DIR,'video')
+    # SAVE_DIR = os.path.join(NOW_DIR,'video')
+    print(NOW_DIR)
+    # sys.path.append(NOW_DIR)
+    # from module.const import *
 
+    METER_PER_GRID = 0.3
 
 
 
     object_name = "dem"
     file_num = 0
-    path = f"dem/dem_{file_num}.npy" 
+    path = f"dem.npy" 
     path = os.path.join(NOW_DIR, path)
     img2plot(path)
 
