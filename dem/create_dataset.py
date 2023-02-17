@@ -154,30 +154,7 @@ def Get_Roughness(cropped):
 
     #a,b,c,d = m
     smooth = 1e-6
-    """
-    #print("cropped.shape",cropped.shape,type(cropped))
-    #print("x",x.shape)
-
-    z = x_ary*(-a/(c+smooth)) + y_ary*(-b/(c+smooth))+ (-d/(c+smooth))
-    #print("z",z.shape)
-    diff = cropped-z
-    #print("diff",diff.shape)
-    roughness = np.nanmax(diff) 
-    
-    diff = [0]
-    for x in range(F):
-        for y in range(F):
-            z = (-a/(c+smooth))*x + (-b/(c+smooth))*y + (-d/(c+smooth))
-            #print("z",z)
-            #print("cropped[x][y]-z",cropped[x][y]-z)
-            diff_ = cropped[x][y]-z
-            if diff_ > 1:
-                pass
-            else:
-                diff.append(cropped[x][y]-z)
-
-    roughness = max(diff) 
-    """
+   
     roughness = np.var(cropped)
     return roughness
 
@@ -193,8 +170,7 @@ def make_hazard(DEM):
 
     #print(DEM.dtype)
     DEM = np.array(DEM, dtype='float32')
-    mu = np.mean(DEM)
-    sigma = np.std(DEM)
+
 
     scale = 1.0
 
@@ -202,7 +178,6 @@ def make_hazard(DEM):
     # rotate_list = [0.0,30.0,60.0,90.0,120.0,150.0,180.0]# ALHAT 適用時
     rotate_list = [0.0,45]
 
-    # V = np.zeros((height,width)) # safety for each pixel
     S = np.zeros((height,width)) # slope for each pixel
     R = np.zeros((height,width)) # roughness for each pixel
     size = (F,F)

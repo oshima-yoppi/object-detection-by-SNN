@@ -1,8 +1,9 @@
-import torch 
+import numpy as np
 
-a = torch.zeros((3,3))
-b = torch.ones((2,3))
-c = torch.zeros((1,3))
 
-a[:2] = a[:2]+b
+dtype = [('t', '<i4'), ('x', '<i1')]
+a = np.zeros((2,2), dtype=dtype)
+b = np.ones((2,2))
+a['x'] = b
+print(a['t'])
 print(a)

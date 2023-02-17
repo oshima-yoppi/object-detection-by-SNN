@@ -1,14 +1,13 @@
 import math
 import numpy as np
 from module.const import*
+from module import convert_label
 import random
 import matplotlib.pyplot as plt
-
+import cv2
 
 class LunarDEMGeneartor:
     def __init__(self, shape, max_crater, max_boulder, sigma, harst):
-        
-        
         self.shape = shape
         self.dem = np.zeros((self.shape, self.shape))
         self.side = self.shape -1
@@ -17,6 +16,7 @@ class LunarDEMGeneartor:
 
         self.sigma0 = sigma
         self.harst = harst
+        self.label_converter = convert_label.Dem2Img(focal=FOCAL, img_height=IMG_HEIGHT, img_width=IMG_WIDTH, sensor_heitght=SENSOR_HEIGHT, sensor_width=SENSOR_WIDTH, cam_x=CAM_X, cam_y=CAM_Y, cam_z=CAM_Z, meter_per_grid=METER_PER_GRID)
     def calculate_sigma(self, n):
         sigma_n = self.sigma0*(1-2**(2*self.harst-2))/(2**n)**(2*self.harst)
         return sigma_n
@@ -134,8 +134,75 @@ class LunarDEMGeneartor:
         self.put_crater()
         self.put_boulder()
         return self.dem
+    
+
+    def Get_Slope(self, roi):
+        W = roi[0,2]
+        E = roi[4,2]
+        S = roi[2,4]
+        N = roi[2,0]
+        SE = roi[4,4]
+        SW = roi[0,4]
+        NE = roi[4,0]
+        NW = roi[0,0]
+        fx = (SE-SW+np.sqrt(2)*(E-W)+NE-NW)/(4+2*np.sqrt(2))
+        fy = (NW-SW+np.sqrt(2)*(N-S)+NE-SE)/(4+2*np.sqrt(2))
+        theta = np.arctan(math.sqrt((fx**2+fy**2)))
+        return theta
+    def Get_Roughness(self, cropped):
+        roughness = np.var(cropped)
+        return roughness
+    def make_hazard(self):
+        # ウィンドウ大きさ
+        F = 5
+        scale = 1.0
+
+        # rotate_list = [0.0] # simple label 適用時
+        rotate_list = [0.0, 45]
+
+        S = np.zeros((self.shape,self.shape)) # slope for each pixel
+        R = np.zeros((self.shape,self.shape)) # roughness for each pixel
+        size = (F,F)
+        for row in range(F//2+1, self.shape-(F//2)-1, 1):
+            for col in range(F//2+1, self.shape-(F//2)-1, 1):
+                for angle in rotate_list:
+                    center = (int(col), int(row))
+                    #print(center)
+                    trans = cv2.getRotationMatrix2D(center, angle, scale)
+                    DEM2 = cv2.warpAffine(self.dem, trans, (self.shape,self.shape),cv2.INTER_CUBIC)
+                    #roi = DEM2[(row-F//2):(row+F//2),(col-F//2):(col+F//2)]
+                    # 切り抜く。
+                    cropped = cv2.getRectSubPix(DEM2, size, center)
+                    suiheido = self.Get_Slope(cropped)
+                    if suiheido > S[row][col]: # ワーストケースを記録
+                        S[row][col] = suiheido
+                    
+                    
+                    # 画像外枠境界線で粗さの取得を禁止する
+                    if row==F//2+1 or col==F//2+1:
+                        heitando=0
+                    elif row==self.shape-(F//2)-2 or col==self.shape-(F//2)-2:
+                        heitando=0
+                    else:
+                        #heitando = Get_Roughness_alhat(cropped, m)   
+                        heitando = self.Get_Roughness(cropped)
+                    if heitando > R[row][col]:
+                        R[row][col] = heitando
+                    
+
+        S = S>0.6
+        R = R>0.1
+
+        hazard = (S|R)
+        return hazard
+    def generate_hazard(self):
+        self.label = self.make_hazard()
+        self.converted_label = self.label_converter(self.label)
+        return self.label, self.converted_label
     def save_dem(self, path):
         np.save(path, self.dem)
+    def save_label(self, path):
+        np.save(path, self.converted_label)
 
 
 
