@@ -74,10 +74,10 @@ class LunarDEMGeneartor:
         n_crater = random.randint(0, self.max_crater)
         for i in range(n_crater):
             center_x, center_y = random.uniform(-5, self.shape+5), random.uniform(-5, self.shape+5)
-            min_lentgh_of_crater = 0.2 # [m]
+            min_lentgh_of_crater = 5 #[pix]
             
-            radius = random.uniform(min_lentgh_of_crater//METER_PER_GRID, self.shape//5)
-            if radius == 0:radius =1
+            radius = random.uniform(min_lentgh_of_crater, self.shape//4)
+            
             print(center_x, center_y, radius)
 
             #    % H_r = 150 + abs(5*randn())
@@ -95,7 +95,7 @@ class LunarDEMGeneartor:
                     r = math.sqrt(abs(i-center_x)**2 + abs(j-center_y)**2)
 
                     if r <= alpha:
-                        h = (H_c+H_ro)*(r**2/radius**2)-H_c;
+                        h = (H_c+H_ro)*(r**2/radius**2)-H_c
                     elif r <= radius:
                         h = ((H_c + H_ro)**2/(H_r - H_ro+eps) - H_c + eps)*((r/radius) - 1+eps)**2 + H_r
                     elif r <= beta:
@@ -110,10 +110,10 @@ class LunarDEMGeneartor:
         for i in range(self.max_boulder):
             center_x, center_y = random.uniform(-5, self.shape+5), random.uniform(-5, self.shape+5)
 
-            min_lentgh_of_boulder = 0.1 
-            max_lentgh_of_boulder = 1
-            x_axis = random.uniform(min_lentgh_of_boulder//METER_PER_GRID, max_lentgh_of_boulder//METER_PER_GRID) # 0.1m~1m
-            y_axis = random.uniform(min_lentgh_of_boulder//METER_PER_GRID, max_lentgh_of_boulder//METER_PER_GRID)
+            min_lentgh_of_boulder = 4 # [pix]
+            max_lentgh_of_boulder = self.shape/10
+            x_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder) 
+            y_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder)
             z_axis = max(x_axis, y_axis)*0.5 # by kariya
             for i in range(self.shape):
                 for j in range(self.shape):
