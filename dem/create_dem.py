@@ -4,6 +4,13 @@ from module.const import*
 import random
 import matplotlib.pyplot as plt
 
+
+class LunarDEMGeneartor:
+    def __init__(self, x_pix, y_pix):
+        self.dem = np.zeros((x_pix, y_pix))
+    
+    def put_crater(self, dem):
+
 def put_crater(dem, n_crater):
     x_shape, y_shape = dem.shape
     eps = 1e-6
