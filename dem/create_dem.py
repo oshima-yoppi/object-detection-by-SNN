@@ -21,7 +21,6 @@ class LunarDEMGeneartor:
         sigma_n = self.sigma0*(1-2**(2*self.harst-2))/(2**n)**(2*self.harst)
         return sigma_n
     def put_fractal(self):
-        
         self.dem[0::self.shape-1,0::self.shape-1] = np.random.uniform(-1, 1, (2,2))
         nsquares = 1
         step = 1
@@ -143,14 +142,13 @@ class LunarDEMGeneartor:
 
 
 if __name__ == "__main__":
-    # dem = np.zeros((100,100))
-    n = 7
+    n = 8
     shape = 2**n + 1 # The array must be square with edge length 2**n + 1
-    max_crater = 5
-    max_boulder = 5
-
-    harst = 0.5
-    sigma0 = 11
+    max_crater = 3
+    max_boulder = 3
+    # harst=0.2 sigma 3 is best..?
+    harst = 0.18
+    sigma0 = 5
     dem_gen = LunarDEMGeneartor(shape, max_crater, max_boulder, sigma0, harst)
     
     rr = dem_gen.generate_dem()

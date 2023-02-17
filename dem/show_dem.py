@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # sys.path.append(NOW_DIR)
     # from module.const import *
 
-    METER_PER_GRID = 0.3
+    METER_PER_GRID = 0.1
 
 
 
