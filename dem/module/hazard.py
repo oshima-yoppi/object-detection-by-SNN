@@ -44,10 +44,10 @@ class LunarHazardMapper:
             for j in range(half_window, half_window+self.shape):
                 cropped_window = self.dem_padding[i-half_window:i+half_window+1, j-half_window:j+half_window+1]
                 suiheido = self.Get_Slope(cropped_window)
-                S[i,j] = max(S[i,j], suiheido)
+                S[i-half_window, j-half_window] = max(S[i-half_window, j-half_window], suiheido)
                     
                 heitando = self.Get_Roughness(cropped_window)
-                R[i, j] = max(R[i, j], heitando)
+                R[i-half_window, j-half_window] = max(R[i-half_window, j-half_window], heitando)
                     
              
 
