@@ -7,7 +7,6 @@ class LunarHazardMapper:
         self.shape = shape
         self.rough = rough
         self.theta = theta
-        self.dem = np.zeros((shape,shape))
     def Get_Slope(self, roi):
         W = roi[0,2]
         E = roi[4,2]

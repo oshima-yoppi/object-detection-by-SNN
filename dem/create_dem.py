@@ -9,7 +9,7 @@ import cv2
 class LunarDEMGeneartor(hazard.LunarHazardMapper):
     def __init__(self, shape, max_crater, max_boulder, sigma, harst, rough, theta):
         self.shape = shape
-        self.dem = np.zeros((self.shape, self.shape))
+        self.dem = np.zeros((self.shape, self.shape), dtype='float32')
         self.side = self.shape -1
         self.max_crater = max_crater
         self.max_boulder = max_boulder
