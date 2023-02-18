@@ -35,6 +35,7 @@ CORRECT_RATE = 0.5
 NET = network.FullyConv3(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL)
 
 
+LABEL_PATH = 'label_only'
 
 # path
 VIDEO_PATH = 'blender/video'

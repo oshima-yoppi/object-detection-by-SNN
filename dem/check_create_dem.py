@@ -1,4 +1,4 @@
-
+#%%
 import math
 import numpy as np
 from module.const import*
@@ -6,11 +6,8 @@ from module import convert_label, hazard
 import random
 import matplotlib.pyplot as plt
 import cv2
-import os
-import shutil
-from tqdm import tqdm
 
-class LunarDEMGenerator(hazard.LunarHazardMapper):
+class LunarDEMGeneartor(hazard.LunarHazardMapper):
     def __init__(self, shape, max_crater, max_boulder, sigma, harst, rough, theta):
         self.shape = shape
         self.dem = np.zeros((self.shape, self.shape), dtype='float32')
@@ -155,40 +152,44 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
 
 
-
+#%%
 n = 8
 shape = 2**n + 1 # The array must be square with edge length 2**n + 1
 max_crater = 3
-max_boulder = 6
+max_boulder = 4
 # harst=0.2 sigma 3 is best..?
 harst = 0.18
 sigma0 = 3 # 3 now
 rough = 0.1
 theta = 20
-dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
+dem_gen = LunarDEMGeneartor(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
 
-save_label_dir = LABEL_PATH
-save_dem_dir = 'blender/dem'
-if os.path.exists(save_label_dir):
-    shutil.rmtree(save_label_dir)
-os.mkdir(save_label_dir)
-if os.path.exists(save_dem_dir):
-    shutil.rmtree(save_dem_dir)
-os.mkdir(save_dem_dir)
-num_data = 3000
-for i in tqdm(range(num_data)):
-    dem = dem_generator.generate_dem()
-    dem_filename = f'{i}.npy'
-    save_dem_path = os.path.join(save_dem_dir, dem_filename)
-    dem_generator.save_dem(save_dem_path)
+rr = dem_gen.generate_dem()
+#%%
+save_path = 'blender/dem.npy'
+dem_gen.save_dem(save_path)
+plt.figure()
+plt.imshow(rr)
+plt.show()
+
+#%%
+dem_gen.rough = 0.1
+dem_gen.theta = 20
+label, converted_label = dem_gen.generate_hazard()
+# save_path = 'blender/dem.npy'
+# dem_gen.save_dem(save_path)
+fig = plt.figure()
+ax1 = fig.add_subplot(131)
+ax2 = fig.add_subplot(132)
+ax3 = fig.add_subplot(133)
+
+ax1.imshow(rr)
+ax2.imshow(label)
+ax3.imshow(converted_label)
+
+plt.show()
 
 
-    label, converted_label = dem_generator.generate_hazard()
-    label_filename = f'{i}.npy'
-    save_label_path = os.path.join(save_label_dir, label_filename)
-    dem_generator.save_label(save_label_path)
 
 
-
-
-
+# %%
