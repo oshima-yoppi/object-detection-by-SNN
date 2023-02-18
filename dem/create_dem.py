@@ -110,7 +110,10 @@ class LunarDEMGeneartor(hazard.LunarHazardMapper):
             min_lentgh_of_boulder = 4 # [pix]
             max_lentgh_of_boulder = self.shape/10
             x_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder) 
+        
             y_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder)
+            x_axis = 2
+            y_axis = 2
             z_axis = max(x_axis, y_axis)*0.5 # by kariya
             for i in range(self.shape):
                 for j in range(self.shape):
@@ -153,9 +156,9 @@ max_crater = 3
 max_boulder = 4
 # harst=0.2 sigma 3 is best..?
 harst = 0.18
-sigma0 = 5 # 3 now
-rough = 0.3
-theta = 30
+sigma0 = 3 # 3 now
+rough = 0.1
+theta = 15
 dem_gen = LunarDEMGeneartor(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
 
 rr = dem_gen.generate_dem()
@@ -167,6 +170,8 @@ plt.imshow(rr)
 plt.show()
 
 #%%
+dem_gen.rough = 0.1
+dem_gen.theta = 20
 label, converted_label = dem_gen.generate_hazard()
 # save_path = 'blender/dem.npy'
 # dem_gen.save_dem(save_path)

@@ -3,18 +3,19 @@ import math
 import cv2
 
 class LunarHazardMapper:
-    def __init__(self, shape, rough, theta):
+    def __init__(self, shape, rough, theta, window=3):
         self.shape = shape
         self.rough = rough
         self.theta = theta
+        self.window = window
     def Get_Slope(self, roi):
-        W = roi[0,2]
-        E = roi[4,2]
-        S = roi[2,4]
-        N = roi[2,0]
-        SE = roi[4,4]
-        SW = roi[0,4]
-        NE = roi[4,0]
+        W = roi[0,self.window//2]
+        E = roi[self.window - 1,self.window//2]
+        S = roi[self.window//2,self.window - 1]
+        N = roi[self.window//2,0]
+        SE = roi[self.window - 1,self.window - 1]
+        SW = roi[0,self.window - 1]
+        NE = roi[self.window - 1,0]
         NW = roi[0,0]
         fx = (SE-SW+np.sqrt(2)*(E-W)+NE-NW)/(4+2*np.sqrt(2))
         fy = (NW-SW+np.sqrt(2)*(N-S)+NE-SE)/(4+2*np.sqrt(2))
@@ -25,7 +26,7 @@ class LunarHazardMapper:
         return roughness
     def map_hazard(self):
         # ウィンドウ大きさ
-        F = 5 # motomoto 5
+        F = self.window # motomoto 5
         
         scale = 1.0
 
