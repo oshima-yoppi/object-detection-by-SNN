@@ -15,8 +15,8 @@ from . import network
 FOCAL = 0.050# 焦点距離 
 IMG_HEIGHT, IMG_WIDTH = 260, 346 # カメラの大きさ[pix]
 SENSOR_HEIGHT, SENSOR_WIDTH = 0.026, 0.0346 # イメージセンサの大きさ [m]
-CAM_X, CAM_Y, CAM_Z = 64, 64, 164 # カメラの初期位置[m,m,m]
-METER_PER_GRID = 0.3
+CAM_X, CAM_Y, CAM_Z = 16, 20, 50 # カメラの初期位置[m,m,m]
+METER_PER_GRID = 0.15
 
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
