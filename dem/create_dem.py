@@ -77,7 +77,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
             
             radius = random.uniform(min_lentgh_of_crater, self.shape//4)
             
-            print(center_x, center_y, radius)
+            # print(center_x, center_y, radius)
 
             #    % H_r = 150 + abs(5*randn())
             H_ro = 0.036*(2*radius)**1.014
