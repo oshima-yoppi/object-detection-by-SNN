@@ -25,7 +25,8 @@ class LunarHazardMapper:
         return roughness
     def map_hazard(self):
         # ウィンドウ大きさ
-        F = 5
+        F = 5 # motomoto 5
+        
         scale = 1.0
 
         rotate_list = [0.0] # simple label 適用時

@@ -1,3 +1,4 @@
+#%%
 import math
 import numpy as np
 from module.const import*
@@ -145,33 +146,42 @@ class LunarDEMGeneartor(hazard.LunarHazardMapper):
 
 
 
+#%%
+n = 8
+shape = 2**n + 1 # The array must be square with edge length 2**n + 1
+max_crater = 3
+max_boulder = 4
+# harst=0.2 sigma 3 is best..?
+harst = 0.18
+sigma0 = 5 # 3 now
+rough = 0.3
+theta = 30
+dem_gen = LunarDEMGeneartor(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
 
-if __name__ == "__main__":
-    n = 8
-    shape = 2**n + 1 # The array must be square with edge length 2**n + 1
-    max_crater = 3
-    max_boulder = 4
-    # harst=0.2 sigma 3 is best..?
-    harst = 0.18
-    sigma0 = 5 # 3 now
-    rough = 0.1
-    theta = 30
-    dem_gen = LunarDEMGeneartor(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
-    
-    rr = dem_gen.generate_dem()
-    label, converted_label = dem_gen.generate_hazard()
-    # save_path = 'blender/dem.npy'
-    # dem_gen.save_dem(save_path)
-    fig = plt.figure()
-    ax1 = fig.add_subplot(131)
-    ax2 = fig.add_subplot(132)
-    ax3 = fig.add_subplot(133)
+rr = dem_gen.generate_dem()
+#%%
+save_path = 'blender/dem.npy'
+dem_gen.save_dem(save_path)
+plt.figure()
+plt.imshow(rr)
+plt.show()
 
-    ax1.imshow(rr)
-    ax2.imshow(label)
-    ax3.imshow(converted_label)
+#%%
+label, converted_label = dem_gen.generate_hazard()
+# save_path = 'blender/dem.npy'
+# dem_gen.save_dem(save_path)
+fig = plt.figure()
+ax1 = fig.add_subplot(131)
+ax2 = fig.add_subplot(132)
+ax3 = fig.add_subplot(133)
 
-    plt.show()
+ax1.imshow(rr)
+ax2.imshow(label)
+ax3.imshow(converted_label)
+
+plt.show()
 
 
 
+
+# %%
