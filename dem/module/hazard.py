@@ -29,15 +29,10 @@ class LunarHazardMapper:
         # ウィンドウ大きさ
         half_window = self.window//2
         self.dem_padding = np.pad(self.dem, half_window)
-        
-        scale = 1.0
-
-        rotate_list = [0.0] # simple label 適用時
-        # rotate_list = [0.0, 45]
 
         S = np.zeros((self.shape,self.shape)) # slope for each pixel
         R = np.zeros((self.shape,self.shape)) # roughness for each pixel
-        size = (self.window,self.window)
+
 
 
         for i in range(half_window, half_window+self.shape):
