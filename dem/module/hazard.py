@@ -3,7 +3,7 @@ import math
 import cv2
 
 class LunarHazardMapper:
-    def __init__(self, shape, rough, theta, window=33):
+    def __init__(self, shape, rough, theta, window=3):
         self.shape = shape
         self.rough = rough
         self.theta = theta
@@ -51,33 +51,6 @@ class LunarHazardMapper:
                     
              
 
-        # for row in range(self.window//2+1, self.shape-(self.window//2)-1, 1):
-        #     for col in range(self.window//2+1, self.shape-(self.window//2)-1, 1):
-        #         for angle in rotate_list:
-        #             center = (int(col), int(row))
-        #             #print(center)
-        #             # trans = cv2.getRotationMatrix2D(center, angle, scale)
-        #             # DEM2 = cv2.warpAffine(self.dem, trans, (self.shape,self.shape),cv2.INTER_CUBIC)
-                   
-        #             # 切り抜く。
-        #             # cropped = cv2.getRectSubPix(DEM2, size, center)
-        #             cropped = cv2.getRectSubPix(self.dem, size, center)
-        #             suiheido = self.Get_Slope(cropped)
-        #             if suiheido > S[row][col]: # ワーストケースを記録
-        #                 S[row][col] = suiheido
-                    
-                    
-        #             # 画像外枠境界線で粗さの取得を禁止する
-        #             if row==self.window//2+1 or col==self.window//2+1:
-        #                 heitando=0
-        #             elif row==self.shape-(self.window//2)-2 or col==self.shape-(self.window//2)-2:
-        #                 heitando=0
-        #             else:
-        #                 #heitando = Get_Roughness_alhat(cropped, m)   
-        #                 heitando = self.Get_Roughness(cropped)
-        #             if heitando > R[row][col]:
-        #                 R[row][col] = heitando
-                    
 
         S = S>math.radians(self.theta)
         R = R>self.rough
