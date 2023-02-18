@@ -16,7 +16,6 @@ class LunarDEMGeneartor(hazard.LunarHazardMapper):
         self.max_boulder = max_boulder
 
         super().__init__(shape=shape, rough=rough, theta=theta)
-
         self.sigma0 = sigma
         self.harst = harst
         self.label_converter = convert_label.Dem2Img(focal=FOCAL, img_height=IMG_HEIGHT, img_width=IMG_WIDTH, sensor_heitght=SENSOR_HEIGHT, sensor_width=SENSOR_WIDTH, cam_x=CAM_X, cam_y=CAM_Y, cam_z=CAM_Z, meter_per_grid=METER_PER_GRID)
@@ -103,17 +102,21 @@ class LunarDEMGeneartor(hazard.LunarHazardMapper):
                     self.dem[i,j] += h
         return self.dem
     def put_boulder(self):
-        eps = 1e-6
+  
         for i in range(self.max_boulder):
-            center_x, center_y = random.uniform(-5, self.shape+5), random.uniform(-5, self.shape+5)
+            center_x, center_y = random.uniform(0, self.shape), random.uniform(0, self.shape)
 
-            min_lentgh_of_boulder = 4 # [pix]
-            max_lentgh_of_boulder = self.shape/10
+            min_lentgh_of_boulder = 2 # [pix]
+            max_lentgh_of_boulder = 20 # [pix]
             x_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder) 
-        
             y_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder)
-            x_axis = 2
-            y_axis = 2
+            long_bool = random.uniform(0,1)
+            if long_bool >= 0.5:
+                y_axis = x_axis*0.75 # by kariya
+            else:
+                x_axis = y_axis * 0.75
+            # x_axis = 2
+            # y_axis = 2
             z_axis = max(x_axis, y_axis)*0.5 # by kariya
             for i in range(self.shape):
                 for j in range(self.shape):
@@ -158,7 +161,7 @@ max_boulder = 4
 harst = 0.18
 sigma0 = 3 # 3 now
 rough = 0.1
-theta = 15
+theta = 20
 dem_gen = LunarDEMGeneartor(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
 
 rr = dem_gen.generate_dem()
