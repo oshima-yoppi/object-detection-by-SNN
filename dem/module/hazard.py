@@ -40,8 +40,8 @@ class LunarHazardMapper:
                 for angle in rotate_list:
                     center = (int(col), int(row))
                     #print(center)
-                    trans = cv2.getRotationMatrix2D(center, angle, scale)
-                    DEM2 = cv2.warpAffine(self.dem, trans, (self.shape,self.shape),cv2.INTER_CUBIC)
+                    # trans = cv2.getRotationMatrix2D(center, angle, scale)
+                    # DEM2 = cv2.warpAffine(self.dem, trans, (self.shape,self.shape),cv2.INTER_CUBIC)
                    
                     # 切り抜く。
                     # cropped = cv2.getRectSubPix(DEM2, size, center)
