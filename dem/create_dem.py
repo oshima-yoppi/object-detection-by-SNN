@@ -150,10 +150,10 @@ if __name__ == "__main__":
     n = 8
     shape = 2**n + 1 # The array must be square with edge length 2**n + 1
     max_crater = 3
-    max_boulder = 3
+    max_boulder = 4
     # harst=0.2 sigma 3 is best..?
     harst = 0.18
-    sigma0 = 5
+    sigma0 = 5 # 3 now
     rough = 0.1
     theta = 30
     dem_gen = LunarDEMGeneartor(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
