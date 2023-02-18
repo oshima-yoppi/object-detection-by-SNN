@@ -156,7 +156,7 @@ if __name__ == "__main__":
     sigma0 = 5
     rough = 0.1
     theta = 30
-    dem_gen = LunarDEMGeneartor(shape, max_crater, max_boulder, sigma0, harst)
+    dem_gen = LunarDEMGeneartor(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
     
     rr = dem_gen.generate_dem()
     label, converted_label = dem_gen.generate_hazard()
