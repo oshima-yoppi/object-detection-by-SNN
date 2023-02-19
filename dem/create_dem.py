@@ -165,7 +165,7 @@ harst = 0.18
 sigma0 = 3 # 3 now
 rough = 0.1
 theta = 20
-dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
+
 
 save_label_dir = LABEL_PATH
 save_dem_dir = DEM_NP_PATH
@@ -177,6 +177,7 @@ if os.path.exists(save_dem_dir):
 os.mkdir(save_dem_dir)
 num_data = 3000
 for i in tqdm(range(num_data)):
+    dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
     dem = dem_generator.generate_dem()
     number = str(i).zfill(5)
     dem_filename = f'{number}.npy'

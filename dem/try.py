@@ -38,24 +38,27 @@ def init(theta, save_dir):
     y_start = CAM_Y
     y_finish = y_start
     z_start = CAM_Z
-    z_finish = 45
-    z_length = z_start - z_finish
-    velocity = 5 # 速度m/s
+    z_finish = 47
+    z_length = z_start - z_finish 
+    velocity = 3 # 速度m/s
     video_fps =  100#int(velocity*frame_num/z_length)
     # アニメーションのフレーム設定
     fram_start = 0
     frame_finish = int(z_length*video_fps/velocity)
     frame_num = frame_finish - fram_start
     frame_lst = [fram_start,frame_finish]
-    z_lst = [z_start, z_finish]
+    coodinate_lst = [(x_start,y_start,z_start), (x_finish, y_finish, z_finish)]
+    # z_lst = [z_start, z_finish]
     bpy.context.scene.render.fps = video_fps
     bpy.context.scene.frame_end = fram_start
     bpy.context.scene.frame_end = frame_finish
     #フレームを挿入する
-    for frame, z in zip(frame_lst, z_lst):
+    for frame, (x ,y,z) in zip(frame_lst, coodinate_lst):
         bpy.context.scene.frame_set(frame)
-        camera.location[2] = z
-        camera.keyframe_insert(data_path = "location",index = 2)
+        camera.location = (x,y,z)
+        camera.keyframe_insert(data_path = "location",index = 0) # x
+        camera.keyframe_insert(data_path = "location",index = 1) # y
+        camera.keyframe_insert(data_path = "location",index = 2) # z
     kf = camera.animation_data.action.fcurves[0].keyframe_points[0]# アニメーション補間を線形に
     kf.interpolation = 'LINEAR' 
 
@@ -132,12 +135,12 @@ if __name__ == "__main__":
 
     
     
-    DATA_NUM = 1
+    DATA_NUM = 3000
     object_name = "dem"
     for i in range(DATA_NUM):
         number = str(i).zfill(5)
         dem_path = os.path.join(dem_path_abs, f'{number}.npy')
-       
+        a = 1
         img2plot(dem_path)
 
         save_video_path = os.path.join(video_path_abs, f'{number}.avi')
