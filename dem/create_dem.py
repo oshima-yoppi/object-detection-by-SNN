@@ -168,7 +168,7 @@ theta = 20
 dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
 
 save_label_dir = LABEL_PATH
-save_dem_dir = 'blender/dem'
+save_dem_dir = DEM_NP_PATH
 if os.path.exists(save_label_dir):
     shutil.rmtree(save_label_dir)
 os.mkdir(save_label_dir)
@@ -178,13 +178,14 @@ os.mkdir(save_dem_dir)
 num_data = 3000
 for i in tqdm(range(num_data)):
     dem = dem_generator.generate_dem()
-    dem_filename = f'{i}.npy'
+    number = str(i).zfill(5)
+    dem_filename = f'{number}.npy'
     save_dem_path = os.path.join(save_dem_dir, dem_filename)
     dem_generator.save_dem(save_dem_path)
 
 
     label, converted_label = dem_generator.generate_hazard()
-    label_filename = f'{i}.npy'
+    label_filename = f'{number}.npy'
     save_label_path = os.path.join(save_label_dir, label_filename)
     dem_generator.save_label(save_label_path)
 
