@@ -9,3 +9,5 @@ METER_PER_GRID = 0.15
 # path
 VIDEO_PATH = 'blender/video'
 DEM_NP_PATH = 'blender/dem' 
+VIDEO_PATH_BLENDER = '//blender/video' # https://docs.blender.org/manual/en/2.79/data_system/files/relative_paths.html
+DEM_NP_PATH_BLENDER = '//blender/dem' 

@@ -38,9 +38,9 @@ def init(theta, save_dir):
     y_start = CAM_Y
     y_finish = y_start
     z_start = CAM_Z
-    z_finish = 40
+    z_finish = 45
     z_length = z_start - z_finish
-    velocity = 10 # 速度m/s
+    velocity = 5 # 速度m/s
     video_fps =  100#int(velocity*frame_num/z_length)
     # アニメーションのフレーム設定
     fram_start = 0
@@ -89,7 +89,7 @@ def img2plot(np_path):
     verts = []
     for x in range(pix):
         for y in range(pix):
-            verts.append(mathutils.Vector([x, y, (data[x, y])]))
+            verts.append(mathutils.Vector([x*METER_PER_GRID, y*METER_PER_GRID, data[x, y]*METER_PER_GRID]))
     fIndexes = []
     for x in range(0, pix - 1):
         for y in range(0, pix - 1):
@@ -124,20 +124,23 @@ def remove(name):
 
 
 if __name__ == "__main__":
+    dem_path_abs = bpy.path.abspath(DEM_NP_PATH_BLENDER) # https://twitter.com/Bookyakuno/status/1457726187745153038
+    video_path_abs = bpy.path.abspath(VIDEO_PATH_BLENDER)
+    print(dem_path_abs)
+    init(theta = 10, save_dir=video_path_abs)
+
+
     
-    init(theta = 10, save_dir=VIDEO_PATH)
-
-
-
-    DATA_NUM = 3001
+    
+    DATA_NUM = 1
     object_name = "dem"
     for i in range(DATA_NUM):
         number = str(i).zfill(5)
-        dem_path = os.path.join(DEM_NP_PATH, f'{number}.npy')
+        dem_path = os.path.join(dem_path_abs, f'{number}.npy')
        
         img2plot(dem_path)
 
-        save_video_path = os.path.join(VIDEO_PATH, f'{number}.avi')
+        save_video_path = os.path.join(video_path_abs, f'{number}.avi')
         render(save_video_path)
 
 
