@@ -36,9 +36,9 @@ if __name__ == '__main__':
         num_zip = str(file_num).zfill(5)
         label_path = os.path.join(LABEL_PATH, f"{num_zip}.npy")
         label = np.load(label_path)
-        plt.figure()
-        plt.imshow(label)
-        plt.show()
+        # plt.figure()
+        # plt.imshow(label)
+        # plt.show()
         
 
 
