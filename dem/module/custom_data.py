@@ -70,6 +70,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
         # 0梅するための対策
         example_file = h5py_allfile[0]
         with h5py.File(example_file, "r") as f:
+            print(f.keys())
             label = f['label'][()]
             raw_events = f['events'][()]
         raw_event_len = raw_events.shape[0]
@@ -159,10 +160,13 @@ if __name__ == "__main__":
     raw_event_dir = 'data'
     # youtube_path = "gomibako/h5.gif"
     a = LoadDataset(dir=dataset_path, raw_event_dir=raw_event_dir,accumulate_time=100000 ,train=True)
-    input, label = a[0]
-    print(input.shape)
-    print(label.shape)
-    print(input.shape[0])
-    # print(a.file_lst[6], a.num_lst[6])
+    while 1:
+        n = int(input())
+            
+        input, label = a[n]
+        print(input.shape)
+        print(label.shape)
+        print(input.shape[0])
+        # print(a.file_lst[6], a.num_lst[6])
     # make_data.youtube(input, youtube_path)
     
