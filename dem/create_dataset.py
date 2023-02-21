@@ -25,12 +25,11 @@ if __name__ == '__main__':
 
     if os.path.exists(RAW_EVENT_PATH):
         shutil.rmtree(RAW_EVENT_PATH)
-    os.mkdir(RAW_EVENT_PATH)
+    os.makedirs(RAW_EVENT_PATH)
 
 
     data_num = 3000
     label_path = LABEL_PATH
-    event_th = 0.1
 
     for file_num in tqdm(range( data_num)):
         num_zip = str(file_num).zfill(5)
@@ -47,7 +46,7 @@ if __name__ == '__main__':
         with h5py.File(savefile_path, 'a') as f:
             f.create_dataset("label", data=label)
         
-        cmd.v2e_cmd(file_num, event_th)
+        cmd.v2e_cmd(file_num, EVENT_TH)
         
 
         
