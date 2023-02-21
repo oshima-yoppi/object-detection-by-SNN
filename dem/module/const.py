@@ -38,8 +38,8 @@ ACCUMULATE_EVENT_MILITIME = 100 #[ms] # 何msイベントをためるか
 ACCUMULATE_EVENT_MICROTIME= ACCUMULATE_EVENT_MILITIME*1000 #[us]
 DATASET_PATH = 'dataset' # datasetのパス
 # DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIME)) # dataset/〇〇  ←何秒ためるかを表す
-EVENT_TH = 0.1# イベントカメラの閾値
-RAW_EVENT_PATH = f'data/th-{str(EVENT_TH)}' # v2eから出力されたイベント生データ
+EVENT_TH = 0.4# イベントカメラの閾値
+RAW_EVENT_PATH = f'raw-data/th-{str(EVENT_TH)}' # v2eから出力されたイベント生データ
 PROCESSED_EVENT_DATASET_PATH = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
 
 MODEL_NAME = f'{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
