@@ -48,23 +48,28 @@ if __name__ == "__main__":
     check_save_dir = "check/h5.gif"
 
 
-    a= LoadDataset(dataset_dir=DATASET_PATH, dataset_accevent_dir=DATASET_ACCEVENT_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
-    number = int(input('何番を読み込む？'))
-    events, label = a[number]
-    
-    fig = plt.figure()
-    ax1 = fig.add_subplot(131)
-    ax2 = fig.add_subplot(132)
-    ax3 = fig.add_subplot(133)
-    print(events.shape)
-    first_events = view.get_first_events(events)
-    ax1.imshow(first_events)
+    a= LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
+    custom_number = input('Do u want to see spesific nunber? [y/n]')
+    number = -1
+    while 1:
+        if custom_number == 'y':
+            number = int(input('何番を読み込む？'))
+        else:
+            number += 1
+        events, label = a[number]
+        
+        fig = plt.figure()
+        ax1 = fig.add_subplot(131)
+        ax2 = fig.add_subplot(132)
+        print(events.shape)
+        first_events = view.get_first_events(events)
+        ax1.imshow(first_events)
 
-    label_ =label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu')
-    ax2.imshow(label_)
+        label_ =label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu')
+        ax2.imshow(label_)
 
-    print(events.shape)
-    plt.show()
+        print(events.shape)
+        plt.show()
     # youtube(events, youtube_path, True)
 
     

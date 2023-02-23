@@ -54,8 +54,10 @@ class Dem2Img():
 
                 dem_pix_x_from_center = dem_x_from_center//self.meter_per_grid # ピクセルに変換 
                 dem_pix_y_from_center = dem_y_from_center//self.meter_per_grid
-                dem_pix_x = dem_pix_x_from_center + self.dem_height // 2
-                dem_pix_y = dem_pix_y_from_center + self.dem_width // 2
+                # dem_pix_x = dem_pix_x_from_center + self.dem_height // 2
+                # dem_pix_y = dem_pix_y_from_center + self.dem_width // 2
+                dem_pix_x = dem_pix_x_from_center + self.cam_x//self.meter_per_grid
+                dem_pix_y = dem_pix_y_from_center + self.cam_y//self.meter_per_grid
                 # print(dem_pix_x, dem_pix_y)
                 # print(dem_label.shape)
                 label[x_pix, y_pix] = dem_label[int(dem_pix_x), int(dem_pix_y)]
