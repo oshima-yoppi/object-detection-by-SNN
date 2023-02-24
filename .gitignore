@@ -9,13 +9,19 @@ dem/blender/kaguya
 dem/blender/video/*.avi
 dem/blender/*.blend
 dem/blender/*.blend1
+dem/blender/dem_only_boulder
+dem/blender/video_only_boulder
 
 dem/DEM/128pix_(0-3deg)_dem(lidar_noisy)_boulder
 dem/DEM/64pix_(0-3deg)_dem(lidar_noisy)_boulder
 
 dem/data/
 dem/raw-data
+dem/raw-data_only_boulder
 dem/dataset/*
+dem/dataset_only_boulder/*
 dem/result_img/*
+dem/result_img_boulder/*
 dem/label_only/*
+dem/label_only_boulder/*
 
