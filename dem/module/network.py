@@ -28,13 +28,13 @@ from IPython.display import HTML
 
 
 class BaseFunction:
-    def __call__(self, data):
-        soft = nn.Softmax2d()
+    def __call__(self, data, time):
+        # soft = nn.Softmax2d()
         spk_rec = []
         utils.reset(self.network)  # resets hidden states for all LIF neurons in net
         # print(data.shape)
 
-        for step in range(data.size(0)):  # data.size(0) = number of time steps
+        for step in range(time):  # data.size(0) = number of time steps
             spk_out, mem_out = self.network(data[step])
             # print(spk_out.shape)
             if self.reshape_bool:

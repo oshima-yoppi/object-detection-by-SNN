@@ -109,8 +109,8 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         for i in range(self.max_boulder):
             center_x, center_y = random.uniform(0, self.shape), random.uniform(0, self.shape)
 
-            min_lentgh_of_boulder = 7 # [pix]
-            max_lentgh_of_boulder = 20 # [pix]
+            min_lentgh_of_boulder = 2 # [pix]
+            max_lentgh_of_boulder = 4 # [pix]
             x_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder) 
             y_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder)
             long_bool = random.uniform(0,1)
@@ -142,6 +142,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         self.put_boulder()
         return self.dem
     
+    
 
     def generate_hazard(self):
         self.label = super().map_hazard()
@@ -158,8 +159,8 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
 n = 8
 shape = 2**n + 1 # The array must be square with edge length 2**n + 1
-max_crater = 3
-max_boulder = 6
+max_crater = 0
+max_boulder = 15
 # harst=0.2 sigma 3 is best..?
 harst = 0.18
 sigma0 = 3 # 3 now
@@ -167,18 +168,24 @@ rough = 0.1
 theta = 20
 
 
-save_label_dir = LABEL_PATH
-save_dem_dir = DEM_NP_PATH
+save_label_dir = LABEL_BOULDER_PATH
+save_dem_dir = DEM_ONLY_BOULDER_PATH
 if os.path.exists(save_label_dir):
     shutil.rmtree(save_label_dir)
 os.mkdir(save_label_dir)
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
-num_data = 3000
+num_data = 10
 for i in tqdm(range(num_data)):
     dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
-    dem = dem_generator.generate_dem()
+    dem_generator.put_fractal()
+    dem_generator.put_boulder()
+    dem = dem_generator.dem
+    # plt.figure()
+    # plt.imshow(dem)
+    # plt.show()
+
     number = str(i).zfill(5)
     dem_filename = f'{number}.npy'
     save_dem_path = os.path.join(save_dem_dir, dem_filename)

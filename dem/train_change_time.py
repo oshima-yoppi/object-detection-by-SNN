@@ -63,54 +63,48 @@ num_iters = 50
 correct_rate = 0.5
 loss_hist = []
 hist = defaultdict(list)
-
-if TIME_CHANGE:
-    time_step_lst = np.linspace(events.shape[0], FINISH_TIME, 3).astype(int)
-else:
-    time_step_lst = [events.shape[0]]
-print(time_step_lst)
 # training loop
 try:
-    for time_step in time_step_lst:
-        for epoch in tqdm(range(num_epochs)):
-            for i, (data, label) in enumerate(iter(train_loader)):
-                data = data.to(DEVICE)
-                # label = torch.tensor(label, dtype=torch.int64)
-                label = label.type(torch.int64)
-                label = label.to(DEVICE)
-                batch = len(data[0])
-                data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
-                # print(data.shape)
-                net.network.train()
-                pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
-                # print(pred_pro.shape)
-                # loss_val = criterion(pred_pro, label)
-                loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
-                # loss_val = 1 - acc
+    if TIME_CHANGE:
+        for step_time in np.linspace(train_loader[0].shape[0], FINISH_TIME, 3):
+            for epoch in tqdm(range(num_epochs)):
+                for i, (data, label) in enumerate(iter(train_loader)):
+                    data = data.to(DEVICE)
+                    # label = torch.tensor(label, dtype=torch.int64)
+                    label = label.type(torch.int64)
+                    label = label.to(DEVICE)
+                    batch = len(data[0])
+                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                    # print(data.shape)
+                    net.network.train()
+                    pred_pro = net(data, step_time)# batch, channel, pixel ,pixel
+                    # print(pred_pro.shape)
+                    # loss_val = criterion(pred_pro, label)
+                    loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
+                    # loss_val = 1 - acc
 
-                # Gradient calculation + weight update
-                optimizer.zero_grad()
-                loss_val.backward()
-                optimizer.step()
+                    # Gradient calculation + weight update
+                    optimizer.zero_grad()
+                    loss_val.backward()
+                    optimizer.step()
 
-                # Store loss history for future plotting
-                hist['loss'].append(loss_val.item())
-                acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
+                    # Store loss history for future plotting
+                    hist['loss'].append(loss_val.item())
+                    acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
 
-                # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
+                    # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-                
-                hist['train'].append(acc)
+                    
+                    hist['train'].append(acc)
 
-                # print(f"Accuracy: {acc * 100:.2f}%/n")
-                # spk_count_batch = (spk_rec==1).sum().item()
-                # spk_count_batch /= batch
-                # tqdm.write(f'{spk_count_batch}')
-                # plt.figure()
-                # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
-                # plt.show()
-            tqdm.write(f'{epoch}:{acc=}')
-            if i % 10 == 0:
+                    # print(f"Accuracy: {acc * 100:.2f}%/n")
+                    # spk_count_batch = (spk_rec==1).sum().item()
+                    # spk_count_batch /= batch
+                    # tqdm.write(f'{spk_count_batch}')
+                    # plt.figure()
+                    # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
+                    # plt.show()
+                tqdm.write(f'{epoch}:{acc=}')
                 with torch.no_grad():
                     net.network.eval()
                     for i, (data, label) in enumerate(iter(test_loader)):
@@ -119,7 +113,7 @@ try:
                         label = label.type(torch.int64)
                         batch = len(data[0])
                         data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
-                        pred_pro = net(data, time_step)
+                        pred_pro = net(data, step_time)
                         # loss_val = criterion(pred_pro, label)
                         acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
                         hist['test'].append(acc)
