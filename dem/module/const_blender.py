@@ -8,6 +8,12 @@ METER_PER_GRID = 0.15
 
 # path
 VIDEO_PATH = 'blender/video'
+VIDEO_ONLY_BOULDER_PATH = 'blender/video_only_boulder'
 DEM_NP_PATH = 'blender/dem' 
-VIDEO_PATH_BLENDER = '//blender/video' # https://docs.blender.org/manual/en/2.79/data_system/files/relative_paths.html
-DEM_NP_PATH_BLENDER = '//blender/dem' 
+DEM_ONLY_BOULDER_PATH = "blender/dem_only_boulder"
+
+# https://docs.blender.org/manual/en/2.79/data_system/files/relative_paths.html
+VIDEO_PATH_BLENDER = "//"+ VIDEO_PATH 
+VIDEO_ONLY_BOULDER_PATH_BLENDER = "//"+ VIDEO_ONLY_BOULDER_PATH
+DEM_NP_PATH_BLENDER = "//"+DEM_NP_PATH
+DEM_ONLY_BOULDER_PATH_BLENDER = "//" + DEM_ONLY_BOULDER_PATH
