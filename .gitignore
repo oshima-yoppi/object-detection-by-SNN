@@ -20,6 +20,7 @@ dem/raw-data
 dem/raw-data_only_boulder
 dem/dataset/*
 dem/dataset_only_boulder/*
+dem/dataset_boulder/*
 dem/result_img/*
 dem/result_img_boulder/*
 dem/label_only/*
