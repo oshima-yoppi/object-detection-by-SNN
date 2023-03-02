@@ -169,6 +169,7 @@ plt.show()
 # %%
 spikes_lst = []
 ious = []
+test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE_TEST, collate_fn=custom_data.custom_collate, shuffle=False,)
 with torch.no_grad():
     net.eval()
     for i, (events, label) in enumerate(tqdm(iter(test_loader))):
@@ -186,3 +187,26 @@ with torch.no_grad():
       
         # save_img(i, events, pred_pro, label,  iou, pdf_output=False)
         # break
+# %%
+iou_mean = sum(ious)/len(ious)
+print(MODEL_NAME, iou_mean)
+# %%
+n_spikes = sum(spikes_lst)/len(spikes_lst)
+print(f'{n_spikes=}')
+# %%
+jules_per_spike = 0.9e-12 #J
+# jules_per_spike = 0.45e-9 #J hide
+n_spikes*jules_per_spike
+# %%
+params = 0
+for p in net.parameters():
+    if p.requires_grad:
+        params += p.numel()
+        
+print(params)  # 121898
+jules_ = params*FINISH_TIME*2.19e-9
+jules_
+# %%
+spike_rate = n_spikes/params
+spike_rate
+# %%
