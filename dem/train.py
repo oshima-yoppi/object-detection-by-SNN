@@ -54,7 +54,7 @@ net = NET
 
 events, _ = train_dataset[0]
 num_steps = events.shape[0]
-optimizer = torch.optim.Adam(net.network.parameters(), lr=LR, betas=(0.9, 0.999))
+optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
 
 
 num_epochs = 50
@@ -64,10 +64,11 @@ correct_rate = 0.5
 loss_hist = []
 hist = defaultdict(list)
 
+
 if TIME_CHANGE:
     time_step_lst = np.linspace(events.shape[0], FINISH_TIME, 3).astype(int)
 else:
-    time_step_lst = [events.shape[0]]
+    time_step_lst = [FINISH_TIME]
 print(time_step_lst)
 # training loop
 try:
@@ -81,7 +82,7 @@ try:
                 batch = len(data[0])
                 data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                 # print(data.shape)
-                net.network.train()
+                net.train()
                 pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
                 # print(pred_pro.shape)
                 # loss_val = criterion(pred_pro, label)
@@ -132,7 +133,9 @@ except Exception as e:
     # print(e)
 ## save model
 enddir = MODEL_PATH
-torch.save(net.network.state_dict(), enddir)
+# if os.path.exists(enddir) == False:
+#     os.makedirs(enddir)
+torch.save(net.state_dict(), enddir)
 print("success model saving")
 print(MODEL_NAME)
 print(f'{acc=}')

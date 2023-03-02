@@ -1,4 +1,4 @@
-import numpy as np
+import torch
 
-a = np.linspace(10,0,3)
-for i in a:print(i)
+a = torch.ones((2,3,4,5,))
+print(torch.sum(a))
