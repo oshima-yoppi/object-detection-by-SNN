@@ -23,13 +23,16 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 BETA = 0.95
 BATCH_SIZE = 12
 BATCH_SIZE_TEST = 1
-FINISH_TIME = 4
+FINISH_TIME = 5
+RESET = 'subtract'
+# RESET = 'zero'
 PARM_LEARN = False
 TIME_CHANGE = False
 SPIKE_GRAD = surrogate.atan()
 LR = 1e-3
 CORRECT_RATE = 0.5
-NET = network.FullyConv2_new(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True)
+LOSS_RATE = 1e-7
+NET = network.FullyConv2_new(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET)
 
 
 
@@ -47,10 +50,11 @@ RAW_EVENT_PATH = f'raw-data/th-{str(EVENT_TH)}' # v2eから出力されたイベ
 RAW_EVENT_ONLY_BOULDER_PATH = f'raw-data_only_boulder/th-{str(EVENT_TH)}' 
 PROCESSED_EVENT_DATASET_PATH = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
 PROCESSED_EVENT_DATASET_ONLY_BOULDER_PATH = f'dataset_boulder/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
+ANN_DATASET_PATH = "dataset_ann"
 
 
 NETWORK_CLASS_NAME = NET.__class__.__name__
-MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_FinishTime-{FINISH_TIME}'
+MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_FinishTime-{FINISH_TIME}_Reset-{RESET}'
 MODEL_PATH = f'models/{MODEL_NAME}.pth'
 
 RESULT_PATH = f'result_img/{MODEL_NAME}'

@@ -16,12 +16,14 @@ import pandas as pd
 import argparse
 import h5py
 import glob
+import cv2
 import numpy as np
 import tonic
 import tonic.transforms as transforms
 from torchvision import transforms as transforms_
 import torchvision.transforms as T
 from tqdm import tqdm
+import shutil
 # from .module import const
 from .const import *
 # import const
@@ -143,6 +145,35 @@ class LoadDataset(Dataset):
         input = torch.from_numpy(input.astype(np.float32)).clone()
         label = torch.from_numpy(label.astype(np.float32)).clone()
         return input, label
+
+
+class AnnLoadDataset(Dataset):
+    def __init__(self, dataset_dir, input_height, input_width, train:bool, test_rate=0.2):
+ 
+        self.input_height = input_height
+        self.input_width = input_width
+        
+ 
+
+        self.all_files = glob.glob(f"{dataset_dir}/*")
+        self.divide = int((len(self.all_files)*test_rate))
+
+        if train:
+            self.file_lst = self.all_files[self.divide:]
+        else:
+            self.file_lst = self.all_files[:self.divide]
+
+    def __len__(self):
+        return len(self.file_lst)
+
+    def __getitem__(self, index):
+        with h5py.File(self.file_lst[index], "r") as f:
+            label = f['label'][()]
+            input = f['input'][()]
+        input = torch.from_numpy(input.astype(np.float32)).clone()
+        label = torch.from_numpy(label.astype(np.float32)).clone()
+        return input, label
+
 def custom_collate(batch):
     """
     batchをどの引数に持っていくかを決める関数。入力はbatchを2つ目。ラベルは1つ目に設定。

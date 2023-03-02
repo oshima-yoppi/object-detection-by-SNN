@@ -39,7 +39,19 @@ def loss_dice(pred_pro, target, rate=0.8):
     dice = 1 - dice.sum() / batch
     # iou = torch.mean(intersection/(union+eps))
     return dice
-
+# def loss_iou(pred_pro, target, rate=0.8):
+    
+#     batch = len(target)
+#     # print(pred_pro.shape) #batch, channel , pixel, pixel
+#     pred_pro = pred_pro[:, 1, :, :]
+#     pred_pro = pred_pro.reshape(batch, -1)
+#     target = target.reshape(batch, -1)
+#     pred = torch.where(pred_pro>=rate, 1, 0)
+#     union  = torch.logical_or(pred, target).sum(dim=1)
+#     intersection = torch.logical_and(pred, target).sum(dim = 1)
+#     eps = 1e-6
+#     iou = torch.mean(intersection/(union+eps))
+#     return iou
 
 def culc_iou(pred_pro, target, rate=0.8):
     
