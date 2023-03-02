@@ -23,13 +23,13 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 BETA = 0.95
 BATCH_SIZE = 12
 BATCH_SIZE_TEST = 1
-FINISH_TIME = 2
+FINISH_TIME = 4
 PARM_LEARN = False
-TIME_CHANGE = True
+TIME_CHANGE = False
 SPIKE_GRAD = surrogate.atan()
 LR = 1e-3
 CORRECT_RATE = 0.5
-NET = network.FullyConv2(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL)
+NET = network.FullyConv2_new(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True)
 
 
 
@@ -50,7 +50,7 @@ PROCESSED_EVENT_DATASET_ONLY_BOULDER_PATH = f'dataset_boulder/{ACCUMULATE_EVENT_
 
 
 NETWORK_CLASS_NAME = NET.__class__.__name__
-MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}'
+MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_FinishTime-{FINISH_TIME}'
 MODEL_PATH = f'models/{MODEL_NAME}.pth'
 
 RESULT_PATH = f'result_img/{MODEL_NAME}'
