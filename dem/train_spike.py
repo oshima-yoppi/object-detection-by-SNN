@@ -1,4 +1,4 @@
-import snntorch as snn
+#%%import snntorch as snn
 from snntorch import spikeplot as splt
 from snntorch import spikegen
 from snntorch import utils
@@ -51,13 +51,14 @@ train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custo
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
 
 net = NET
+net.load_state_dict(torch.load(MODEL_PATH))
 
 events, _ = train_dataset[0]
 num_steps = events.shape[0]
 optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
 
 
-num_epochs = 50
+num_epochs = 15
 num_iters = 50
 # pixel = 64
 correct_rate = 0.5
@@ -87,6 +88,7 @@ try:
                 # print(pred_pro.shape)
                 # loss_val = criterion(pred_pro, label)
                 loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
+                loss_val += net.spike_count*LOSS_RATE
                 # loss_val = 1 - acc
 
                 # Gradient calculation + weight update
@@ -111,6 +113,7 @@ try:
                 # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
                 # plt.show()
             tqdm.write(f'{epoch}:{acc=}')
+            tqdm.write(f'{epoch}:{net.spike_count=}')
             if i % 10 == 0:
                 with torch.no_grad():
                     net.network.eval()
@@ -133,9 +136,11 @@ except Exception as e:
     # print(e)
 ## save model
 enddir = MODEL_PATH
-torch.save(net.state_dict(), enddir)
-print("success model saving")
-print(MODEL_NAME)
+# if os.path.exists(enddir) == False:
+#     os.makedirs(enddir)
+# torch.save(net.state_dict(), enddir)
+# print("success model saving")
+# print(MODEL_NAME)
 print(f'{acc=}')
 # Plot Loss
 # print(hist)
@@ -160,3 +165,24 @@ fig.tight_layout()
 plt.show()
 
 
+
+# %%
+spikes_lst = []
+ious = []
+with torch.no_grad():
+    net.eval()
+    for i, (events, label) in enumerate(tqdm(iter(test_loader))):
+        events = events.to(DEVICE)
+        label = label.to(DEVICE)
+        batch = len(events[0])
+        # print(events.shape)# TBCHW
+        # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+        pred_pro = net(events, FINISH_TIME)
+        
+        iou = compute_loss.culc_iou(pred_pro, label, CORRECT_RATE)
+        ious.append(iou)
+        # pred_pro = compute_loss.show_pred(pred_pro, correct_rate)
+        spikes_lst.append(net.spike_count)  
+      
+        # save_img(i, events, pred_pro, label,  iou, pdf_output=False)
+        # break
