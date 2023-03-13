@@ -10,12 +10,14 @@ class DiceLoss(nn.Module):
     def forward(self, inputs, targets, smooth=1):
         
         #comment out if your model contains a sigmoid or equivalent activation layer
-        inputs = F.sigmoid(inputs)       
+        # print(inputs.shape)
+        inputs = F.softmax(inputs, dim=1)       
         
         #flatten label and prediction tensors
-        inputs = inputs.view(-1)
-        targets = targets.view(-1)
-        
+        # print(inputs.shape)
+        inputs = inputs[:,1,:,:].reshape(-1)
+        targets = targets.reshape(-1)
+        # print(inputs.shape, targets.shape)
         intersection = (inputs * targets).sum()                            
         dice = (2.*intersection + smooth)/(inputs.sum() + targets.sum() + smooth)  
         
@@ -31,11 +33,13 @@ class IoU(nn.Module):
     def forward(self, inputs, targets, smooth=1):
         
         #comment out if your model contains a sigmoid or equivalent activation layer
-        inputs = F.sigmoid(inputs)       
-        
+        # inputs = F.sigmoid(inputs)     
+          
+        inputs = F.softmax(inputs, dim=1)    
         #flatten label and prediction tensors
-        inputs = inputs.view(-1)
-        targets = targets.view(-1)
+        
+        inputs = inputs[:,1,:,:].reshape(-1)
+        targets = targets.reshape(-1)
         
         #intersection is equivalent to True Positive count
         #union is the mutually inclusive area of all labels & predictions 
