@@ -23,9 +23,12 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 BETA = 0.95
 BATCH_SIZE = 12
 BATCH_SIZE_TEST = 1
-FINISH_TIME = 5
-RESET = 'subtract'
-# RESET = 'zero'
+FINISH_STEP = 8 # 8
+soft_reset =True
+if soft_reset:
+    RESET = 'subtract'
+else:
+    RESET = 'zero'
 PARM_LEARN = False
 TIME_CHANGE = False
 SPIKE_GRAD = surrogate.atan()
@@ -41,20 +44,21 @@ LABEL_BOULDER_PATH = "label_only_boulder"
 
 
 
-ACCUMULATE_EVENT_MILITIME = 100 #[ms] # 何msイベントをためるか
+# ACCUMULATE_EVENT_MILITIME = 100 #[ms] # 何msイベントをためるか
+ACCUMULATE_EVENT_MILITIME = 25 #[ms] # 何msイベントをためるか
 ACCUMULATE_EVENT_MICROTIME= ACCUMULATE_EVENT_MILITIME*1000 #[us]
 DATASET_PATH = 'dataset' # datasetのパス
 # DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIME)) # dataset/〇〇  ←何秒ためるかを表す
 EVENT_TH = 0.15# イベントカメラの閾値
 RAW_EVENT_PATH = f'raw-data/th-{str(EVENT_TH)}' # v2eから出力されたイベント生データ
 RAW_EVENT_ONLY_BOULDER_PATH = f'raw-data_only_boulder/th-{str(EVENT_TH)}' 
-PROCESSED_EVENT_DATASET_PATH = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
+PROCESSED_EVENT_DATASET_PATH = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_FinTime-{FINISH_STEP}'
 PROCESSED_EVENT_DATASET_ONLY_BOULDER_PATH = f'dataset_boulder/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
 ANN_DATASET_PATH = "dataset_ann"
 
 
 NETWORK_CLASS_NAME = NET.__class__.__name__
-MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_FinishTime-{FINISH_TIME}_Reset-{RESET}'
+MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_FinishTime-{FINISH_STEP}_Reset-{RESET}'
 MODEL_PATH = f'models/{MODEL_NAME}.pth'
 
 RESULT_PATH = f'result_img/{MODEL_NAME}'

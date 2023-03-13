@@ -26,4 +26,7 @@ dem/result_img_boulder/*
 dem/label_only/*
 dem/label_only_boulder/*
 dem/dataset_ann
+dem/akida
+
+akida/*.pickle
 

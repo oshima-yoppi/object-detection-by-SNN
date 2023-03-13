@@ -49,16 +49,24 @@ class Fill0_Tensor():
         arr_reshape[:shape_time] = arr_reshape[:shape_time] + arr
         
         return arr_reshape
+def get_until_finishtime(raw_events, finish_time):
+    for i in range(len(raw_events)):
+        # print(raw_events[i], finish_time)
+        if raw_events[i,0] > finish_time:
 
-def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
+            break 
+    return raw_events[:i, :]
+        
+def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
     SENSOR_SIZE = (IMG_WIDTH, IMG_HEIGHT, 2) # (WHP)
+    finish_time = accumulate_time*finish_step + 1 # 最期の秒を記録 us?
     # converter = transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time)
-    converter = transforms.Compose(
-        [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
-        num2torch(),
-        Number2one(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
-    )
+    # converter = transforms.Compose(
+    #     [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+    #     num2torch(),
+    #     Number2one(),
+    #     transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
+    # )
     converter_label = transforms.Compose(
         [transforms_.ToTensor(),
         transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
@@ -69,25 +77,16 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
         dtype = [('t', '<i4'), ('x', '<i4'), ('y', '<i4'), ('p', '<i4')]
         # print(h5py_allfile)
 
-        # 0梅するための対策
-        example_file = h5py_allfile[0]
-        with h5py.File(example_file, "r") as f:
-            print(f.keys())
-            label = f['label'][()]
-            raw_events = f['events'][()]
-        raw_event_len = raw_events.shape[0]
-        processed_events = np.zeros(raw_event_len, dtype=dtype)
-        for idx, (key , _) in enumerate(dtype):
-            processed_events[key] = raw_events[:,idx]
-        acc_events = converter(processed_events)
-        processed_events_shape = acc_events.shape
+        # # 0梅するための対策
+        true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+        
 
         converter_event = transforms.Compose(
         [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
         num2torch(),
         Number2one(),
         transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
-        Fill0_Tensor(processed_events_shape)]
+        Fill0_Tensor(true_shape),]
         )
         converter_label = transforms.Compose(
         [transforms_.ToTensor(),
@@ -97,12 +96,13 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
             with h5py.File(file, "r") as f:
                 label = f['label'][()]
                 raw_events = f['events'][()]
+            raw_events = get_until_finishtime(raw_events, finish_time=finish_time)
             raw_event_len = raw_events.shape[0]
             processed_events = np.zeros(raw_event_len, dtype=dtype)
             for idx, (key , _) in enumerate(dtype):
                 processed_events[key] = raw_events[:,idx]
             acc_events = converter_event(processed_events)
-
+            # print(acc_events.shape)
             label = converter_label(label)
             file_name = f'{str(i).zfill(5)}.h5'
             new_file_path = os.path.join(new_dir, file_name)
@@ -117,7 +117,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time):
         exit()
     return 
 class LoadDataset(Dataset):
-    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, train:bool, test_rate=0.2):
+    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, finish_step, train:bool, test_rate=0.2):
         
         self.accumulate_time = accumulate_time
         self.input_height = input_height
@@ -126,7 +126,7 @@ class LoadDataset(Dataset):
         if os.path.isdir(processed_event_dataset_path):
             pass
         else:
-            convert_raw_event(events_raw_dir=raw_event_dir, new_dir=processed_event_dataset_path, accumulate_time=self.accumulate_time)
+            convert_raw_event(events_raw_dir=raw_event_dir, new_dir=processed_event_dataset_path, accumulate_time=self.accumulate_time, finish_step=finish_step)
 
         self.all_files = glob.glob(f"{processed_event_dataset_path}/*")
         self.divide = int((len(self.all_files)*test_rate))
