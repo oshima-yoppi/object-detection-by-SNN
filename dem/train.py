@@ -44,8 +44,8 @@ def print_batch_accuracy(data, label, train=False):
 # num_outputs = 10
 # dtype = torch.float
 
-train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True)
-test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
+train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
+test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
 
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
@@ -66,9 +66,9 @@ hist = defaultdict(list)
 
 
 if TIME_CHANGE:
-    time_step_lst = np.linspace(events.shape[0], FINISH_TIME, 3).astype(int)
+    time_step_lst = np.linspace(events.shape[0], FINISH_STEP, 3).astype(int)
 else:
-    time_step_lst = [FINISH_TIME]
+    time_step_lst = [FINISH_STEP]
 print(time_step_lst)
 # training loop
 try:
@@ -100,6 +100,7 @@ try:
 
                 # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
+                
                 
                 hist['train'].append(acc)
 
