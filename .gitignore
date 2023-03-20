@@ -29,4 +29,5 @@ dem/dataset_ann
 dem/akida
 
 akida/*.pickle
+*.pickle
 
