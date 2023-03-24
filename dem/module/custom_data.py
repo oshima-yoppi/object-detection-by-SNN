@@ -117,17 +117,28 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         exit()
     return 
 class LoadDataset(Dataset):
-    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, finish_step, train:bool, test_rate=0.2):
-        
+    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, finish_step, train:bool, test_rate=0.2, download=False):
+        """
+        processed_event_dataset_path: 処理済みのイベントデータのパス
+        raw_event_dir: イベントの生データ
+        accumulate_time: イベントの集積時間
+        input_height, input_width: 入力画像の高さと幅
+        finish_step: 何ステップをSNNに入力するか
+        test_rate: 全体のデータに対するテストデータの割合
+        train: 学習データかテストデータか
+        download: データを一基にメモリに読み取らせるか。もちろんFalseにした方が早い。ただメモリエラーが起きたときはTrueにして、一回一回読み込ませるようにする(__getitem__時に読み込む必要がなくなるので早くなる) """# 
         self.accumulate_time = accumulate_time
         self.input_height = input_height
         self.input_width = input_width
+        self.download = download
         
-        if os.path.isdir(processed_event_dataset_path):
+        # イベントデータの前処理を行う。すでにディレクトリがあったら飛ばす
+        if os.path.isdir(processed_event_dataset_path): 
             pass
         else:
             convert_raw_event(events_raw_dir=raw_event_dir, new_dir=processed_event_dataset_path, accumulate_time=self.accumulate_time, finish_step=finish_step)
-
+        
+        # 全てのイベントデータのファイルパスを取得
         self.all_files = glob.glob(f"{processed_event_dataset_path}/*")
         self.divide = int((len(self.all_files)*test_rate))
 
@@ -135,15 +146,32 @@ class LoadDataset(Dataset):
             self.file_lst = self.all_files[self.divide:]
         else:
             self.file_lst = self.all_files[:self.divide]
+        # データを丸ごとリストに格納する場合
+        if self.download == False:
+            self.all_data = []
+        
+            for path in self.file_lst:
+                with h5py.File(path, "r") as f:
+                    label = f['label'][()]
+                    input = f['events'][()]
+                input = torch.from_numpy(input.astype(np.float32)).clone()
+                label = torch.from_numpy(label.astype(np.float32)).clone()
+                self.all_data.append((input, label))
+          
+
+
     def __len__(self):
         return len(self.file_lst)
 
     def __getitem__(self, index):
-        with h5py.File(self.file_lst[index], "r") as f:
-            label = f['label'][()]
-            input = f['events'][()]
-        input = torch.from_numpy(input.astype(np.float32)).clone()
-        label = torch.from_numpy(label.astype(np.float32)).clone()
+        if self.download:
+            with h5py.File(self.file_lst[index], "r") as f:
+                label = f['label'][()]
+                input = f['events'][()]
+            input = torch.from_numpy(input.astype(np.float32)).clone()
+            label = torch.from_numpy(label.astype(np.float32)).clone()
+        else:
+            input, label = self.all_data[index]
         return input, label
 
 
