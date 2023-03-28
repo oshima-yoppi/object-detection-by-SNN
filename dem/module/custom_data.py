@@ -149,14 +149,15 @@ class LoadDataset(Dataset):
         # データを丸ごとリストに格納する場合
         if self.download == False:
             self.all_data = []
-        
-            for path in self.file_lst:
+            print('dataset読み込み開始')
+            for path in tqdm(self.file_lst):
                 with h5py.File(path, "r") as f:
                     label = f['label'][()]
                     input = f['events'][()]
                 input = torch.from_numpy(input.astype(np.float32)).clone()
                 label = torch.from_numpy(label.astype(np.float32)).clone()
                 self.all_data.append((input, label))
+            print('dataset読み込み終了')
           
 
 
@@ -176,10 +177,11 @@ class LoadDataset(Dataset):
 
 
 class AnnLoadDataset(Dataset):
-    def __init__(self, dataset_dir, input_height, input_width, train:bool, test_rate=0.2):
+    def __init__(self, dataset_dir, input_height, input_width, train:bool, test_rate=0.2, download=False):
  
         self.input_height = input_height
         self.input_width = input_width
+        self.download = download
         
  
 
@@ -190,16 +192,29 @@ class AnnLoadDataset(Dataset):
             self.file_lst = self.all_files[self.divide:]
         else:
             self.file_lst = self.all_files[:self.divide]
-
+        if self.download == False:
+            self.all_data = []
+            print('dataset読み込み開始')
+            for path in tqdm(self.file_lst):
+                with h5py.File(path, "r") as f:
+                    label = f['label'][()]
+                    input = f['events'][()]
+                input = torch.from_numpy(input.astype(np.float32)).clone()
+                label = torch.from_numpy(label.astype(np.float32)).clone()
+                self.all_data.append((input, label))
+            print('dataset読み込み終了')
     def __len__(self):
         return len(self.file_lst)
 
     def __getitem__(self, index):
-        with h5py.File(self.file_lst[index], "r") as f:
-            label = f['label'][()]
-            input = f['input'][()]
-        input = torch.from_numpy(input.astype(np.float32)).clone()
-        label = torch.from_numpy(label.astype(np.float32)).clone()
+        if self.download:
+            with h5py.File(self.file_lst[index], "r") as f:
+                label = f['label'][()]
+                input = f['events'][()]
+            input = torch.from_numpy(input.astype(np.float32)).clone()
+            label = torch.from_numpy(label.astype(np.float32)).clone()
+        else:
+            input, label = self.all_data[index]
         return input, label
 
 def custom_collate(batch):

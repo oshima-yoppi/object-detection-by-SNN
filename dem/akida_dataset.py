@@ -27,7 +27,8 @@ import shutil
 import pickle
 
 INPUT_HEIGHT, INPUT_WIDTH = 130, 173
-def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, finish_step=1):
+# INPUT_HEIGHT, INPUT_WIDTH = 50, 50
+def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, finish_step=1, count=False):
     SENSOR_SIZE = (IMG_WIDTH, IMG_HEIGHT, 2) # (WHP)
     input_lst = []
     label_lst = []
@@ -54,10 +55,14 @@ def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, f
             label = cv2.resize(label, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST)
             # print(input.shape)
             # break
+            if count == False:
+                input = np.where(input>= 1, 1, 0)
+
+
             input_lst.append(input)
             label_lst.append(label)
             # break
-        save_path = os.path.join(akida_dataset_dir, f"dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}.pickle")
+        save_path = os.path.join(akida_dataset_dir, f"dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_count-{count}.pickle")
         with open(save_path, mode="wb") as f:
             pickle.dump((input_lst, label_lst), f)
             
@@ -72,4 +77,5 @@ def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, f
 if __name__ == "__main__":
     AKIDA_DATASET_DIR = 'akida'
     event_dir = RAW_EVENT_PATH
-    make_dataset_for_akida(akida_dataset_dir=AKIDA_DATASET_DIR, events_raw_dir=RAW_EVENT_PATH, accumulate_time=1e6, finish_step=1)
+    count = False
+    make_dataset_for_akida(akida_dataset_dir=AKIDA_DATASET_DIR, events_raw_dir=RAW_EVENT_PATH, accumulate_time=1e6, finish_step=1, count=count)
