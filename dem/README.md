@@ -40,7 +40,7 @@
     - `analysis.ipynb`：学習結果を解析
 4. その他ファイル説明
     - `akida-dataset.py`：brainchipのデータセットを作成するために使用。無視してよい
-    - `model.py`：モデル定義
+    - `model.py`：モデル定義  
     ‐ `data.py`: データローダー定義
     - `openh5.py`: h5ファイルの中身を確認＆`youtube`フォルダ内に動画を保存する
     - `blender_make_video.py`：blenderでアニメーションをするためのファイル。設定関連も行ってくれる。blender内部で開く。blender上で実行。
