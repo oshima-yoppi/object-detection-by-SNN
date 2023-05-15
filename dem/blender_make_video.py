@@ -38,9 +38,9 @@ def init(theta, save_dir):
     y_start = CAM_Y
     y_finish = y_start
     z_start = CAM_Z
-    z_finish = 5
+    z_finish = 5.5
     z_length = z_start - z_finish 
-    velocity = 1 # 速度m/s
+    velocity = 0.5 # 速度m/s
     video_fps =  100#int(velocity*frame_num/z_length)
     # アニメーションのフレーム設定
     fram_start = 0
