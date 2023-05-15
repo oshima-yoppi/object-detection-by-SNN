@@ -38,7 +38,7 @@ def init(theta, save_dir):
     y_start = CAM_Y
     y_finish = y_start
     z_start = CAM_Z
-    z_finish = 2.5
+    z_finish = 5
     z_length = z_start - z_finish 
     velocity = 1 # 速度m/s
     video_fps =  100#int(velocity*frame_num/z_length)
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     
     
-    DATA_NUM = 1
+    DATA_NUM = 3
     object_name = "dem"
     for i in range(DATA_NUM):
         number = str(i).zfill(5)
