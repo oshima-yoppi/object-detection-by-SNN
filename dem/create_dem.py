@@ -21,6 +21,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         super().__init__(shape=shape, rough=rough, theta=theta)
         self.sigma0 = sigma
         self.harst = harst
+        # self.cam_x = random.uniform(0, 100)
         self.label_converter = convert_label.Dem2Img(focal=FOCAL, img_height=IMG_HEIGHT, img_width=IMG_WIDTH, sensor_heitght=SENSOR_HEIGHT, sensor_width=SENSOR_WIDTH, cam_x=CAM_X, cam_y=CAM_Y, cam_z=CAM_Z, meter_per_grid=METER_PER_GRID)
     def calculate_sigma(self, n):
         sigma_n = self.sigma0*(1-2**(2*self.harst-2))/(2**n)**(2*self.harst)
@@ -73,9 +74,10 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         n_crater = random.randint(0, self.max_crater)
         for i in range(n_crater):
             center_x, center_y = random.uniform(-5, self.shape+5), random.uniform(-5, self.shape+5)
-            min_lentgh_of_crater = 5 #[pix]
+            minimum_detection_crater_size = 0.3 # 見つけたい障害物の最小の大きさ[m]
+            min_pix_of_crater = minimum_detection_crater_size / METER_PER_GRID #[pix]
             
-            radius = random.uniform(min_lentgh_of_crater, self.shape//8)
+            radius = random.uniform(min_pix_of_crater, self.shape//8)
             
             # print(center_x, center_y, radius)
 
@@ -109,10 +111,14 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         for i in range(self.max_boulder):
             center_x, center_y = random.uniform(0, self.shape), random.uniform(0, self.shape)
 
-            min_lentgh_of_boulder = 7 # [pix]
-            max_lentgh_of_boulder = 20 # [pix]
-            x_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder) 
-            y_axis = random.uniform(min_lentgh_of_boulder, max_lentgh_of_boulder)
+            min_detection_boulder_size = 0.15 # 見つけたい障害物の最小の大きさ[m]
+            min_pix_of_boulder = min_detection_boulder_size / METER_PER_GRID #[pix]
+            max_pix_of_boulder = 40 # [pix]
+
+            x_axis = random.uniform(min_pix_of_boulder, max_pix_of_boulder) 
+            # x_axis = random.uniform(min_pix_of_boulder, min_pix_of_boulder) 
+            y_axis = random.uniform(min_pix_of_boulder, max_pix_of_boulder)
+            # print(x_axis, y_axis)
             long_bool = random.uniform(0,1)
             if long_bool >= 0.5:
                 y_axis = x_axis*0.75 # by kariya
@@ -189,6 +195,11 @@ for i in tqdm(range(num_data)):
     label_filename = f'{number}.npy'
     save_label_path = os.path.join(save_label_dir, label_filename)
     dem_generator.save_label(save_label_path)
+
+    # plt.figure()
+    # plt.imshow(dem)
+    # # plt.colorbar()  
+    # plt.show()
 
 
 

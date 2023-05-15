@@ -38,9 +38,9 @@ def init(theta, save_dir):
     y_start = CAM_Y
     y_finish = y_start
     z_start = CAM_Z
-    z_finish = 47
+    z_finish = 5
     z_length = z_start - z_finish 
-    velocity = 3 # 速度m/s
+    velocity = 1# 速度m/s
     video_fps =  100#int(velocity*frame_num/z_length)
     # アニメーションのフレーム設定
     fram_start = 0
@@ -129,9 +129,12 @@ def remove(name):
 if __name__ == "__main__":
     dem_path_abs = bpy.path.abspath(DEM_NP_PATH_BLENDER) # https://twitter.com/Bookyakuno/status/1457726187745153038
     video_path_abs = bpy.path.abspath(VIDEO_PATH_BLENDER)
+    # rate = 2
+    # CAM_X, CAM_Y, CAM_Z = 1.2* rate, 1.2* rate, 6 # カメラの初期位置[m,m,m]
+    # METER_PER_GRID = 0.15*3/50*rate
     print(dem_path_abs)
     init(theta = 10, save_dir=video_path_abs)
-
+    
 
     
     
@@ -142,8 +145,5 @@ if __name__ == "__main__":
     dem_path = os.path.join(dem_path_abs, f'{number}.npy')
     # a = 1
     img2plot(dem_path)
-
-   
-
 
 
