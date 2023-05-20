@@ -15,11 +15,11 @@ def log_experiment(constants, results):
         file.write("-------------\n")
         file.write("conditions\n")
         for key, value in constants.items():
-            file.write(f"{key}: {value}\n")
+            file.write(f"\t{key}: {value}\n")
 
         file.write("results\n")
         for key, value in results.items():
-            file.write(f"{key}: {value}\n")
+            file.write(f"\t{key}: {value}\n")
         file.write("-------------\n")
 
 
