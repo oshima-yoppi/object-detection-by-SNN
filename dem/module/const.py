@@ -11,7 +11,7 @@ from .const_blender import *
 import json
 
 
-with open('const.json') as file:
+with open('module/const_base.json') as file:
     constants = json.load(file)
 # 設定ファイル。ここでいろんな変数を定義
 
