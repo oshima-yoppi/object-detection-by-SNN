@@ -40,7 +40,8 @@ def print_batch_accuracy(data, label, train=False):
 
 # Network Architecture
 # num_inputs = 28*28
-# num_hidden = 1000
+# num_hidden = 10
+# 00
 # num_outputs = 10
 # dtype = torch.float
 
