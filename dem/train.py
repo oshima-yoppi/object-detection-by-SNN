@@ -44,9 +44,6 @@ import yaml
 # num_outputs = 10
 # dtype = torch.float
 def main():
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-    print(soft_reset)
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
 
@@ -60,7 +57,7 @@ def main():
     optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
 
 
-    num_epochs = 50
+    num_epochs = 2
     num_iters = 50
     # pixel = 64
     correct_rate = 0.5

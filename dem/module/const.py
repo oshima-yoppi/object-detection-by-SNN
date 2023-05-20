@@ -19,6 +19,7 @@ with open('module/const_base.json') as file:
 soft_reset = constants['soft_reset']
 parm_learn = constants['parm_learn']
 FINISH_STEP = constants['FINISH_STEP']
+print(f"soft_reset: {soft_reset}", f"parm_learn: {parm_learn}", f"FINISH_STEP: {FINISH_STEP}")
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
 INPUT_CHANNEL = 2  if BOOL_DISTINGUISH_EVENT else 1
