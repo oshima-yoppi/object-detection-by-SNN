@@ -1,8 +1,16 @@
 import os 
+import itertools
 
-cmd = "python experiment.py --soft_reset --parm_learn  --FINISH_STEP 8"
-os.system(cmd)
+soft_reset_lst = [True, False]
+parm_learn_lst = [True, False]
+finish_step_lst = [1 ,4, 8]
+combinations = list(itertools.product(soft_reset_lst, parm_learn_lst, finish_step_lst))
 
-
-cmd = "python experiment.py  --parm_learn --FINISH_STEP 8"
-os.system(cmd)
+for soft_reset, parm_learn, finish_step in combinations:
+    cmd = "python experiment.py"
+    if soft_reset:
+        cmd += " --soft_reset"
+    if parm_learn:
+        cmd += " --parm_learn"
+    cmd += f" --FINISH_STEP {finish_step}"
+    os.system(cmd)
