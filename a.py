@@ -1,10 +1,9 @@
 import json
-
+print('import a')
 with open('const.json') as file:
     constants = json.load(file)
 
-constants["MY_CONSTANT"] = 24
+TIME = constants['time']
+print(TIME)
 
-# 変更したデータを保存
-with open('const.json', 'w') as file:
-    json.dump(constants, file)
+

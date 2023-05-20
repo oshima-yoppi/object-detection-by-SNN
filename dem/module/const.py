@@ -8,11 +8,17 @@ import os
 import torch
 from . import network
 from .const_blender import *
+import json
 
+
+with open('const.json') as file:
+    constants = json.load(file)
 # 設定ファイル。ここでいろんな変数を定義
 
 
-
+soft_reset = constants['soft_reset']
+parm_learn = constants['parm_learn']
+FINISH_STEP = constants['FINISH_STEP']
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
 INPUT_CHANNEL = 2  if BOOL_DISTINGUISH_EVENT else 1
@@ -23,8 +29,8 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 BETA = 0.95
 BATCH_SIZE = 12
 BATCH_SIZE_TEST = 1
-FINISH_STEP = 8 # 8
-soft_reset =True
+# FINISH_STEP = 8 # 8
+
 if soft_reset:
     RESET = 'subtract'
 else:
