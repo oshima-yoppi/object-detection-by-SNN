@@ -19,6 +19,7 @@ with open('module/const_base.json') as file:
 soft_reset = constants['soft_reset']
 parm_learn = constants['parm_learn']
 FINISH_STEP = constants['FINISH_STEP']
+ACCUMULATE_EVENT_MILITIME = constants['ACCUMULATE_EVENT_MILITIME']
 print(f"soft_reset: {soft_reset}", f"parm_learn: {parm_learn}", f"FINISH_STEP: {FINISH_STEP}")
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
@@ -52,7 +53,7 @@ LABEL_BOULDER_PATH = "label_only_boulder"
 
 
 # ACCUMULATE_EVENT_MILITIME = 100 #[ms] # 何msイベントをためるか
-ACCUMULATE_EVENT_MILITIME = 25 #[ms] # 何msイベントをためるか
+
 ACCUMULATE_EVENT_MICROTIME= ACCUMULATE_EVENT_MILITIME*1000 #[us]
 DATASET_PATH = 'dataset' # datasetのパス
 # DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIME)) # dataset/〇〇  ←何秒ためるかを表す

@@ -118,3 +118,47 @@ results
 	Energy per inference: 1.159299245045986e-06
 	Spike Rate: 0.2922183573246002
 -------------
+-------------
+conditions
+	soft_reset: True
+	parm_learn: True
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 50
+results
+	IoU: 0.6860817387203375
+	Energy per inference: 5.868687935617345e-07
+	Spike Rate: 0.1479288786649704
+-------------
+-------------
+conditions
+	soft_reset: True
+	parm_learn: True
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 100
+results
+	IoU: 0.7556972655653954
+	Energy per inference: 4.792345293935796e-07
+	Spike Rate: 0.12079808861017227
+-------------
+-------------
+conditions
+	soft_reset: True
+	parm_learn: True
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 50
+results
+	IoU: 0.7824094865719478
+	Energy per inference: 1.493156787546468e-06
+	Spike Rate: 0.3763720691204071
+-------------
+-------------
+conditions
+	soft_reset: True
+	parm_learn: True
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 100
+results
+	IoU: 0.8156366401910782
+	Energy per inference: 1.18109051072679e-06
+	Spike Rate: 0.29771116375923157
+-------------

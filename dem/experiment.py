@@ -6,7 +6,8 @@ def update_constant(args):
     constants = {
         "soft_reset": args.soft_reset,
         "parm_learn": args.parm_learn,
-        "FINISH_STEP": args.FINISH_STEP
+        "FINISH_STEP": args.FINISH_STEP,
+        "ACCUMULATE_EVENT_MILITIME": args.ACCUMULATE_EVENT_MILITIME
     }
     with open('module/const_base.json', 'w') as file:
         json.dump(constants, file)
@@ -27,6 +28,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--soft_reset', action='store_true') # store_true: 引数があればTrue, なければFalse.これしないと正しく出ない。https://qiita.com/hirorin/items/fbcf76c1119da24e2eeb
 parser.add_argument('--parm_learn', action='store_true')
 parser.add_argument('--FINISH_STEP', type=int)
+parser.add_argument('--ACCUMULATE_EVENT_MILITIME', type=int)
 
 args = parser.parse_args()
 print(args.soft_reset)
