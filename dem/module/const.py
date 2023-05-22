@@ -17,10 +17,10 @@ with open('module/const_base.json') as file:
 
 
 soft_reset = constants['soft_reset']
-parm_learn = constants['parm_learn']
+PARM_LEARN = constants['PARM_LEARN']
 FINISH_STEP = constants['FINISH_STEP']
 ACCUMULATE_EVENT_MILITIME = constants['ACCUMULATE_EVENT_MILITIME']
-print(f"soft_reset: {soft_reset}", f"parm_learn: {parm_learn}", f"FINISH_STEP: {FINISH_STEP}")
+print(f"soft_reset: {soft_reset}", f"parm_learn: {PARM_LEARN}", f"FINISH_STEP: {FINISH_STEP}")
 # イベントかめらの極性を分けるかどうか
 BOOL_DISTINGUISH_EVENT = True
 INPUT_CHANNEL = 2  if BOOL_DISTINGUISH_EVENT else 1
@@ -37,7 +37,7 @@ if soft_reset:
     RESET = 'subtract'
 else:
     RESET = 'zero'
-PARM_LEARN = False
+
 TIME_CHANGE = False
 SPIKE_GRAD = surrogate.atan()
 LR = 1e-3

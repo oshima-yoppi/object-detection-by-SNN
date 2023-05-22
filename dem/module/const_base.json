@@ -1,1 +1,1 @@
-{"soft_reset": true, "parm_learn": true, "FINISH_STEP": 8, "ACCUMULATE_EVENT_MILITIME": 100}
+{"soft_reset": true, "PARM_LEARN": true, "FINISH_STEP": 4, "ACCUMULATE_EVENT_MILITIME": 60}
