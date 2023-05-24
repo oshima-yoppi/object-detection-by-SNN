@@ -57,7 +57,7 @@ def main():
     optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
 
 
-    num_epochs = 80
+    num_epochs = 50
     num_iters = 50
     # pixel = 64
     correct_rate = 0.5
@@ -70,6 +70,7 @@ def main():
         time_step_lst = [FINISH_STEP]
     print(time_step_lst)
     # training loop
+    # return
     try:
         for time_step in time_step_lst:
             for epoch in tqdm(range(num_epochs)):

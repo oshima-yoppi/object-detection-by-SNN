@@ -138,7 +138,7 @@ def main():
     jules_per_spike = 0.9e-12 #J
     # jules_per_spike = 0.45e-9 #J hide
     jule_per_estimate = n_spikes*jules_per_spike
-    results['Energy per inference'] = jule_per_estimate
+    results['Energy per inference'] = jule_per_estimate.item()
     print(f'{jule_per_estimate=}')
 
     # スパイクレート発火率を求める
@@ -155,6 +155,6 @@ def main():
     n_nerons = count_neuron(net)
 
     spike_rate = n_spikes/n_nerons
-    results['Spike Rate'] = spike_rate
+    results['Spike Rate'] = spike_rate.item()
     
     return results
