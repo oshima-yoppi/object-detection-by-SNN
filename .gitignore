@@ -31,3 +31,22 @@ dem/akida
 akida/*.pickle
 *.pickle
 
+dem_classificationblender/dem/*.npy
+dem_classificationblender/kaguya
+dem_classificationblender/video/*.avi
+dem_classificationblender/*.blend
+dem_classificationblender/*.blend1
+dem_classificationblender/dem_only_boulder
+dem_classificationblender/video_only_boulder
+dem_classificationdata/
+dem_classificationraw-data
+dem_classificationraw-data_only_boulder
+dem_classificationdataset/*
+dem_classificationdataset_only_boulder/*
+dem_classificationdataset_boulder/*
+dem_classificationresult_img/*
+dem_classificationresult_img_boulder/*
+dem_classificationlabel_only/*
+dem_classificationlabel_only_boulder/*
+dem_classificationdataset_ann
+dem_classificationakida
