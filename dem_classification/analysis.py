@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 import cv2
+import pandas as pd
 from tqdm import tqdm
 # from collections import defaultdict
 
@@ -29,7 +30,7 @@ from IPython.display import HTML
 
 from collections import defaultdict
 
-def main():
+def main(classification=False):
     train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
 
@@ -45,11 +46,43 @@ def main():
     events, _ = train_dataset[0]
     num_steps = events.shape[0]
 
-    ious = []
-    def save_img(number, events, pred_pro, label, iou, pdf_output):
+    # ious = []
+    
+    results = {}
+    results['TP'] = []
+    results['TN'] = []
+    results['FP'] = []
+    results['FN'] = []
+    results['iou'] = []
+
+    def analysis_segmentation(pred, label):
+        # print(pred.shape)
+        # print(label.shape)
+        # exit()
+        pred = pred.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
+        label = label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
+        # print(pred.shape)
+        # print(label.shape)
+        # exit()
+        all_pixel = INPUT_HEIGHT * INPUT_WIDTH
+        TP = np.sum(np.where((pred>=CORRECT_RATE) & (label==1), 1, 0))/all_pixel
+        TN = np.sum(np.where((pred<CORRECT_RATE) & (label==0), 1, 0))/all_pixel
+        FP = np.sum(np.where((pred>=CORRECT_RATE) & (label==0), 1, 0))/all_pixel
+        FN = np.sum(np.where((pred<CORRECT_RATE) & (label==1), 1, 0))/all_pixel
+        iou = compute_loss.culc_iou(pred, label, CORRECT_RATE)
+        return TP, TN, FP, FN, iou
+
+
+    def save_img(number, events, pred_pro, label, results, pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
         number_str = str(number).zfill(5)
+        tp = results['TP'][-1]
+        tn = results['TN'][-1]
+        fp = results['FP'][-1]
+        fn = results['FN'][-1]
+        iou = results['iou'][-1]
+
         num_steps = len(pred_pro)
         nrows = 2
         ncols = 5
@@ -99,7 +132,6 @@ def main():
             img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
             fig.savefig(img_path)
         plt.close()
-
     hist = defaultdict(list)
     if os.path.exists(RESULT_PATH):
             shutil.rmtree(RESULT_PATH)
@@ -114,18 +146,21 @@ def main():
             # print(events.shape)# TBCHW
             # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             pred_pro = net(events, FINISH_STEP)
-            
-            iou = compute_loss.culc_iou(pred_pro, label, CORRECT_RATE)
-            ious.append(iou)
+            tp, tn, fp, fn, iou = analysis_segmentation(pred_pro, label)
+            # iou = compute_loss.culc_iou(pred_pro, label, CORRECT_RATE)
+            results['TP'].append(tp)
+            results['TN'].append(tn)
+            results['FP'].append(fp)
+            results['FN'].append(fn)
+            results['iou'].append(iou)
             # pred_pro = compute_loss.show_pred(pred_pro, correct_rate)
             spikes_lst.append(net.spike_count)  
         
-            save_img(i, events, pred_pro, label,  iou, pdf_output=False)
+            save_img(i, events, pred_pro, label,  results, pdf_output=False)
             # break
 
-    results = {}
     # iouの平均を求める
-    iou_mean = sum(ious)/len(ious)
+    iou_mean = sum(results['iou'])/len(results['iou'])
     results['IoU'] = iou_mean
     print(MODEL_NAME, iou_mean)
 
@@ -156,5 +191,9 @@ def main():
 
     spike_rate = n_spikes/n_nerons
     results['Spike Rate'] = spike_rate.item()
+    if classification == False:
+        return results
     
-    return results
+
+
+

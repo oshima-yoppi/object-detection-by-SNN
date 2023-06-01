@@ -167,14 +167,18 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
     def save_label(self, path):
         # print(self.converted_label.shape)
-        self.splited_label = []
-        splited_images = self.split_4img(self.converted_label)
-        for img in splited_images:
-            if 1 in img:
-                self.splited_label.append(1)
-            else:
-                self.splited_label.append(0)
-        self.splited_label= np.array(self.splited_label)
+        self.splited_label = np.zeros((2,2))
+        img1, img2, img3, img4 = self.split_4img(self.converted_label)
+        if np.sum(img1) > 0:
+            self.splited_label[0,0] = 1
+        if np.sum(img2) > 0:
+            self.splited_label[0,1] = 1
+        if np.sum(img3) > 0:
+            self.splited_label[1,0] = 1
+        if np.sum(img4) > 0:
+            self.splited_label[1,1] = 1
+
+        # self.splited_label= np.array(self.splited_label)
         np.save(path, self.converted_label)
         # plt.figure()
         # plt.imshow(self.converted_label)

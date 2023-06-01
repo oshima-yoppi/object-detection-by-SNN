@@ -10,9 +10,9 @@ file_count += 1
 csv_name = prefix + str(file_count).zfill(3) + ".csv"
 csv_path = os.path.join(csv_dir, csv_name)
 
-soft_reset_lst = [True, False]
-parm_learn_lst = [True, False]
-finish_step_lst = [4, 8]
+soft_reset_lst = [True]
+parm_learn_lst = [False]
+finish_step_lst = [2,4,8]
 accumulate_event_militime_lst = [10, 20 , 40, 80, 100]
 # accumulate_event_militime_lst = [40, 60, 80]
 combinations = list(itertools.product(soft_reset_lst, parm_learn_lst, finish_step_lst, accumulate_event_militime_lst))
