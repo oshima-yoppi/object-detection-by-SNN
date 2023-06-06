@@ -68,9 +68,11 @@ class FullyConv2_new(nn.Module):
         c2 = 32
         c3 = 64
         n_class=2
+        neu = 1024
         encode_kernel = 5
         decode_kernel = 5
         n_neuron = 4096
+        n_output = 512
         
         super().__init__()
         self.down1 = nn.Sequential(
@@ -83,27 +85,19 @@ class FullyConv2_new(nn.Module):
                     nn.MaxPool2d(2, stride=2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),
         ).to(device)   
-        self.middle = nn.Sequential(
+        self.down3 = nn.Sequential(
                     nn.Conv2d(c3, c3, encode_kernel, padding=encode_kernel//2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),
         ).to(device)   
-        self.up1 = nn.Sequential(
-                    nn.Upsample(scale_factor=2),
-                    nn.Conv2d(c3, c2, decode_kernel, padding=encode_kernel//2),
+        self.lenear1 = nn.Sequential(
+                    nn.Linear(neu, n_neuron),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),
-        ).to(device)   
-        self.up2 = nn.Sequential(
-                    nn.Upsample(scale_factor=2),
-                    nn.Conv2d(c2, c0, decode_kernel, padding=decode_kernel//2),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),
-        ).to(device)   
-        self.output = nn.Sequential(
-                    nn.Conv2d(c0, n_class, 1,),
-                    nn.AdaptiveMaxPool2d((self.input_height, self.input_width)),
-                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),
-        ).to(device)   
-
-        self.network_lst = [self.down1, self.down2, self.middle, self.up1, self.up2, self.output]
+        ).to(device)
+        self.lenear2 = nn.Sequential(
+                    nn.Linear(n_neuron, n_output),
+                    snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, output = True, learn_threshold=parm_learn, reset_mechanism=reset),
+        ).to(device)
+        self.network_lst = [self.down1, self.down2, self.lenear1, self.lenear2]
     def forward(self, data, time):
         self.spike_count = 0
         spk_rec = []
@@ -112,30 +106,27 @@ class FullyConv2_new(nn.Module):
         for step in range(time):
             d1 = self.down1(data[step])
             d2 = self.down2(d1)
-            m1 = self.middle(d2)
-            u1 = self.up1(m1)
-            u2 = self.up2(u1)
-            output, _ = self.output(u2)
-            spk_rec.append(output)
+            d3 = self.down3(d2)
+            d3 = d3.reshape(d3.shape[0], -1)
+            l1 = self.lenear1(d3)
+            l2, _ = self.lenear2(l1)
+            # output, _ = self.output(u2)
+            spk_rec.append(l2)
             if self.power:
                 self.spike_count += torch.sum(d1)
                 self.spike_count += torch.sum(d2)
-                self.spike_count += torch.sum(m1)
-                self.spike_count += torch.sum(u1)
-                self.spike_count += torch.sum(u1)
-                self.spike_count += torch.sum(output)
+                self.spike_count += torch.sum(d3)
+                self.spike_count += torch.sum(l1)
+                self.spike_count += torch.sum(l2)
+
         # print(self.spike_count)
         spk_rec = torch.stack(spk_rec)
          # print(spk_rec.shape)
         spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
-        spk_cnt_ = spk_cnt[0,0,:,:].reshape(self.input_height, self.input_width).to('cpu').detach().numpy().copy()
         
         # print(np.sum(spk_cnt_.reshape(-1)))
        
-        pred_pro = F.softmax(spk_cnt, dim=1)
-        # pred_pro_ = pred_pro[0,0,:,:].reshape(self.input_height, self.input_width).to('cpu').detach().numpy().copy()
-        # pred_pro__ = pred_pro[0,1,:,:].reshape(self.input_height, self.input_width).to('cpu').detach().numpy().copy()
-
+        pred_pro = F.sigmoid(spk_cnt, dim=1)
         return pred_pro
 
 

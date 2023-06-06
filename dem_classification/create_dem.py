@@ -178,8 +178,8 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         if np.sum(img4) > 0:
             self.splited_label[1,1] = 1
 
-        # self.splited_label= np.array(self.splited_label)
-        np.save(path, self.converted_label)
+        self.splited_label= np.array(self.splited_label)
+        np.save(path, self.splited_label)
         # plt.figure()
         # plt.imshow(self.converted_label)
         # plt.title(f"{self.splited_label}")
@@ -207,7 +207,7 @@ os.mkdir(save_label_dir)
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
-num_data = 3000
+num_data = 3000//4
 for i in tqdm(range(num_data)):
     dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
     dem = dem_generator.generate_dem()

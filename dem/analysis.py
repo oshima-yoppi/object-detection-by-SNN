@@ -78,8 +78,9 @@ def main():
         FN = np.sum(np.where((pred_danger<CORRECT_RATE) & (label_np==1), 1, 0))
 
         iou = compute_loss.culc_iou(pred, label, CORRECT_RATE)
-        precision = TP / (TP + FP)
-        recall = TP / (TP + FN)
+        eps = 1e-7
+        precision = TP / (TP + FP + eps)
+        recall = TP / (TP + FN + eps)
         results['TP'].append(TP)
         results['TN'].append(TN)
         results['FP'].append(FP)
