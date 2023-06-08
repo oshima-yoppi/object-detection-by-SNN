@@ -50,3 +50,4 @@ dem_classification/label_only/*
 dem_classification/label_only_boulder/*
 dem_classification/dataset_ann
 dem_classification/akida
+dem_classification/models/*.pth
