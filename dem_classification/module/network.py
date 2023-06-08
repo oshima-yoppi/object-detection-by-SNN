@@ -68,11 +68,15 @@ class FullyConv2_new(nn.Module):
         c2 = 32
         c3 = 64
         n_class=2
-        neu = 1024
+        neu = 88064
+        n1 = 88064
+        n2 = 4096
+        n3 = 2
+    
         encode_kernel = 5
         decode_kernel = 5
         n_neuron = 4096
-        n_output = 512
+        n_output = 2
         
         super().__init__()
         self.down1 = nn.Sequential(
@@ -90,13 +94,17 @@ class FullyConv2_new(nn.Module):
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),
         ).to(device)   
         self.lenear1 = nn.Sequential(
-                    nn.Linear(neu, n_neuron),
+                    nn.Linear(n1, n2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),
         ).to(device)
         self.lenear2 = nn.Sequential(
-                    nn.Linear(n_neuron, n_output),
+                    nn.Linear(n2, n3),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, output = True, learn_threshold=parm_learn, reset_mechanism=reset),
         ).to(device)
+        # self.lenear3 = nn.Sequential(
+        #             nn.Linear(n_neuron, n_output),
+        #             snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, output = True, learn_threshold=parm_learn, reset_mechanism=reset),
+        # ).to(device)
         self.network_lst = [self.down1, self.down2, self.lenear1, self.lenear2]
     def forward(self, data, time):
         self.spike_count = 0
@@ -125,9 +133,12 @@ class FullyConv2_new(nn.Module):
         spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
         
         # print(np.sum(spk_cnt_.reshape(-1)))
-       
-        pred_pro = F.sigmoid(spk_cnt, dim=1)
+        
+        pred_pro = F.softmax(spk_cnt, dim=1)
+        # print(pred_pro[0])
+        # pred_pro = F.sigmoid(spk_cnt)
         return pred_pro
+
 
 
 

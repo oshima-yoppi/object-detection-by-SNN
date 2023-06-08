@@ -85,10 +85,8 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
         Fill0_Tensor(true_shape),]
         )
-        converter_label = transforms.Compose(
-        [transforms_.ToTensor(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
-        )
+        
+
         for i, file in enumerate(tqdm(h5py_allfile)):
             with h5py.File(file, "r") as f:
                 label = f['label'][()]
@@ -103,18 +101,18 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
             processed_events = np.zeros(raw_event_len, dtype=dtype)
             for idx, (key , _) in enumerate(dtype):
                 processed_events[key] = raw_events[:,idx]
-            print(processed_events.shape)
+            # print(processed_events.shape)
             acc_events = converter_event(processed_events)
-            print(acc_events.shape)
+            # print(acc_events.shape)
             for i in range(spilit_num):
                 if i == 0:
                     splited_events = acc_events[:, :, :IMG_HEIGHT//2, :IMG_WIDTH//2]
                     splited_label = label[0,0]
                 elif i == 1:
-                    splited_events = acc_events[:, :, IMG_HEIGHT//2:, :IMG_WIDTH//2]
+                    splited_events = acc_events[:, :, :IMG_HEIGHT//2, IMG_WIDTH//2:]
                     splited_label = label[0,1]
                 elif i == 2:
-                    splited_events = acc_events[:, :, :IMG_HEIGHT//2, IMG_WIDTH//2:]
+                    splited_events = acc_events[:, :, IMG_HEIGHT//2:, :IMG_WIDTH//2]
                     splited_label = label[1,0]
                 elif i == 3:
                     splited_events = acc_events[:, :, IMG_HEIGHT//2:, IMG_WIDTH//2:]
@@ -178,8 +176,12 @@ class LoadDataset(Dataset):
                 with h5py.File(path, "r") as f:
                     label = f['label'][()]
                     input = f['events'][()]
+                # print(input.shape, label.shape, label)
                 input = torch.from_numpy(input.astype(np.float32)).clone()
-                label = torch.from_numpy(label.astype(np.float32)).clone()
+                if label == 1:
+                    label = torch.tensor([0,1], dtype=torch.float32)
+                else:
+                    label = torch.tensor([1,0], dtype=torch.float32)
                 self.all_data.append((input, label))
             print('dataset読み込み終了')
           
@@ -193,8 +195,9 @@ class LoadDataset(Dataset):
             with h5py.File(self.file_lst[index], "r") as f:
                 label = f['label'][()]
                 input = f['events'][()]
+            
             input = torch.from_numpy(input.astype(np.float32)).clone()
-            label = torch.from_numpy(label.astype(np.float32)).clone()
+            label = torch.tensor(label, dtype=torch.float32)
         else:
             input, label = self.all_data[index]
         return input, label

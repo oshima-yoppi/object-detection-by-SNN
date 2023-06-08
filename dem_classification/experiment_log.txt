@@ -955,3 +955,86 @@ results
 	Energy per inference: 1.1325738569212263e-06
 	Spike Rate: 0.28548184037208557
 -------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 10
+results
+	TP: 0.33
+	FP: 0.67
+	FN: 0.5
+	TN: 0.33
+	Energy per inference: 3.759627276167521e-09
+	Spike Rate: 0.0019348246278241277
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 40
+results
+	TP: 0.67
+	TN: 1.0
+	FN: 0.17
+	Energy per inference: 1.8548182989519546e-09
+	Spike Rate: 0.0009545488865114748
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 10
+results
+	TP: 32.67
+	FP: 4.17
+	TN: 36.17
+	FN: 27.0
+	Energy per inference: 1.635407720357307e-08
+	Spike Rate: 0.008416332304477692
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 40
+results
+	TP: 55.5
+	FP: 17.83
+	TN: 22.5
+	FN: 4.17
+	Energy per inference: 1.975546837229558e-08
+	Spike Rate: 0.010166795924305916
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 80
+results
+	TP: 49.17
+	TN: 37.17
+	FN: 10.5
+	FP: 3.17
+	Energy per inference: 3.859897290681147e-08
+	Spike Rate: 0.019864266738295555
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 10
+results
+	TP: 46.67
+	TN: 30.67
+	FP: 9.67
+	FN: 13.0
+	Energy per inference: 2.434841483989203e-08
+	Spike Rate: 0.012530473060905933
+-------------

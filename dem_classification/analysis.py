@@ -27,15 +27,15 @@ from module.const import *
 
 import matplotlib.pyplot as plt
 from IPython.display import HTML
-
 from collections import defaultdict
 
+
 def main(classification=False):
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
+    # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
 
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE_TEST, collate_fn=custom_data.custom_collate, shuffle=True)
+    # train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE_TEST, collate_fn=custom_data.custom_collate, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE_TEST, collate_fn=custom_data.custom_collate, shuffle=False,)
 
 
@@ -43,86 +43,72 @@ def main(classification=False):
     net = NET
     net.load_state_dict(torch.load(MODEL_PATH))
     # corract_rate  = 0.5
-    events, _ = train_dataset[0]
-    num_steps = events.shape[0]
+   
 
     # ious = []
     
-    results = {}
-    results['TP'] = []
-    results['TN'] = []
-    results['FP'] = []
-    results['FN'] = []
-    results['iou'] = []
+    results = defaultdict(int)
+    # results['iou'] = []
 
-    def analysis_segmentation(pred, label):
-        # print(pred.shape)
-        # print(label.shape)
-        # exit()
-        pred = pred.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
-        label = label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
-        # print(pred.shape)
-        # print(label.shape)
-        # exit()
-        all_pixel = INPUT_HEIGHT * INPUT_WIDTH
-        TP = np.sum(np.where((pred>=CORRECT_RATE) & (label==1), 1, 0))/all_pixel
-        TN = np.sum(np.where((pred<CORRECT_RATE) & (label==0), 1, 0))/all_pixel
-        FP = np.sum(np.where((pred>=CORRECT_RATE) & (label==0), 1, 0))/all_pixel
-        FN = np.sum(np.where((pred<CORRECT_RATE) & (label==1), 1, 0))/all_pixel
-        iou = compute_loss.culc_iou(pred, label, CORRECT_RATE)
-        return TP, TN, FP, FN, iou
+    # def analysis_segmentation(pred, label):
+    #     # print(pred.shape)
+    #     # print(label.shape)
+    #     # exit()
+    #     pred = pred.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
+    #     label = label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
+    #     # print(pred.shape)
+    #     # print(label.shape)
+    #     # exit()
+    #     all_pixel = INPUT_HEIGHT * INPUT_WIDTH
+    #     TP = np.sum(np.where((pred>=CORRECT_RATE) & (label==1), 1, 0))/all_pixel
+    #     TN = np.sum(np.where((pred<CORRECT_RATE) & (label==0), 1, 0))/all_pixel
+    #     FP = np.sum(np.where((pred>=CORRECT_RATE) & (label==0), 1, 0))/all_pixel
+    #     FN = np.sum(np.where((pred<CORRECT_RATE) & (label==1), 1, 0))/all_pixel
+    #     # iou = compute_loss.culc_iou(pred, label, CORRECT_RATE)
+    #     return TP, TN, FP, FN
 
 
-    def save_img(number, events, pred_pro, label, results, pdf_output):
+    def save_img(number, events, pred_pro, label, bool_pred, pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
-        number_str = str(number).zfill(5)
-        tp = results['TP'][-1]
-        tn = results['TN'][-1]
-        fp = results['FP'][-1]
-        fn = results['FN'][-1]
-        iou = results['iou'][-1]
+        # number_str = str(number).zfill(5)
+        
 
-        num_steps = len(pred_pro)
-        nrows = 2
-        ncols = 5
+    
         fig = plt.figure()
-        # ax1 = fig.add_subplot(231)
-        ax2 = fig.add_subplot(232)
-        ax3 = fig.add_subplot(233)
-        ax4 = fig.add_subplot(234)
-        ax5 = fig.add_subplot(235)
-        ax6 = fig.add_subplot(236)
+        ax1 = fig.add_subplot(121)
+        ax2 = fig.add_subplot(122)
 
 
         # dem_filename = f'dem_{str(number).npy}'
         # dem_path = os.path.join(DEM_NP_PATH, dem_filename)
         # dem = np.load(dem_path)
         # ax1.imshow(dem)
-
-        video_filename = f'{number_str}.avi'
+        # print(number)
+        video_file_number = number // 4
+        video_file_number = str(video_file_number).zfill(5)
+        video_filename = f'{video_file_number}.avi'
         video_path = os.path.join(VIDEO_PATH, video_filename)
         first_frame = view.get_first_frame(video_path) 
-        ax2.set_title('Camera_view')
-        ax2.imshow(first_frame)
+        # print(first_frame.shape)
+        video_height, video_width, _ = first_frame.shape
+        if number % 4 == 0:
+            first_frame = first_frame[0:video_height//2, :video_width//2]
+        elif number % 4 == 1:
+            first_frame = first_frame[0:video_height//2, video_width//2:]
+        elif number % 4 == 2:
+            first_frame = first_frame[video_height//2:, :video_width//2]
+        elif number % 4 == 3:
+            first_frame = first_frame[video_height//2:, video_width//2:]
+        
+        ax1.set_title('Camera_view')
+        ax1.imshow(first_frame)
 
         first_events = view.get_first_events(events) 
-        ax3.set_title('EVS view')
-        ax3.imshow(first_events)
+        ax2.set_title('EVS view')
+        ax2.imshow(first_events)
 
-        label_ =label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu')
-        ax4.imshow(label_)
-        ax4.set_title('label')
-
-        pred_pro_ = pred_pro[:, 1, :, :]
-        pred_pro_ = pred_pro_.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
-        ax5.imshow(pred_pro_)
-        ax5.set_title('Estimated Probability')
-
-        ax6.imshow(np.where(pred_pro_>=CORRECT_RATE, 1, 0))
-        ax6.set_title('Safe or Dangerous')
-
-        fig.suptitle(f"No.{number} IoU:{round(iou, 3)}  ModelName:{MODEL_NAME}")
+        fig.suptitle(f"No.{number} __ {bool_pred}")
         plt.tight_layout()
         # plt.show()
         # exit()
@@ -131,8 +117,12 @@ def main(classification=False):
         if pdf_output:
             img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
             fig.savefig(img_path)
+        # plt.show()
         plt.close()
-    hist = defaultdict(list)
+        
+        return
+    
+
     if os.path.exists(RESULT_PATH):
             shutil.rmtree(RESULT_PATH)
     os.makedirs(RESULT_PATH)
@@ -146,23 +136,37 @@ def main(classification=False):
             # print(events.shape)# TBCHW
             # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             pred_pro = net(events, FINISH_STEP)
-            tp, tn, fp, fn, iou = analysis_segmentation(pred_pro, label)
-            # iou = compute_loss.culc_iou(pred_pro, label, CORRECT_RATE)
-            results['TP'].append(tp)
-            results['TN'].append(tn)
-            results['FP'].append(fp)
-            results['FN'].append(fn)
-            results['iou'].append(iou)
-            # pred_pro = compute_loss.show_pred(pred_pro, correct_rate)
+            pred_class = torch.argmax(pred_pro, dim=1)
+            label_class = torch.argmax(label, dim=1)
+            # print(label_class, i)
+            if pred_class == 1:
+                if label_class == 1:
+                    bool_pred = 'TP'
+                else:
+                    bool_pred = 'FP'
+            else:
+                if label_class == 1:
+                    bool_pred = 'FN'
+                else:
+                    bool_pred = 'TN'
+            results[bool_pred] += 1
             spikes_lst.append(net.spike_count)  
         
-            save_img(i, events, pred_pro, label,  results, pdf_output=False)
+            save_img(i, events, pred_pro, label, bool_pred, pdf_output=False)
+
+            # if i == 10:
+            #     break
+
             # break
 
     # iouの平均を求める
-    iou_mean = sum(results['iou'])/len(results['iou'])
-    results['IoU'] = iou_mean
-    print(MODEL_NAME, iou_mean)
+
+    all_num_data = len(test_loader.dataset)
+    for key in results.keys():
+        results[key] = results[key]/all_num_data * 100
+        results[key] = round(results[key], 2)
+
+    print(MODEL_NAME, results)
 
     # スパイク数の平均を求める
     n_spikes = sum(spikes_lst)/len(spikes_lst)
@@ -197,3 +201,5 @@ def main(classification=False):
 
 
 
+if __name__ == '__main__':
+    main()

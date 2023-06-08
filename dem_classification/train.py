@@ -55,9 +55,11 @@ def main():
     events, _ = train_dataset[0]
     num_steps = events.shape[0]
     optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
+    loss_func = nn.BCELoss()
 
 
     num_epochs = 50
+    # num_epochs = 1
     num_iters = 50
     # pixel = 64
     correct_rate = 0.5
@@ -77,7 +79,7 @@ def main():
                 for i, (data, label) in enumerate(iter(train_loader)):
                     data = data.to(DEVICE)
                     # label = torch.tensor(label, dtype=torch.int64)
-                    label = label.type(torch.int64)
+                    
                     label = label.to(DEVICE)
                     batch = len(data[0])
                     data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
@@ -85,8 +87,10 @@ def main():
                     net.train()
                     pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
                     # print(pred_pro.shape)
+                    # print(pred_pro.shape)
                     # loss_val = criterion(pred_pro, label)
-                    loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
+                    loss_val = loss_func(pred_pro, label)
+                    # loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
                     # loss_val = 1 - acc
 
                     # Gradient calculation + weight update
@@ -96,7 +100,11 @@ def main():
 
                     # Store loss history for future plotting
                     hist['loss'].append(loss_val.item())
-                    acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
+                    # acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
+
+                    pred_class = pred_pro.argmax(dim=1)
+                    label_class = label.argmax(dim=1)
+                    acc = (pred_class == label_class).sum().item() / batch
 
                     # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
@@ -118,10 +126,14 @@ def main():
                         for i, (data, label) in enumerate(iter(test_loader)):
                             data = data.to(DEVICE)
                             label = label.to(DEVICE)
-                            label = label.type(torch.int64)
                             batch = len(data[0])
                             data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                             pred_pro = net(data, time_step)
+
+                            pred_class = pred_pro.argmax(dim=1)
+                            label_class = label.argmax(dim=1)
+                            acc = (pred_class == label_class).sum().item() / batch
+                            
                             # loss_val = criterion(pred_pro, label)
                             acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
                             hist['test'].append(acc)
