@@ -113,7 +113,8 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
             min_detection_boulder_size = 0.15 # 見つけたい障害物の最小の大きさ[m]
             min_pix_of_boulder = min_detection_boulder_size / METER_PER_GRID #[pix]
-            max_pix_of_boulder = 40 # [pix]
+            max_detection_boulder_size = 0.5 # 見つけたい障害物の最大の大きさ[m]
+            max_pix_of_boulder = max_detection_boulder_size / METER_PER_GRID #[pix]
 
             x_axis = random.uniform(min_pix_of_boulder, max_pix_of_boulder) 
             # x_axis = random.uniform(min_pix_of_boulder, min_pix_of_boulder) 
@@ -155,17 +156,42 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         return self.label, self.converted_label
     def save_dem(self, path):
         np.save(path, self.dem)
-    def save_label(self, path):
-        np.save(path, self.converted_label)
+    
+    def split_4img(self, img):
+        img_h, img_w = img.shape
+        img1 = img[:img_h//2, :img_w//2]
+        img2 = img[:img_h//2, img_w//2:]
+        img3 = img[img_h//2:, :img_w//2]
+        img4 = img[img_h//2:, img_w//2:]
+        return img1, img2, img3, img4
 
+    def save_label(self, path):
+        # print(self.converted_label.shape)
+        self.splited_label = np.zeros((2,2))
+        img1, img2, img3, img4 = self.split_4img(self.converted_label)
+        if np.sum(img1) > 0:
+            self.splited_label[0,0] = 1
+        if np.sum(img2) > 0:
+            self.splited_label[0,1] = 1
+        if np.sum(img3) > 0:
+            self.splited_label[1,0] = 1
+        if np.sum(img4) > 0:
+            self.splited_label[1,1] = 1
+
+        self.splited_label= np.array(self.splited_label)
+        np.save(path, self.splited_label)
+        # plt.figure()
+        # plt.imshow(self.converted_label)
+        # plt.title(f"{self.splited_label}")
+        # plt.show()
 
 
 
 
 n = 8
 shape = 2**n + 1 # The array must be square with edge length 2**n + 1
-max_crater = 3
-max_boulder = 6
+max_crater = 0
+max_boulder = 3
 # harst=0.2 sigma 3 is best..?
 harst = 0.18
 sigma0 = 3 # 3 now
@@ -181,7 +207,7 @@ os.mkdir(save_label_dir)
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
-num_data = 3000
+num_data = 3000//4
 for i in tqdm(range(num_data)):
     dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
     dem = dem_generator.generate_dem()

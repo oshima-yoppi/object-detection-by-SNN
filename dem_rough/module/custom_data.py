@@ -67,10 +67,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
     #     Number2one(),
     #     transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
     # )
-    converter_label = transforms.Compose(
-        [transforms_.ToTensor(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
-    )
+    
     try:
         os.makedirs(new_dir)
         h5py_allfile = glob.glob(f'{events_raw_dir}/*.h5')
@@ -78,37 +75,74 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         # print(h5py_allfile)
 
         # # 0梅するための対策
-        true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+        true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT*2, INPUT_WIDTH*2)
         
+        if EVENT_COUNT:
 
-        converter_event = transforms.Compose(
-        [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
-        num2torch(),
-        Number2one(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
-        Fill0_Tensor(true_shape),]
-        )
-        converter_label = transforms.Compose(
-        [transforms_.ToTensor(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST)]
-        )
+            converter_event = transforms.Compose(
+            [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+            num2torch(),
+            transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+            Fill0_Tensor(true_shape),]
+            )
+        else:
+            converter_event = transforms.Compose(
+            [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+            num2torch(),
+            Number2one(), 
+            transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+            Fill0_Tensor(true_shape),]
+            )
+            
+
         for i, file in enumerate(tqdm(h5py_allfile)):
             with h5py.File(file, "r") as f:
                 label = f['label'][()]
                 raw_events = f['events'][()]
             raw_events = get_until_finishtime(raw_events, finish_time=finish_time)
             raw_event_len = raw_events.shape[0]
+            spilit_num = 4
+            # print(raw_events.shape)
+            # print(raw_events[0])
+            
+            
             processed_events = np.zeros(raw_event_len, dtype=dtype)
             for idx, (key , _) in enumerate(dtype):
                 processed_events[key] = raw_events[:,idx]
-            acc_events = converter_event(processed_events)
+            # print(processed_events.shape)
+            # print(processed_events)
+            if processed_events.shape[0] == 0:
+                acc_events = np.zeros(true_shape)
+            else:
+                acc_events = converter_event(processed_events)
             # print(acc_events.shape)
-            label = converter_label(label)
-            file_name = f'{str(i).zfill(5)}.h5'
-            new_file_path = os.path.join(new_dir, file_name)
-            with h5py.File(new_file_path, "w") as f :
-                f.create_dataset('label', data=label)
-                f.create_dataset('events', data=acc_events)
+            for i in range(spilit_num):
+                if i == 0:
+                    splited_events = acc_events[:, :, :IMG_HEIGHT//2, :IMG_WIDTH//2]
+                    splited_label = label[0,0]
+                elif i == 1:
+                    splited_events = acc_events[:, :, :IMG_HEIGHT//2, IMG_WIDTH//2:]
+                    splited_label = label[0,1]
+                elif i == 2:
+                    splited_events = acc_events[:, :, IMG_HEIGHT//2:, :IMG_WIDTH//2]
+                    splited_label = label[1,0]
+                elif i == 3:
+                    splited_events = acc_events[:, :, IMG_HEIGHT//2:, IMG_WIDTH//2:]
+                    splited_label = label[1,1]
+                
+                num_of_file_in_dir = len(os.listdir(new_dir))
+                file_name = f'{str(num_of_file_in_dir).zfill(5)}.h5'
+                new_file_path = os.path.join(new_dir, file_name)
+                with h5py.File(new_file_path, "w") as f :
+                    f.create_dataset('label', data=splited_label)
+                    f.create_dataset('events', data=splited_events)
+            # print(acc_events.shape)
+            # label = converter_label(label)
+            # file_name = f'{str(i).zfill(5)}.h5'
+            # new_file_path = os.path.join(new_dir, file_name)
+            # with h5py.File(new_file_path, "w") as f :
+            #     f.create_dataset('label', data=label)
+            #     f.create_dataset('events', data=acc_events)
     except Exception as e:
         import shutil
         shutil.rmtree(new_dir)
@@ -154,8 +188,12 @@ class LoadDataset(Dataset):
                 with h5py.File(path, "r") as f:
                     label = f['label'][()]
                     input = f['events'][()]
+                # print(input.shape, label.shape, label)
                 input = torch.from_numpy(input.astype(np.float32)).clone()
-                label = torch.from_numpy(label.astype(np.float32)).clone()
+                if label == 1:
+                    label = torch.tensor([0,1], dtype=torch.float32)
+                else:
+                    label = torch.tensor([1,0], dtype=torch.float32)
                 self.all_data.append((input, label))
             print('dataset読み込み終了')
           
@@ -169,8 +207,9 @@ class LoadDataset(Dataset):
             with h5py.File(self.file_lst[index], "r") as f:
                 label = f['label'][()]
                 input = f['events'][()]
+            
             input = torch.from_numpy(input.astype(np.float32)).clone()
-            label = torch.from_numpy(label.astype(np.float32)).clone()
+            label = torch.tensor(label, dtype=torch.float32)
         else:
             input, label = self.all_data[index]
         return input, label

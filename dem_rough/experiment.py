@@ -10,6 +10,7 @@ def update_constant(args):
         "PARM_LEARN": args.PARM_LEARN,
         "FINISH_STEP": args.FINISH_STEP,
         "ACCUMULATE_EVENT_MILITIME": args.ACCUMULATE_EVENT_MILITIME,
+        "EVENT_COUNT": args.EVENT_COUNT,
         
     }
     with open('module/const_base.json', 'w') as file:
@@ -36,7 +37,13 @@ def check_csv_file(filne_name):
 def write_csv(constants, results, csv_file):
     # カラム名と値のリストを作成
     columns = list(constants.keys()) + list(results.keys())
-    values = list(constants.values()) + list(results.values())
+    values = []
+    for key in columns:
+        if key in constants:
+            values.append(constants[key])
+        else:
+            values.append(results[key])
+    # values = list(constants.values()) + list(results.values())
 
     # # CSVファイルにデータを保存
     # with open(csv_file, 'a', newline='') as file:
@@ -61,6 +68,7 @@ parser.add_argument('--PARM_LEARN', action='store_true')
 parser.add_argument('--FINISH_STEP', type=int)
 parser.add_argument('--ACCUMULATE_EVENT_MILITIME', type=int)
 parser.add_argument('--CSV_PATH', type=str)
+parser.add_argument('--EVENT_COUNT', action='store_true')
 args = parser.parse_args()
 print(args.soft_reset)
 CSV_PATH = args.CSV_PATH
