@@ -167,7 +167,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
     def save_label(self, path):
         
-        np.save(path, self.converted_label)
+        # np.save(path, self.converted_label)
         plt.figure()
         plt.imshow(self.converted_label)
         plt.title(f"{self.splited_label}")
@@ -189,20 +189,21 @@ theta = 20
 
 save_label_dir = LABEL_PATH
 save_dem_dir = DEM_NP_PATH
-if os.path.exists(save_label_dir):
-    shutil.rmtree(save_label_dir)
-os.mkdir(save_label_dir)
-if os.path.exists(save_dem_dir):
-    shutil.rmtree(save_dem_dir)
-os.mkdir(save_dem_dir)
-num_data = 3000//4
+# if os.path.exists(save_label_dir):
+#     shutil.rmtree(save_label_dir)
+# os.mkdir(save_label_dir)
+# if os.path.exists(save_dem_dir):
+#     shutil.rmtree(save_dem_dir)
+# os.mkdir(save_dem_dir)
+num_data = 3000
 for i in tqdm(range(num_data)):
     dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
-    dem = dem_generator.generate_dem()
+    
     number = str(i).zfill(5)
     dem_filename = f'{number}.npy'
     save_dem_path = os.path.join(save_dem_dir, dem_filename)
-    dem_generator.save_dem(save_dem_path)
+    dem = np.load(save_dem_path)
+    dem_generator.dem = dem
 
 
     label, converted_label = dem_generator.generate_hazard()
