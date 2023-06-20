@@ -77,15 +77,23 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         # # 0梅するための対策
         true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT*2, INPUT_WIDTH*2)
         
+        if EVENT_COUNT:
 
-        converter_event = transforms.Compose(
-        [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
-        num2torch(),
-        Number2one(),
-        transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
-        Fill0_Tensor(true_shape),]
-        )
-        
+            converter_event = transforms.Compose(
+            [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+            num2torch(),
+            transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+            Fill0_Tensor(true_shape),]
+            )
+        else:
+            converter_event = transforms.Compose(
+            [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+            num2torch(),
+            Number2one(), 
+            transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+            Fill0_Tensor(true_shape),]
+            )
+            
 
         for i, file in enumerate(tqdm(h5py_allfile)):
             with h5py.File(file, "r") as f:
@@ -102,7 +110,11 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
             for idx, (key , _) in enumerate(dtype):
                 processed_events[key] = raw_events[:,idx]
             # print(processed_events.shape)
-            acc_events = converter_event(processed_events)
+            # print(processed_events)
+            if processed_events.shape[0] == 0:
+                acc_events = np.zeros(true_shape)
+            else:
+                acc_events = converter_event(processed_events)
             # print(acc_events.shape)
             for i in range(spilit_num):
                 if i == 0:

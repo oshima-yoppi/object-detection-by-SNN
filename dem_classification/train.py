@@ -27,7 +27,7 @@ from IPython.display import HTML
 from collections import defaultdict
 
 import yaml
-
+import time
 # def print_batch_accuracy(data, label, train=False):
 #     output, _ = net(data.view(BATCH_SIZE, -1))
 #     _, idx = output.sum(dim=0).max(1)
@@ -55,11 +55,16 @@ def main():
     events, _ = train_dataset[0]
     num_steps = events.shape[0]
     optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
-    loss_func = nn.BCELoss()
+
+    class_ration = torch.tensor([977, 1427], dtype=torch.float32).to(DEVICE)
+    weights = 1. / class_ration
+    weights = weights / weights.sum()
+    loss_func = nn.BCELoss(weight=weights)
+    # loss_func = nn.BCELoss()
 
 
     num_epochs = 50
-    # num_epochs = 1
+    # num_epochs = 2
     num_iters = 50
     # pixel = 64
     correct_rate = 0.5
@@ -73,6 +78,8 @@ def main():
     print(time_step_lst)
     # training loop
     # return
+    model_save_path = MODEL_PATH
+    max_acc = -1
     try:
         for time_step in time_step_lst:
             for epoch in tqdm(range(num_epochs)):
@@ -119,10 +126,11 @@ def main():
                     # plt.figure()
                     # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
                     # plt.show()
-                tqdm.write(f'{epoch}:{acc=}')
-                if i % 10 == 0:
+                
+                if epoch % 1 == 0:
+                    start = time.time()
                     with torch.no_grad():
-                        net.network.eval()
+                        net.eval()
                         for i, (data, label) in enumerate(iter(test_loader)):
                             data = data.to(DEVICE)
                             label = label.to(DEVICE)
@@ -135,8 +143,13 @@ def main():
                             acc = (pred_class == label_class).sum().item() / batch
                             
                             # loss_val = criterion(pred_pro, label)
-                            acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
+                            # acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
                             hist['test'].append(acc)
+                        tqdm.write(f'{epoch}:{acc=}')
+                        if max_acc < acc:
+                            max_acc = acc
+                            torch.save(net.state_dict(), model_save_path)
+                    # print(f'{time.time()-start}sec')
     except Exception as e:
         import traceback
         print('--------error--------')
@@ -145,16 +158,17 @@ def main():
         pass
         # print(e)
     ## save model
-    enddir = MODEL_PATH
-    # if os.path.exists(enddir) == False:
-    #     os.makedirs(enddir)
-    torch.save(net.state_dict(), enddir)
-    print("success model saving")
+    # enddir = MODEL_PATH
+    # # if os.path.exists(enddir) == False:
+    # #     os.makedirs(enddir)
+    
+    # torch.save(net.state_dict(), enddir)
+    # print("success model saving")
 
 
-    print(MODEL_NAME)
-    print(f'{acc=}')
-    # # Plot Loss
+    # print(MODEL_NAME)
+    # print(f'{acc=}')
+    # # # Plot Loss
     # # print(hist)
     # fig = plt.figure(facecolor="w")
     # ax1 = fig.add_subplot(1, 3, 1)
@@ -165,11 +179,12 @@ def main():
     # ax1.set_xlabel("Iteration")
     # ax1.set_ylabel("Loss (Dice)")
     # ax2.plot(hist['train'], label="train")
-    # ax2.set_title("Train  IoU")
+    # ax2.set_title("Train  accuracy")
     # ax2.set_xlabel("Iteration")
-    # ax2.set_ylabel("Accuracy(IoU)")
+    # ax2.set_yla
+    # bel("Accuracy(IoU)")
     # ax3.plot(hist['test'], label='test')
-    # ax3.set_title("Test IoU")
+    # ax3.set_title("Test acc")
     # ax3.set_xlabel("epoch")
     # ax3.set_ylabel("Accuracy(IoU)")
     # fig.suptitle(f"ModelName:{MODEL_NAME}")

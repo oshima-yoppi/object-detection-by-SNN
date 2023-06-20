@@ -68,7 +68,7 @@ def main(classification=False):
     #     return TP, TN, FP, FN
 
 
-    def save_img(number, events, pred_pro, label, bool_pred, pdf_output):
+    def save_img(number, events, pred_pro, label_class, bool_pred,pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
         # number_str = str(number).zfill(5)
@@ -101,6 +101,9 @@ def main(classification=False):
         elif number % 4 == 3:
             first_frame = first_frame[video_height//2:, video_width//2:]
         
+        danger_pro = pred_pro[0, 1].item()
+        danger_pro = round(danger_pro*100, 2)
+
         ax1.set_title('Camera_view')
         ax1.imshow(first_frame)
 
@@ -108,12 +111,17 @@ def main(classification=False):
         ax2.set_title('EVS view')
         ax2.imshow(first_events)
 
-        fig.suptitle(f"No.{number} __ {bool_pred}")
+        fig.suptitle(f"No.{number} __ {bool_pred}_ label_class:{label_class.item()}  danger:{danger_pro}%")
+        
         plt.tight_layout()
         # plt.show()
         # exit()
         img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.png')
         fig.savefig(img_path)
+        if bool_pred == 'FP':
+            shutil.copy(img_path, result_FP_path)
+        elif bool_pred == 'FN':
+            shutil.copy(img_path, result_FN_path)
         if pdf_output:
             img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
             fig.savefig(img_path)
@@ -126,6 +134,11 @@ def main(classification=False):
     if os.path.exists(RESULT_PATH):
             shutil.rmtree(RESULT_PATH)
     os.makedirs(RESULT_PATH)
+    result_FN_path = os.path.join(RESULT_PATH, 'FN_images')
+    result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
+    os.makedirs(result_FN_path)
+    os.makedirs(result_FP_path)
+
     spikes_lst = []
     with torch.no_grad():
         net.eval()
@@ -152,19 +165,26 @@ def main(classification=False):
             results[bool_pred] += 1
             spikes_lst.append(net.spike_count)  
         
-            save_img(i, events, pred_pro, label, bool_pred, pdf_output=False)
+            save_img(i, events, pred_pro, label_class, bool_pred,  pdf_output=False)
 
             # if i == 10:
             #     break
 
             # break
+    # precision recall を求める
+    eps  = 1e-7
+    results['Precision'] = results['TP']/(results['TP']+results['FP'] + eps) * 100
+    results['Recall'] = results['TP']/(results['TP']+results['FN'] + eps) * 100
+    results['Accuracy'] = (results['TP']+results['TN'])/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
+    results['Precision'] = round(results['Precision'], 2)
+    results['Recall'] = round(results['Recall'], 2)
+    results['Accuracy'] = round(results['Accuracy'], 2)
 
-    # iouの平均を求める
-
+    # print(results)
     all_num_data = len(test_loader.dataset)
-    for key in results.keys():
-        results[key] = results[key]/all_num_data * 100
-        results[key] = round(results[key], 2)
+    # for key in ['TP', 'TN', 'FP', 'FN']:
+    #     results[key] = results[key]/all_num_data * 100
+    #     results[key] = round(results[key], 2)
 
     print(MODEL_NAME, results)
 
@@ -195,6 +215,7 @@ def main(classification=False):
 
     spike_rate = n_spikes/n_nerons
     results['Spike Rate'] = spike_rate.item()
+    # results['Spike Rate'] = round(results['Spike Rate'], 2)
     if classification == False:
         return results
     
