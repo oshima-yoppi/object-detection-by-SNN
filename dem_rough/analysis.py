@@ -68,7 +68,7 @@ def main(classification=False):
     #     return TP, TN, FP, FN
 
 
-    def save_img(number, events, pred_pro, label_class, bool_pred,pdf_output):
+    def save_img(number, events, pred_pro, label, pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
         # number_str = str(number).zfill(5)
@@ -76,8 +76,13 @@ def main(classification=False):
 
     
         fig = plt.figure()
-        ax1 = fig.add_subplot(121)
-        ax2 = fig.add_subplot(122)
+        ax1 = fig.add_subplot(231)
+        ax2 = fig.add_subplot(232)
+        ax3 = fig.add_subplot(233)
+        ax4 = fig.add_subplot(234)
+        ax5 = fig.add_subplot(235)
+        ax6 = fig.add_subplot(236)
+
 
 
         # dem_filename = f'dem_{str(number).npy}'
@@ -85,31 +90,24 @@ def main(classification=False):
         # dem = np.load(dem_path)
         # ax1.imshow(dem)
         # print(number)
-        video_file_number = number // 4
-        video_file_number = str(video_file_number).zfill(5)
-        video_filename = f'{video_file_number}.avi'
+        # video_file_number = number // 4
+        video_filename = f'{number}.avi'
         video_path = os.path.join(VIDEO_PATH, video_filename)
         first_frame = view.get_first_frame(video_path) 
         # print(first_frame.shape)
-        video_height, video_width, _ = first_frame.shape
-        if number % 4 == 0:
-            first_frame = first_frame[0:video_height//2, :video_width//2]
-        elif number % 4 == 1:
-            first_frame = first_frame[0:video_height//2, video_width//2:]
-        elif number % 4 == 2:
-            first_frame = first_frame[video_height//2:, :video_width//2]
-        elif number % 4 == 3:
-            first_frame = first_frame[video_height//2:, video_width//2:]
+        
         
         danger_pro = pred_pro[0, 1].item()
         danger_pro = round(danger_pro*100, 2)
 
-        ax1.set_title('Camera_view')
-        ax1.imshow(first_frame)
+        ax2.set_title('Camera_view')
+        ax2.imshow(first_frame)
 
         first_events = view.get_first_events(events) 
-        ax2.set_title('EVS view')
-        ax2.imshow(first_events)
+        ax3.set_title('EVS view')
+        ax3.imshow(first_events)
+
+        lbell_ = label[0]
 
         fig.suptitle(f"No.{number} __ {bool_pred}_ label_class:{label_class.item()}  danger:{danger_pro}%")
         
@@ -165,7 +163,7 @@ def main(classification=False):
             results[bool_pred] += 1
             spikes_lst.append(net.spike_count)  
         
-            save_img(i, events, pred_pro, label_class, bool_pred,  pdf_output=False)
+            save_img(i, events, pred_pro, label,  pdf_output=False)
 
             # if i == 10:
             #     break
