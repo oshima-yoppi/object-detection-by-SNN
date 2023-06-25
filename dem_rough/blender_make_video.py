@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     
     
-    DATA_NUM = 3000 // 4
+    DATA_NUM = 3000 
     object_name = "dem"
     for i in range(DATA_NUM):
         number = str(i).zfill(5)

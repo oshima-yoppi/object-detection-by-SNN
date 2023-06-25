@@ -28,7 +28,7 @@ if __name__ == '__main__':
     os.makedirs(RAW_EVENT_PATH)
 
 
-    data_num = 3000 // 4
+    data_num = 3000 
     label_path = LABEL_PATH
 
     for file_num in tqdm(range( data_num)):

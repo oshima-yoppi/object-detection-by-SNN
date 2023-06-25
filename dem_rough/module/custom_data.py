@@ -49,6 +49,36 @@ class Fill0_Tensor():
         arr_reshape[:shape_time] = arr_reshape[:shape_time] + arr
         
         return arr_reshape
+    
+class ToRoughSegmentation():
+    def __init__(self, rough_pix) :
+        self.rough_pix = rough_pix
+        return
+    def __call__(self, arr):
+        # print(arr.shape, INPUT_HEIGHT, INPUT_WIDTH)
+        rough_label = torch.zeros((1, self.rough_pix, self.rough_pix))
+        for i in range(self.rough_pix):
+            for j in range(self.rough_pix):
+                splited_label = arr[0, i*INPUT_HEIGHT//self.rough_pix:(i+1)*INPUT_HEIGHT//self.rough_pix, j*INPUT_WIDTH//self.rough_pix:(j+1)*INPUT_WIDTH//self.rough_pix]
+                contein_one = torch.any(splited_label==1)
+                if contein_one:
+                    rough_label[0,i,j] = 1
+                
+
+        # rough_label_ = rough_label.to('cpu').detach().numpy().copy()
+        # plt.figure()
+        # plt.subplot(1, 2, 1)
+        # plt.imshow(arr_[0])
+        # plt.subplot(1, 2, 2)
+        # plt.imshow(rough_label_[0])
+        # plt.show()
+
+
+        return rough_label
+
+
+
+        
 def get_until_finishtime(raw_events, finish_time):
     for i in range(len(raw_events)):
         # print(raw_events[i], finish_time)
@@ -75,14 +105,14 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         # print(h5py_allfile)
 
         # # 0梅するための対策
-        true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT*2, INPUT_WIDTH*2)
+        true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
         
         if EVENT_COUNT:
 
             converter_event = transforms.Compose(
             [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
             num2torch(),
-            transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+            transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
             Fill0_Tensor(true_shape),]
             )
         else:
@@ -90,10 +120,17 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
             [transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
             num2torch(),
             Number2one(), 
-            transforms_.Resize(size=(IMG_HEIGHT, IMG_WIDTH),interpolation=T.InterpolationMode.NEAREST),
-            Fill0_Tensor(true_shape),]
+            transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+            Fill0_Tensor(true_shape),
+            ]
             )
-            
+           
+        converter_label = transforms.Compose(
+        [transforms_.ToTensor(),
+        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+        ToRoughSegmentation(ROUGH_PIXEL),
+        ]
+        )
 
         for i, file in enumerate(tqdm(h5py_allfile)):
             with h5py.File(file, "r") as f:
@@ -101,7 +138,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
                 raw_events = f['events'][()]
             raw_events = get_until_finishtime(raw_events, finish_time=finish_time)
             raw_event_len = raw_events.shape[0]
-            spilit_num = 4
+            # spilit_num = 4
             # print(raw_events.shape)
             # print(raw_events[0])
             
@@ -116,33 +153,15 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
             else:
                 acc_events = converter_event(processed_events)
             # print(acc_events.shape)
-            for i in range(spilit_num):
-                if i == 0:
-                    splited_events = acc_events[:, :, :IMG_HEIGHT//2, :IMG_WIDTH//2]
-                    splited_label = label[0,0]
-                elif i == 1:
-                    splited_events = acc_events[:, :, :IMG_HEIGHT//2, IMG_WIDTH//2:]
-                    splited_label = label[0,1]
-                elif i == 2:
-                    splited_events = acc_events[:, :, IMG_HEIGHT//2:, :IMG_WIDTH//2]
-                    splited_label = label[1,0]
-                elif i == 3:
-                    splited_events = acc_events[:, :, IMG_HEIGHT//2:, IMG_WIDTH//2:]
-                    splited_label = label[1,1]
-                
-                num_of_file_in_dir = len(os.listdir(new_dir))
-                file_name = f'{str(num_of_file_in_dir).zfill(5)}.h5'
-                new_file_path = os.path.join(new_dir, file_name)
-                with h5py.File(new_file_path, "w") as f :
-                    f.create_dataset('label', data=splited_label)
-                    f.create_dataset('events', data=splited_events)
-            # print(acc_events.shape)
-            # label = converter_label(label)
-            # file_name = f'{str(i).zfill(5)}.h5'
-            # new_file_path = os.path.join(new_dir, file_name)
-            # with h5py.File(new_file_path, "w") as f :
-            #     f.create_dataset('label', data=label)
-            #     f.create_dataset('events', data=acc_events)
+
+
+            label = converter_label(label)           
+            file_name = f'{str(i).zfill(5)}.h5'
+            new_file_path = os.path.join(new_dir, file_name)
+            with h5py.File(new_file_path, "w") as f :
+                f.create_dataset('label', data=label)
+                f.create_dataset('events', data=acc_events)
+          
     except Exception as e:
         import shutil
         shutil.rmtree(new_dir)
@@ -190,10 +209,11 @@ class LoadDataset(Dataset):
                     input = f['events'][()]
                 # print(input.shape, label.shape, label)
                 input = torch.from_numpy(input.astype(np.float32)).clone()
-                if label == 1:
-                    label = torch.tensor([0,1], dtype=torch.float32)
-                else:
-                    label = torch.tensor([1,0], dtype=torch.float32)
+                label = torch.tensor(label, dtype=torch.float32)
+                # if label == 1:
+                #     label = torch.tensor([0,1], dtype=torch.float32)
+                # else:
+                #     label = torch.tensor([1,0], dtype=torch.float32)
                 self.all_data.append((input, label))
             print('dataset読み込み終了')
           

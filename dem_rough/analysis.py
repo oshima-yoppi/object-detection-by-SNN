@@ -47,7 +47,7 @@ def main(classification=False):
 
     # ious = []
     
-    results = defaultdict(int)
+    results = defaultdict(list)
     # results['iou'] = []
 
     # def analysis_segmentation(pred, label):
@@ -91,35 +91,44 @@ def main(classification=False):
         # ax1.imshow(dem)
         # print(number)
         # video_file_number = number // 4
+        number = str(number).zfill(5)
         video_filename = f'{number}.avi'
         video_path = os.path.join(VIDEO_PATH, video_filename)
         first_frame = view.get_first_frame(video_path) 
         # print(first_frame.shape)
         
         
-        danger_pro = pred_pro[0, 1].item()
-        danger_pro = round(danger_pro*100, 2)
+        # danger_pro = pred_pro[0, 1].item()
+        # danger_pro = round(danger_pro*100, 2)
 
         ax2.set_title('Camera_view')
+        # print(first_frame.shape)
         ax2.imshow(first_frame)
 
         first_events = view.get_first_events(events) 
         ax3.set_title('EVS view')
         ax3.imshow(first_events)
 
-        lbell_ = label[0]
+        label = label.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
+        ax4.set_title('label')
+        ax4.imshow(label)
 
-        fig.suptitle(f"No.{number} __ {bool_pred}_ label_class:{label_class.item()}  danger:{danger_pro}%")
-        
+        pred_pro_ = pred_pro[0,1].reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
+        ax5.set_title('pred_pro')
+        ax5.imshow(pred_pro_)
+
+        pred = torch.where(pred_pro[0,1,]>=CORRECT_RATE, 1, 0)
+        pred = pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
+        ax6.set_title('pred')
+        ax6.imshow(pred)
+
+        fig.suptitle(f"No.{number} ModelName:{MODEL_NAME}")
         plt.tight_layout()
         # plt.show()
         # exit()
         img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.png')
         fig.savefig(img_path)
-        if bool_pred == 'FP':
-            shutil.copy(img_path, result_FP_path)
-        elif bool_pred == 'FN':
-            shutil.copy(img_path, result_FN_path)
+       
         if pdf_output:
             img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
             fig.savefig(img_path)
@@ -130,37 +139,29 @@ def main(classification=False):
     
 
     if os.path.exists(RESULT_PATH):
-            shutil.rmtree(RESULT_PATH)
+        shutil.rmtree(RESULT_PATH)
     os.makedirs(RESULT_PATH)
-    result_FN_path = os.path.join(RESULT_PATH, 'FN_images')
-    result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
-    os.makedirs(result_FN_path)
-    os.makedirs(result_FP_path)
+    # result_FN_path = os.path.join(RESULT_PATH, 'FN_images')
+    # result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
+    # os.makedirs(result_FN_path)
+    # os.makedirs(result_FP_path)
 
     spikes_lst = []
+    analyzer = compute_loss.Analyzer()
     with torch.no_grad():
         net.eval()
         for i, (events, label) in enumerate(tqdm(iter(test_loader))):
             events = events.to(DEVICE)
             label = label.to(DEVICE)
-            batch = len(events[0])
+            # batch = len(events[0])
             # print(events.shape)# TBCHW
             # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             pred_pro = net(events, FINISH_STEP)
-            pred_class = torch.argmax(pred_pro, dim=1)
-            label_class = torch.argmax(label, dim=1)
-            # print(label_class, i)
-            if pred_class == 1:
-                if label_class == 1:
-                    bool_pred = 'TP'
-                else:
-                    bool_pred = 'FP'
-            else:
-                if label_class == 1:
-                    bool_pred = 'FN'
-                else:
-                    bool_pred = 'TN'
-            results[bool_pred] += 1
+            iou, prec, recall = analyzer(pred_pro, label)
+            results['IoU'].append(iou)
+            results['Precision'].append(prec)
+            results['Recall'].append(recall)
+            
             spikes_lst.append(net.spike_count)  
         
             save_img(i, events, pred_pro, label,  pdf_output=False)
@@ -171,12 +172,17 @@ def main(classification=False):
             # break
     # precision recall を求める
     eps  = 1e-7
-    results['Precision'] = results['TP']/(results['TP']+results['FP'] + eps) * 100
-    results['Recall'] = results['TP']/(results['TP']+results['FN'] + eps) * 100
-    results['Accuracy'] = (results['TP']+results['TN'])/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
+    # results['Precision'] = results['TP']/(results['TP']+results['FP'] + eps) * 100
+    # results['Recall'] = results['TP']/(results['TP']+results['FN'] + eps) * 100
+    # results['Accuracy'] = (results['TP']+results['TN'])/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
+    results['Precision'] = np.mean(results['Precision']) * 100
+    results['Recall'] = np.mean(results['Recall']) * 100
+    results['IoU'] = np.mean(results['IoU']) * 100
+
     results['Precision'] = round(results['Precision'], 2)
     results['Recall'] = round(results['Recall'], 2)
-    results['Accuracy'] = round(results['Accuracy'], 2)
+    results['IoU'] = round(results['IoU'], 2)
+
 
     # print(results)
     all_num_data = len(test_loader.dataset)

@@ -157,21 +157,21 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
     def save_dem(self, path):
         np.save(path, self.dem)
     
-    def split_4img(self, img):
-        img_h, img_w = img.shape
-        img1 = img[:img_h//2, :img_w//2]
-        img2 = img[:img_h//2, img_w//2:]
-        img3 = img[img_h//2:, :img_w//2]
-        img4 = img[img_h//2:, img_w//2:]
-        return img1, img2, img3, img4
+    # def split_4img(self, img):
+    #     img_h, img_w = img.shape
+    #     img1 = img[:img_h//2, :img_w//2]
+    #     img2 = img[:img_h//2, img_w//2:]
+    #     img3 = img[img_h//2:, :img_w//2]
+    #     img4 = img[img_h//2:, img_w//2:]
+    #     return img1, img2, img3, img4
 
     def save_label(self, path):
         
         np.save(path, self.converted_label)
-        plt.figure()
-        plt.imshow(self.converted_label)
-        plt.title(f"{self.splited_label}")
-        plt.show()
+        # plt.figure()
+        # plt.imshow(self.converted_label)
+        # # plt.title(f"{self.splited_label}")
+        # plt.show()
 
 
 
@@ -195,7 +195,7 @@ os.mkdir(save_label_dir)
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
-num_data = 3000//4
+num_data = 3000
 for i in tqdm(range(num_data)):
     dem_generator = LunarDEMGenerator(shape=shape, max_crater=max_crater, max_boulder=max_boulder, sigma=sigma0, harst=harst, rough=rough, theta=theta)
     dem = dem_generator.generate_dem()
