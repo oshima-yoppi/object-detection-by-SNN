@@ -68,7 +68,7 @@ class Analyzer():
         self.smooth = smooth
         self.binary_rate = binary_rate
     def _get_BinaryMap(self, pred_pro, target):
-        self.pred_binary = torch.where(pred_pro[:,1]>=self.binary_rate, 1, 0)
+        self.pred_binary = torch.where(pred_pro[:,1]>self.binary_rate, 1, 0)
         self.pred_binary = self.pred_binary.reshape(-1)
         self.target = target.reshape(-1)
         return
@@ -77,19 +77,19 @@ class Analyzer():
         union  = torch.logical_or(self.pred_binary, self.target).sum()
         intersection = torch.logical_and(self.pred_binary, self.target).sum()
         eps = 1e-6
-        iou = torch.mean(intersection/(union+eps))
+        iou = torch.mean(intersection+eps/(union+eps))
         return iou.item()
     def get_precsion(self,):
         
         intersection = torch.logical_and(self.pred_binary, self.target).sum()
         eps = 1e-6
-        prec = torch.mean(intersection/(self.pred_binary.sum()+eps))
+        prec = torch.mean(intersection+eps/(self.pred_binary.sum()+eps))
         return prec.item()
     
     def get_recall(self,):
         intersection = torch.logical_and(self.pred_binary, self.target).sum()
         eps = 1e-6
-        recall = torch.mean(intersection/(self.target.sum()+eps))
+        recall = torch.mean((intersection+eps)/(self.target.sum()+eps))
         return recall.item()
 
     def __call__(self, pred_pro, target):
@@ -105,9 +105,9 @@ def culc_iou(pred_pro, target, rate=0.8):
     pred_pro = pred_pro[:, 1, :, :]
     pred_pro = pred_pro.reshape(batch, -1)
     target = target.reshape(batch, -1)
-    self.pred_binary = torch.where(pred_pro>=rate, 1, 0)
-    union  = torch.logical_or(self.pred_binary, target).sum(dim=1)
-    intersection = torch.logical_and(self.pred_binary, target).sum(dim = 1)
+    pred_binary = torch.where(pred_pro>=rate, 1, 0)
+    union  = torch.logical_or(pred_binary, target).sum(dim=1)
+    intersection = torch.logical_and(pred_binary, target).sum(dim = 1)
     eps = 1e-6
     iou = torch.mean(intersection/(union+eps))
     return iou.item()

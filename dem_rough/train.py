@@ -65,7 +65,7 @@ def main():
     # loss_func = nn.BCELoss()
 
 
-    num_epochs = 50
+    num_epochs = 20
     # num_epochs = 2
     num_iters = 50
     # pixel = 64
@@ -172,29 +172,29 @@ def main():
     # print("success model saving")
 
 
-    print(MODEL_NAME)
-    print(f'{acc=}')
-    # # Plot Loss
-    # print(hist)
-    fig = plt.figure(facecolor="w")
-    ax1 = fig.add_subplot(1, 3, 1)
-    ax2 = fig.add_subplot(1, 3, 2)
-    ax3 = fig.add_subplot(1, 3, 3)
-    ax1.plot(hist['loss'], label="train")
-    ax1.set_title("loss")
-    ax1.set_xlabel("Iteration")
-    ax1.set_ylabel("Loss (Dice)")
-    ax2.plot(hist['train'], label="train")
-    ax2.set_title("Train  accuracy")
-    ax2.set_xlabel("Iteration")
-    ax2.set_ylabel("Accuracy(IoU)")
-    ax3.plot(hist['test'], label='test')
-    ax3.set_title("Test acc")
-    ax3.set_xlabel("epoch")
-    ax3.set_ylabel("Accuracy(IoU)")
-    fig.suptitle(f"ModelName:{MODEL_NAME}")
-    fig.tight_layout()
-    plt.show()
+    # print(MODEL_NAME)
+    # print(f'{acc=}')
+    # # # Plot Loss
+    # # print(hist)
+    # fig = plt.figure(facecolor="w")
+    # ax1 = fig.add_subplot(1, 3, 1)
+    # ax2 = fig.add_subplot(1, 3, 2)
+    # ax3 = fig.add_subplot(1, 3, 3)
+    # ax1.plot(hist['loss'], label="train")
+    # ax1.set_title("loss")
+    # ax1.set_xlabel("Iteration")
+    # ax1.set_ylabel("Loss (Dice)")
+    # ax2.plot(hist['train'], label="train")
+    # ax2.set_title("Train  accuracy")
+    # ax2.set_xlabel("Iteration")
+    # ax2.set_ylabel("Accuracy(IoU)")
+    # ax3.plot(hist['test'], label='test')
+    # ax3.set_title("Test acc")
+    # ax3.set_xlabel("epoch")
+    # ax3.set_ylabel("Accuracy(IoU)")
+    # fig.suptitle(f"ModelName:{MODEL_NAME}")
+    # fig.tight_layout()
+    # plt.show()
 
 if __name__ == '__main__':
     main()

@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 from IPython.display import HTML
 from collections import defaultdict
 
-
+import time
 def main(classification=False):
     # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
@@ -68,7 +68,7 @@ def main(classification=False):
     #     return TP, TN, FP, FN
 
 
-    def save_img(number, events, pred_pro, label, pdf_output):
+    def save_img(number, events, pred_pro, label, results, result_recall_path,pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
         # number_str = str(number).zfill(5)
@@ -114,8 +114,12 @@ def main(classification=False):
         ax4.imshow(label)
 
         pred_pro_ = pred_pro[0,1].reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
-        ax5.set_title('pred_pro')
-        ax5.imshow(pred_pro_)
+        # pred_pro_max = np.max(pred_pro_)
+        # pred_pro_max_rounded = np.round(pred_pro_max, 2)
+        # pred_pro_min = np.min(pred_pro_)
+        # pred_pro_min_rounded = round(pred_pro_min, 2)
+        ax5.set_title(f'pred_pro')
+        ax5.imshow(pred_pro_, vmin=0, vmax=1)
 
         pred = torch.where(pred_pro[0,1,]>=CORRECT_RATE, 1, 0)
         pred = pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
@@ -128,6 +132,10 @@ def main(classification=False):
         # exit()
         img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.png')
         fig.savefig(img_path)
+
+        if results['Recall'][-1] <= 0.9999:
+            img_path = os.path.join(result_recall_path, f'{str(i).zfill(5)}.png')
+            fig.savefig(img_path)
        
         if pdf_output:
             img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
@@ -141,6 +149,8 @@ def main(classification=False):
     if os.path.exists(RESULT_PATH):
         shutil.rmtree(RESULT_PATH)
     os.makedirs(RESULT_PATH)
+    result_recall_path = os.path.join(RESULT_PATH, 'recall_failed')
+    os.makedirs(result_recall_path)
     # result_FN_path = os.path.join(RESULT_PATH, 'FN_images')
     # result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
     # os.makedirs(result_FN_path)
@@ -158,13 +168,15 @@ def main(classification=False):
             # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             pred_pro = net(events, FINISH_STEP)
             iou, prec, recall = analyzer(pred_pro, label)
+            # print(iou, prec, recall)
             results['IoU'].append(iou)
             results['Precision'].append(prec)
             results['Recall'].append(recall)
             
             spikes_lst.append(net.spike_count)  
-        
-            save_img(i, events, pred_pro, label,  pdf_output=False)
+            # s = time.time()
+            save_img(i, events, pred_pro, label, results, result_recall_path, pdf_output=False)
+            # print(time.time()-s)
 
             # if i == 10:
             #     break
