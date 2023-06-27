@@ -77,8 +77,9 @@ def main(classification=False):
 
     
         fig = plt.figure()
-        ax1 = fig.add_subplot(121)
-        ax2 = fig.add_subplot(122)
+        ax1 = fig.add_subplot(131)
+        ax2 = fig.add_subplot(132)
+        ax3 = fig.add_subplot(133)
 
 
         # dem_filename = f'dem_{str(number).npy}'
@@ -94,7 +95,7 @@ def main(classification=False):
         # print(first_frame.shape)
         i, j = number % 9 // 3, number % 9 % 3
         video_height, video_width, _ = first_frame.shape
-        first_frame = first_frame[i*video_height//3:(i+1)*video_height//3, j*video_width//3:(j+1)*video_width//3]
+        splited_first_frame = first_frame[i*video_height//3:(i+1)*video_height//3, j*video_width//3:(j+1)*video_width//3]
         # if number % 4 == 0:
         #     first_frame = first_frame[0:video_height//2, :video_width//2]
         # elif number % 4 == 1:
@@ -110,9 +111,12 @@ def main(classification=False):
         ax1.set_title('Camera_view')
         ax1.imshow(first_frame)
 
+        ax2.set_title('Splited view')
+        ax2.imshow(splited_first_frame)
+
         first_events = view.get_first_events(events) 
-        ax2.set_title('EVS view')
-        ax2.imshow(first_events)
+        ax3.set_title('EVS view')
+        ax3.imshow(first_events)
 
         fig.suptitle(f"No.{number} __ {bool_pred}_ label_class:{label_class.item()}  danger:{danger_pro}%")
         
