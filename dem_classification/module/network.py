@@ -54,6 +54,7 @@ class BaseFunction(nn.Module):
         pred_pro = F.softmax(spk_cnt, dim=1)
 
         return pred_pro
+    
 
 
 class Conv3Full3_Drop(BaseFunction):

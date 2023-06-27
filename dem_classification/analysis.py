@@ -186,23 +186,18 @@ def main(classification=False):
             # break
     # precision recall を求める
     eps  = 1e-7
-    # results['Precision'] = results['TP']/(results['TP']+results['FP'] + eps) * 100
-    # results['Recall'] = results['TP']/(results['TP']+results['FN'] + eps) * 100
-    # results['Accuracy'] = (results['TP']+results['TN'])/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
-    results['Precision'] = np.mean(results['Precision']) * 100
-    results['Recall'] = np.mean(results['Recall']) * 100
-    results['IoU'] = np.mean(results['IoU']) * 100
+    results['Precision'] = (results['TP'] + eps)/(results['TP']+results['FP'] + eps) * 100
+    results['Recall'] = (results['TP'] + eps)/(results['TP']+results['FN'] + eps) * 100
+    results['Accuracy'] = (results['TP']+results['TN'] + eps)/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
+    # results['Precision'] = np.mean(results['Precision']) * 100
+    # results['Recall'] = np.mean(results['Recall']) * 100
+    # results['IoU'] = np.mean(results['IoU']) * 100
 
     results['Precision'] = round(results['Precision'], 2)
     results['Recall'] = round(results['Recall'], 2)
     results['IoU'] = round(results['IoU'], 2)
 
 
-    # print(results)
-    all_num_data = len(test_loader.dataset)
-    # for key in ['TP', 'TN', 'FP', 'FN']:
-    #     results[key] = results[key]/all_num_data * 100
-    #     results[key] = round(results[key], 2)
 
     print(MODEL_NAME, results)
 
@@ -219,23 +214,31 @@ def main(classification=False):
     print(f'{jule_per_estimate=}')
 
     # スパイクレート発火率を求める
+    
     def count_neuron(net):
         network_lst = net.network_lst
         neurons = 0
-        width = net.input_width
-        height = net.input_height
         for models in network_lst:
             for layer in models.modules():
-                if isinstance(layer, torch.nn.Conv2d):
-                    neurons += height* width * layer.out_channels
+                neurons += utils.count_neurons(layer)
         return neurons
+        # neurons = 0
+        # width = net.input_width
+        # height = net.input_height
+        # for models in network_lst:
+        #     for layer in models.modules():
+        #         if isinstance(layer, torch.nn.Conv2d):
+        #             neurons += height* width * layer.out_channels
+        #         elif isinstance(layer, torch.nn.Linear):
+        #             neurons += layer.out_features
+        # return neurons
     n_nerons = count_neuron(net)
 
     spike_rate = n_spikes/n_nerons
     results['Spike Rate'] = spike_rate.item()
     # results['Spike Rate'] = round(results['Spike Rate'], 2)
-    if classification == False:
-        return results
+
+    return results
     
 
 

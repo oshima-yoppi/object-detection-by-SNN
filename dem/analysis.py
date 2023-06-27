@@ -215,6 +215,8 @@ def main():
             for layer in models.modules():
                 if isinstance(layer, torch.nn.Conv2d):
                     neurons += height* width * layer.out_channels
+                elif isinstance(layer, torch.nn.Linear):
+                    neurons += layer.out_features
         return neurons
     n_nerons = count_neuron(net)
 
