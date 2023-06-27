@@ -28,6 +28,8 @@ INPUT_CHANNEL = 2  if BOOL_DISTINGUISH_EVENT else 1
 
 # network関連の定数
 INPUT_HEIGHT, INPUT_WIDTH = 130, 173
+SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH = INPUT_HEIGHT //3 , INPUT_WIDTH //3
+ROUGH_PIXEL = 3
 # INPUT_HEIGHT, INPUT_WIDTH = 65, 86
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 BETA = 0.95
@@ -45,7 +47,7 @@ SPIKE_GRAD = surrogate.atan()
 LR = 1e-4
 CORRECT_RATE = 0.5
 LOSS_RATE = 1e-7
-NET = network.Conv3Full3_Drop(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET)
+NET = network.Conv3Full3_Drop(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET, )
 
 
 

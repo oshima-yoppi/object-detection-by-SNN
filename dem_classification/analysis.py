@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 from IPython.display import HTML
 from collections import defaultdict
 
-
+import time
 def main(classification=False):
     # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
@@ -47,6 +47,7 @@ def main(classification=False):
 
     # ious = []
     
+    # results = defaultdict(list)
     results = defaultdict(int)
     # results['iou'] = []
 
@@ -85,21 +86,23 @@ def main(classification=False):
         # dem = np.load(dem_path)
         # ax1.imshow(dem)
         # print(number)
-        video_file_number = number // 4
+        video_file_number = number // 9
         video_file_number = str(video_file_number).zfill(5)
         video_filename = f'{video_file_number}.avi'
         video_path = os.path.join(VIDEO_PATH, video_filename)
         first_frame = view.get_first_frame(video_path) 
         # print(first_frame.shape)
+        i, j = number % 9 // 3, number % 9 % 3
         video_height, video_width, _ = first_frame.shape
-        if number % 4 == 0:
-            first_frame = first_frame[0:video_height//2, :video_width//2]
-        elif number % 4 == 1:
-            first_frame = first_frame[0:video_height//2, video_width//2:]
-        elif number % 4 == 2:
-            first_frame = first_frame[video_height//2:, :video_width//2]
-        elif number % 4 == 3:
-            first_frame = first_frame[video_height//2:, video_width//2:]
+        first_frame = first_frame[i*video_height//3:(i+1)*video_height//3, j*video_width//3:(j+1)*video_width//3]
+        # if number % 4 == 0:
+        #     first_frame = first_frame[0:video_height//2, :video_width//2]
+        # elif number % 4 == 1:
+        #     first_frame = first_frame[0:video_height//2, video_width//2:]
+        # elif number % 4 == 2:
+        #     first_frame = first_frame[video_height//2:, :video_width//2]
+        # elif number % 4 == 3:
+        #     first_frame = first_frame[video_height//2:, video_width//2:]
         
         danger_pro = pred_pro[0, 1].item()
         danger_pro = round(danger_pro*100, 2)
@@ -116,14 +119,14 @@ def main(classification=False):
         plt.tight_layout()
         # plt.show()
         # exit()
-        img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.png')
+        img_path = os.path.join(RESULT_PATH, f'{str(number).zfill(5)}.png')
         fig.savefig(img_path)
         if bool_pred == 'FP':
             shutil.copy(img_path, result_FP_path)
         elif bool_pred == 'FN':
             shutil.copy(img_path, result_FN_path)
         if pdf_output:
-            img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
+            img_path = os.path.join(RESULT_PATH, f'{str(number).zfill(5)}.pdf')
             fig.savefig(img_path)
         # plt.show()
         plt.close()
@@ -132,26 +135,28 @@ def main(classification=False):
     
 
     if os.path.exists(RESULT_PATH):
-            shutil.rmtree(RESULT_PATH)
+        shutil.rmtree(RESULT_PATH)
     os.makedirs(RESULT_PATH)
+    # result_recall_path = os.path.join(RESULT_PATH, 'recall_failed')
+    # os.makedirs(result_recall_path)
     result_FN_path = os.path.join(RESULT_PATH, 'FN_images')
     result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
     os.makedirs(result_FN_path)
     os.makedirs(result_FP_path)
 
     spikes_lst = []
+    # analyzer = compute_loss.Analyzer()
     with torch.no_grad():
         net.eval()
         for i, (events, label) in enumerate(tqdm(iter(test_loader))):
             events = events.to(DEVICE)
             label = label.to(DEVICE)
-            batch = len(events[0])
+            # batch = len(events[0])
             # print(events.shape)# TBCHW
             # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             pred_pro = net(events, FINISH_STEP)
-            pred_class = torch.argmax(pred_pro, dim=1)
-            label_class = torch.argmax(label, dim=1)
-            # print(label_class, i)
+            pred_class = pred_pro.argmax(dim=1)
+            label_class = label.argmax(dim=1)
             if pred_class == 1:
                 if label_class == 1:
                     bool_pred = 'TP'
@@ -163,9 +168,13 @@ def main(classification=False):
                 else:
                     bool_pred = 'TN'
             results[bool_pred] += 1
+
+
+            
             spikes_lst.append(net.spike_count)  
-        
+            # s = time.time()
             save_img(i, events, pred_pro, label_class, bool_pred,  pdf_output=False)
+            # print(time.time()-s)
 
             # if i == 10:
             #     break
@@ -173,12 +182,17 @@ def main(classification=False):
             # break
     # precision recall を求める
     eps  = 1e-7
-    results['Precision'] = results['TP']/(results['TP']+results['FP'] + eps) * 100
-    results['Recall'] = results['TP']/(results['TP']+results['FN'] + eps) * 100
-    results['Accuracy'] = (results['TP']+results['TN'])/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
+    # results['Precision'] = results['TP']/(results['TP']+results['FP'] + eps) * 100
+    # results['Recall'] = results['TP']/(results['TP']+results['FN'] + eps) * 100
+    # results['Accuracy'] = (results['TP']+results['TN'])/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
+    results['Precision'] = np.mean(results['Precision']) * 100
+    results['Recall'] = np.mean(results['Recall']) * 100
+    results['IoU'] = np.mean(results['IoU']) * 100
+
     results['Precision'] = round(results['Precision'], 2)
     results['Recall'] = round(results['Recall'], 2)
-    results['Accuracy'] = round(results['Accuracy'], 2)
+    results['IoU'] = round(results['IoU'], 2)
+
 
     # print(results)
     all_num_data = len(test_loader.dataset)

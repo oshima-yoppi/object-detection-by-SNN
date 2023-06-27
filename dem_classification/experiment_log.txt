@@ -1872,3 +1872,675 @@ results
 	Energy per inference: 5.138342018540243e-08
 	Spike Rate: 0.02644355222582817
 -------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 4.890000080207124e-13
+	Spike Rate: 9.98301104004895e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 4.8000001868185593e-14
+	Spike Rate: 9.799274280908321e-09
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 1.669049967678582e-11
+	Spike Rate: 3.4073914321197663e-06
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 7.500000376607294e-14
+	Spike Rate: 1.531136639698616e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 1.288500122570424e-12
+	Spike Rate: 2.630492872413015e-07
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 5.699999798330566e-14
+	Spike Rate: 1.1636637431422514e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 3.076350285624585e-11
+	Spike Rate: 6.280416073423112e-06
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 2.1150000696114335e-13
+	Spike Rate: 4.317805135656272e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 37.5
+	Precision: 37.5
+	Recall: 99.33
+	Energy per inference: 1.0359000116033634e-11
+	Spike Rate: 2.114805965902633e-06
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 67.17
+	Precision: 83.7
+	Recall: 76.96
+	Energy per inference: 3.094961797955875e-08
+	Spike Rate: 0.006318412255495787
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 58.91
+	Precision: 73.56
+	Recall: 74.67
+	Energy per inference: 1.5447056966877426e-08
+	Spike Rate: 0.00315354042686522
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 75.1
+	Precision: 86.42
+	Recall: 84.57
+	Energy per inference: 3.785308422266098e-08
+	Spike Rate: 0.007727765012532473
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 74.38
+	Precision: 85.87
+	Recall: 85.04
+	Energy per inference: 3.2654408954613245e-08
+	Spike Rate: 0.006666447967290878
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 51.73
+	Precision: 64.34
+	Recall: 73.54
+	Energy per inference: 3.543513926729247e-08
+	Spike Rate: 0.00723413797095418
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 49.9
+	Precision: 63.08
+	Recall: 69.83
+	Energy per inference: 3.447784635568496e-08
+	Spike Rate: 0.007038705516606569
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 77.46
+	Precision: 89.96
+	Recall: 84.35
+	Energy per inference: 6.812176422954508e-08
+	Spike Rate: 0.01390716340392828
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 81.8
+	Precision: 92.43
+	Recall: 87.06
+	Energy per inference: 7.914559319033287e-08
+	Spike Rate: 0.016157694160938263
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 83.17
+	Precision: 92.15
+	Recall: 88.59
+	Energy per inference: 7.770475463075854e-08
+	Spike Rate: 0.01586354523897171
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 81.64
+	Precision: 92.11
+	Recall: 87.3
+	Energy per inference: 6.477865355236645e-08
+	Spike Rate: 0.013224662281572819
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 4.890000080207124e-13
+	Spike Rate: 9.98301104004895e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 4.8000001868185593e-14
+	Spike Rate: 9.799274280908321e-09
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 1.669049967678582e-11
+	Spike Rate: 3.4073914321197663e-06
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 0.0
+	Spike Rate: 0.0
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 7.500000376607294e-14
+	Spike Rate: 1.531136639698616e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 1.288500122570424e-12
+	Spike Rate: 2.630492872413015e-07
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 5.699999798330566e-14
+	Spike Rate: 1.1636637431422514e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 3.076350285624585e-11
+	Spike Rate: 6.280416073423112e-06
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 2.1150000696114335e-13
+	Spike Rate: 4.317805135656272e-08
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 0.0
+	Precision: 0.0
+	Recall: 0.0
+	Energy per inference: 1.0359000116033634e-11
+	Spike Rate: 2.114805965902633e-06
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 64.5
+	Precision: 85.5
+	Recall: 71.97
+	Energy per inference: 3.094961797955875e-08
+	Spike Rate: 0.006318412255495787
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 56.77
+	Precision: 74.82
+	Recall: 70.28
+	Energy per inference: 1.5447056966877426e-08
+	Spike Rate: 0.00315354042686522
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 74.72
+	Precision: 88.75
+	Recall: 81.66
+	Energy per inference: 3.785308422266098e-08
+	Spike Rate: 0.007727765012532473
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 73.92
+	Precision: 87.63
+	Recall: 82.41
+	Energy per inference: 3.2654408954613245e-08
+	Spike Rate: 0.006666447967290878
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: False
+results
+	IoU: 51.42
+	Precision: 64.47
+	Recall: 72.91
+	Energy per inference: 3.543513926729247e-08
+	Spike Rate: 0.00723413797095418
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 10
+	EVENT_COUNT: True
+results
+	IoU: 49.58
+	Precision: 63.18
+	Recall: 69.36
+	Energy per inference: 3.447784635568496e-08
+	Spike Rate: 0.007038705516606569
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: False
+results
+	IoU: 77.0
+	Precision: 90.56
+	Recall: 83.21
+	Energy per inference: 6.812176422954508e-08
+	Spike Rate: 0.01390716340392828
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 40
+	EVENT_COUNT: True
+results
+	IoU: 81.23
+	Precision: 92.72
+	Recall: 86.15
+	Energy per inference: 7.914559319033287e-08
+	Spike Rate: 0.016157694160938263
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+results
+	IoU: 82.75
+	Precision: 92.29
+	Recall: 87.87
+	Energy per inference: 7.770475463075854e-08
+	Spike Rate: 0.01586354523897171
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 8
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: True
+results
+	IoU: 81.52
+	Precision: 92.28
+	Recall: 87.02
+	Energy per inference: 6.477865355236645e-08
+	Spike Rate: 0.013224662281572819
+-------------

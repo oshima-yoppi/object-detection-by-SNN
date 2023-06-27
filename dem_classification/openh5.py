@@ -41,7 +41,7 @@ def youtube(events, path, bool_split,all_steps=None):
             images.append(p_)
         images[0].save(path, duration = 100, save_all=True, append_images=images[1:], loop = 50)
     # print(p_.size, max(p_))
-    print(events)
+    # print(events)
     print(torch.max(events))
 
 
@@ -77,5 +77,6 @@ if __name__ == "__main__":
             number = int(input('何番を読み込む？'))
             events, label = a[number]
             print(events.shape)
+            print(label)
             youtube(events, youtube_path, True, all_steps)
             print('save sucess')

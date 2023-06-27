@@ -1,5 +1,7 @@
+from typing import Any
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 def spike_mse_loss(input, target, rate=0.8):
@@ -22,36 +24,118 @@ def spike_count(spk_rec :torch.Tensor, channel=False):
     return count
 
 
-def loss_dice(pred_pro, target, rate=0.8):
-    #https://qiita.com/4Ui_iUrz1/items/4c0efd9c50e344c66665
+class DiceLoss(nn.Module):
+    def __init__(self,):
+        super(DiceLoss, self).__init__()
+    def forward(self, pred_pro, target):
+        batch = len(target)
+        # print(target.shape)# torch.Size([12, 1, 100, 100])
+        smooth = 1e-5
+        # print(pred_pro.shape) #batch, channel , pixel, pixel
+        pred_pro = pred_pro[:, 1, :, :]
+        pred_pro = pred_pro.reshape(batch, -1)
+        target = target.reshape(batch, -1)
+        # self.pred_binary = torch.where(pred_pro>=rate, 1, 0)
+        # union  = torch.logical_or(self.pred_binary, target).sum(dim=1)
+        intersection = (pred_pro * target)
+        dice = (2. * intersection.sum(1) + smooth) / (pred_pro.sum(1) + target.sum(1) + smooth)
+        dice = 1 - dice.sum() / batch
+        # iou = torch.mean(intersection/(union+eps))
+        return dice
     
-    batch = len(target)
-    # print(target.shape)# torch.Size([12, 1, 100, 100])
-    smooth = 1e-5
-    # print(pred_pro.shape) #batch, channel , pixel, pixel
-    pred_pro = pred_pro[:, 1, :, :]
-    pred_pro = pred_pro.reshape(batch, -1)
-    target = target.reshape(batch, -1)
-    # pred = torch.where(pred_pro>=rate, 1, 0)
-    # union  = torch.logical_or(pred, target).sum(dim=1)
-    intersection = (pred_pro * target)
-    dice = (2. * intersection.sum(1) + smooth) / (pred_pro.sum(1) + target.sum(1) + smooth)
-    dice = 1 - dice.sum() / batch
-    # iou = torch.mean(intersection/(union+eps))
-    return dice
-# def loss_iou(pred_pro, target, rate=0.8):
+class DiceBCELoss(nn.Module):
+    def __init__(self, weight=None, size_average=True):
+        super(DiceBCELoss, self).__init__()
+        self.weight = weight
+
+    def forward(self, inputs, targets, smooth=1):
+        
+        #comment out if your model contains a sigmoid or equivalent activation layer
+        inputs = F.sigmoid(inputs)       
+        
+        #flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+        
+        intersection = (inputs * targets).sum()                            
+        dice_loss = 1 - (2.*intersection + smooth)/(inputs.sum() + targets.sum() + smooth)  
+        BCE = F.binary_cross_entropy(inputs, targets, reduction='mean', weight=self.weight)
+        Dice_BCE = BCE + dice_loss
+        
+        return Dice_BCE
+class SegmentationAnalyzer():
+    def __init__(self, binary_rate=0.5, smooth=1e-5):
+        self.smooth = smooth
+        self.binary_rate = binary_rate
+    def _get_BinaryMap(self, pred_pro, target):
+        self.pred_binary = torch.where(pred_pro[:,1]>self.binary_rate, 1, 0)
+        self.pred_binary = self.pred_binary.reshape(-1)
+        self.target = target.reshape(-1)
+        return
+    def get_iou(self, ):
     
-#     batch = len(target)
-#     # print(pred_pro.shape) #batch, channel , pixel, pixel
-#     pred_pro = pred_pro[:, 1, :, :]
-#     pred_pro = pred_pro.reshape(batch, -1)
-#     target = target.reshape(batch, -1)
-#     pred = torch.where(pred_pro>=rate, 1, 0)
-#     union  = torch.logical_or(pred, target).sum(dim=1)
-#     intersection = torch.logical_and(pred, target).sum(dim = 1)
-#     eps = 1e-6
-#     iou = torch.mean(intersection/(union+eps))
-#     return iou
+        union  = torch.logical_or(self.pred_binary, self.target).sum()
+        intersection = torch.logical_and(self.pred_binary, self.target).sum()
+        eps = 1e-6
+        iou = torch.mean(intersection+eps/(union+eps))
+        return iou.item()
+    def get_precsion(self,):
+        
+        intersection = torch.logical_and(self.pred_binary, self.target).sum()
+        eps = 1e-6
+        prec = torch.mean(intersection+eps/(self.pred_binary.sum()+eps))
+        return prec.item()
+    
+    def get_recall(self,):
+        intersection = torch.logical_and(self.pred_binary, self.target).sum()
+        eps = 1e-6
+        recall = torch.mean((intersection+eps)/(self.target.sum()+eps))
+        return recall.item()
+
+    def __call__(self, pred_pro, target):
+        self._get_BinaryMap(pred_pro, target)
+        iou = self.get_iou()
+        prec = self.get_precsion()
+        recall = self.get_recall()
+        return iou, prec,  recall
+
+# class ClassificationAnalyzer():
+#     def __init__(self, binary_rate=0.5, smooth=1e-5):
+#         self.smooth = smooth
+#         self.binary_rate = binary_rate
+#     def _get_BinaryMap(self, pred_pro, target):
+#         self.pred_binary = torch.where(pred_pro[:,1]>self.binary_rate, 1, 0)
+#         self.pred_binary = self.pred_binary.reshape(-1)
+#         self.target = target.reshape(-1)
+#         return
+#     def get_iou(self, ):
+    
+#         union  = torch.logical_or(self.pred_binary, self.target).sum()
+#         intersection = torch.logical_and(self.pred_binary, self.target).sum()
+#         eps = 1e-6
+#         iou = torch.mean(intersection+eps/(union+eps))
+#         return iou.item()
+#     def get_precsion(self,):
+        
+#         intersection = torch.logical_and(self.pred_binary, self.target).sum()
+#         eps = 1e-6
+#         prec = torch.mean(intersection+eps/(self.pred_binary.sum()+eps))
+#         return prec.item()
+    
+#     def get_recall(self,):
+#         intersection = torch.logical_and(self.pred_binary, self.target).sum()
+#         eps = 1e-6
+#         recall = torch.mean((intersection+eps)/(self.target.sum()+eps))
+#         return recall.item()
+
+#     def __call__(self, pred_pro, target):
+#         self._get_BinaryMap(pred_pro, target)
+#         iou = self.get_iou()
+#         prec = self.get_precsion()
+#         recall = self.get_recall()
+#         return iou, prec,  recall
+
+
 
 def culc_iou(pred_pro, target, rate=0.8):
     
@@ -60,9 +144,9 @@ def culc_iou(pred_pro, target, rate=0.8):
     pred_pro = pred_pro[:, 1, :, :]
     pred_pro = pred_pro.reshape(batch, -1)
     target = target.reshape(batch, -1)
-    pred = torch.where(pred_pro>=rate, 1, 0)
-    union  = torch.logical_or(pred, target).sum(dim=1)
-    intersection = torch.logical_and(pred, target).sum(dim = 1)
+    pred_binary = torch.where(pred_pro>=rate, 1, 0)
+    union  = torch.logical_or(pred_binary, target).sum(dim=1)
+    intersection = torch.logical_and(pred_binary, target).sum(dim = 1)
     eps = 1e-6
     iou = torch.mean(intersection/(union+eps))
     return iou.item()

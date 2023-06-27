@@ -60,10 +60,12 @@ def main():
     weights = 1. / class_ration
     weights = weights / weights.sum()
     loss_func = nn.BCELoss(weight=weights)
+    # loss_func = compute_loss.DiceLoss()
+    # analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
 
-    num_epochs = 50
+    num_epochs = 20
     # num_epochs = 2
     num_iters = 50
     # pixel = 64
@@ -78,6 +80,7 @@ def main():
     print(time_step_lst)
     # training loop
     # return
+    
     model_save_path = MODEL_PATH
     max_acc = -1
     try:
@@ -89,15 +92,20 @@ def main():
                     
                     label = label.to(DEVICE)
                     batch = len(data[0])
-                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                    # print(data.shape)
+                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH)
                     # print(data.shape)
                     net.train()
                     pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
+                    # plt.figure()
+                    # plt.imshow(pred_pro[0, 1].detach().cpu().numpy())
+                    # plt.show()
                     # print(pred_pro.shape)
                     # print(pred_pro.shape)
                     # loss_val = criterion(pred_pro, label)
-                    loss_val = loss_func(pred_pro, label)
+                    # loss_val = loss_func(pred_pro, label)
                     # loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
+                    loss_val = loss_func(pred_pro, label)
                     # loss_val = 1 - acc
 
                     # Gradient calculation + weight update
@@ -109,15 +117,12 @@ def main():
                     hist['loss'].append(loss_val.item())
                     # acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
 
-                    pred_class = pred_pro.argmax(dim=1)
-                    label_class = label.argmax(dim=1)
-                    acc = (pred_class == label_class).sum().item() / batch
 
                     # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
                     
                     
-                    hist['train'].append(acc)
+                    hist['train'].append(1 - loss_val.item())
 
                     # print(f"Accuracy: {acc * 100:.2f}%/n")
                     # spk_count_batch = (spk_rec==1).sum().item()
@@ -135,15 +140,17 @@ def main():
                             data = data.to(DEVICE)
                             label = label.to(DEVICE)
                             batch = len(data[0])
-                            data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                            data = data.reshape(num_steps, batch, INPUT_CHANNEL, SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH)
                             pred_pro = net(data, time_step)
 
+                        
                             pred_class = pred_pro.argmax(dim=1)
                             label_class = label.argmax(dim=1)
                             acc = (pred_class == label_class).sum().item() / batch
-                            
+                        
                             # loss_val = criterion(pred_pro, label)
-                            # acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
+                            # acc = compute_loss.culc_iou(pred_pro, label, correct_rate)a
+                            # acc = iou
                             hist['test'].append(acc)
                         tqdm.write(f'{epoch}:{acc=}')
                         if max_acc < acc:
@@ -181,8 +188,7 @@ def main():
     # ax2.plot(hist['train'], label="train")
     # ax2.set_title("Train  accuracy")
     # ax2.set_xlabel("Iteration")
-    # ax2.set_yla
-    # bel("Accuracy(IoU)")
+    # ax2.set_ylabel("Accuracy(IoU)")
     # ax3.plot(hist['test'], label='test')
     # ax3.set_title("Test acc")
     # ax3.set_xlabel("epoch")
