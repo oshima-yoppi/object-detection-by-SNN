@@ -62,7 +62,7 @@ def main():
     loss_func = nn.BCELoss(weight=weights)
     # loss_func = compute_loss.DiceLoss()
     # analyzer = compute_loss.Analyzer()
-    # loss_func = nn.BCELoss()
+    loss_func = nn.BCELoss()
 
 
     num_epochs = 20

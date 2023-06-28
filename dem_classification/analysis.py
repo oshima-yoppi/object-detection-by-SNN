@@ -203,7 +203,6 @@ def main(classification=False):
 
     results['Precision'] = round(results['Precision'], 2)
     results['Recall'] = round(results['Recall'], 2)
-    results['IoU'] = round(results['IoU'], 2)
 
 
 
