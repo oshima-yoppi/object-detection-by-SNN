@@ -54,7 +54,30 @@ class BaseFunction(nn.Module):
         pred_pro = F.softmax(spk_cnt, dim=1)
 
         return pred_pro
+<<<<<<< Updated upstream
     
+=======
+    def count_neurons(self):
+        """
+        ネットワーク内のニューロンの数を数える。発火率を算出する際に使用。
+        torchライブラリじゃだめかもしれないから自作
+        """
+        self.number_neurons = 0
+        input_dummy = torch.zeros(1, self.input_channel, self.input_height, self.input_width).to(self.device)
+        for i, net in enumerate(self.network_lst):
+            if i == len(self.network_lst) - 1:
+                input_dummy, _ = net(input_dummy)
+            else:
+                input_dummy = net(input_dummy)
+            if input_dummy.dim() == 4:
+                _, c, h, w = input_dummy.shape
+                self.number_neurons += c * h * w
+            elif input_dummy.dim() == 2:
+                _, c = input_dummy.shape
+                self.number_neurons += c
+        return self.number_neurons
+
+>>>>>>> Stashed changes
 
 
 class Conv3Full3_Drop(BaseFunction):
@@ -72,6 +95,8 @@ class Conv3Full3_Drop(BaseFunction):
         power=False,
     ):
         self.parm_learn = parm_learn
+        self.device = device
+        self.input_channel = input_channel
         self.reshape_bool = reshape_bool
         self.input_height = input_height
         self.input_width = input_width

@@ -95,7 +95,15 @@ def main(classification=False):
         # print(first_frame.shape)
         i, j = number % 9 // 3, number % 9 % 3
         video_height, video_width, _ = first_frame.shape
-        splited_first_frame = first_frame[i*video_height//3:(i+1)*video_height//3, j*video_width//3:(j+1)*video_width//3]
+        splited_first_frame = first_frame[i*video_height//3:(i+1)*video_height//3, j*video_width//3:(j+1)*video_width//3].copy()
+
+        boder_color = (255, 0,0) 
+        boder_thickness = 2
+        x1 = j * video_width//3
+        x2 = (j+1) * video_width//3
+        y1 = i * video_height//3
+        y2 = (i+1) * video_height//3
+        cv2.rectangle(first_frame, (x1, y1), (x2, y2), boder_color, boder_thickness)
         # if number % 4 == 0:
         #     first_frame = first_frame[0:video_height//2, :video_width//2]
         # elif number % 4 == 1:
@@ -214,25 +222,7 @@ def main(classification=False):
     print(f'{jule_per_estimate=}')
 
     # スパイクレート発火率を求める
-    
-    def count_neuron(net):
-        network_lst = net.network_lst
-        neurons = 0
-        for models in network_lst:
-            for layer in models.modules():
-                neurons += utils.count_neurons(layer)
-        return neurons
-        # neurons = 0
-        # width = net.input_width
-        # height = net.input_height
-        # for models in network_lst:
-        #     for layer in models.modules():
-        #         if isinstance(layer, torch.nn.Conv2d):
-        #             neurons += height* width * layer.out_channels
-        #         elif isinstance(layer, torch.nn.Linear):
-        #             neurons += layer.out_features
-        # return neurons
-    n_nerons = count_neuron(net)
+    n_nerons = net.count_neurons()
 
     spike_rate = n_spikes/n_nerons
     results['Spike Rate'] = spike_rate.item()

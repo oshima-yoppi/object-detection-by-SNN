@@ -126,12 +126,12 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
             )
         resizer = transforms_.Resize(size=(INPUT_HEIGHT//3, INPUT_WIDTH//3),interpolation=T.InterpolationMode.NEAREST)
            
-        converter_label = transforms.Compose(
-        [transforms_.ToTensor(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
-        ToRoughSegmentation(ROUGH_PIXEL),
-        ]
-        )
+        # converter_label = transforms.Compose(
+        # [transforms_.ToTensor(),
+        # transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+        # ToRoughSegmentation(ROUGH_PIXEL),
+        # ]
+        # )
 
         for ii, file in enumerate(tqdm(h5py_allfile)):
             with h5py.File(file, "r") as f:
