@@ -54,9 +54,6 @@ class BaseFunction(nn.Module):
         pred_pro = F.softmax(spk_cnt, dim=1)
 
         return pred_pro
-<<<<<<< Updated upstream
-    
-=======
     def count_neurons(self):
         """
         ネットワーク内のニューロンの数を数える。発火率を算出する際に使用。
@@ -77,7 +74,6 @@ class BaseFunction(nn.Module):
                 self.number_neurons += c
         return self.number_neurons
 
->>>>>>> Stashed changes
 
 
 class Conv3Full3_Drop(BaseFunction):
