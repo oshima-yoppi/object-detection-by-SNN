@@ -9,6 +9,7 @@ import pandas as pd
 import tonic
 import tonic.transforms as transforms
 import os
+
 from PIL import Image
 from module.const import *
 from module.custom_data import LoadDataset
@@ -21,11 +22,13 @@ def youtube(events, path, bool_split,all_steps=None):
         all_steps = events.shape[0]
     x = events.shape[2]
     y = events.shape[3]
-
     if bool_split:
         img_arr = torch.zeros(all_steps, 3, x, y)
-        img_arr[:,0] = events[:all_steps,0]
-        img_arr[:,1] = events[:all_steps,1]
+        if not BOOL_DISTINGUISH_EVENT:
+            img_arr[:,0] = events[:all_steps,0]
+        else:
+            img_arr[:,0] = events[:all_steps,0]
+            img_arr[:,1] = events[:all_steps,1]
         for i in range(all_steps):
             
             p_ = torchvision.transforms.functional.to_pil_image(img_arr[i])

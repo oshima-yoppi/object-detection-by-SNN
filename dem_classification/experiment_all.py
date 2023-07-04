@@ -15,7 +15,8 @@ soft_reset_lst = [True]
 parm_learn_lst = [False]
 finish_step_lst = [1, 2, 4, 8]
 accumulate_event_militime_lst = [10, 40, 80]
-event_count = [False, True]
+# event_count = [False, True]
+event_count = [False]
 # accumulate_event_militime_lst = [40, 60, 80]
 combinations = list(itertools.product(soft_reset_lst, parm_learn_lst, finish_step_lst, accumulate_event_militime_lst, event_count))
 

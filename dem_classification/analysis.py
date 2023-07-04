@@ -124,6 +124,9 @@ def main(classification=False):
 
         first_events = view.get_first_events(events) 
         ax3.set_title('EVS view')
+        # print(first_events.size)
+        if not BOOL_DISTINGUISH_EVENT:
+            first_events = first_events.squeeze()
         ax3.imshow(first_events)
 
         fig.suptitle(f"VideoID:{video_file_number}  No.{number} __ {bool_pred}_ label_class:{label_class.item()}  danger:{danger_pro}%")

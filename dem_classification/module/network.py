@@ -41,18 +41,26 @@ class BaseFunction(nn.Module):
                 elif i < len(self.network_lst) - 1:
                     data_ = net_(data_)
                 elif i == len(self.network_lst) - 1:
-                    data_, _ = net_(data_)
+                    data_, mem = net_(data_)
+                    # print(_.shape)
+                    # print(_)
                 # print(data_.shape)
 
                 if self.power:
                     self.spike_count += torch.sum(data_)
-            spk_rec.append(data_)
-        spk_rec = torch.stack(spk_rec)
-        spk_cnt = compute_loss.spike_count(
-            spk_rec, channel=True
-        )  # batch channel(n_class) pixel pixel
-        pred_pro = F.softmax(spk_cnt, dim=1)
+            # spk_rec.append(data_)
+        # spk_rec = torch.stack(spk_rec)
+        # spk_cnt = compute_loss.spike_count(
+        #     spk_rec, channel=True
+        # )  # batch channel(n_class) pixel pixel
+       
+        # pred_pro = F.softmax(spk_cnt, dim=1)
+        # pred_pro = torch.sigmoid(spk_cnt)
+        pred_pro = torch.sigmoid(mem-0.5)
 
+        # print(pred_pro.shape)
+        pred_pro_ = 1 - pred_pro
+        pred_pro = torch.cat([pred_pro_, pred_pro], dim=1)
         return pred_pro
     def count_neurons(self):
         """
@@ -76,7 +84,7 @@ class BaseFunction(nn.Module):
 
 
 
-class Conv3Full3_Drop(BaseFunction):
+class Conv2Full3_Drop(BaseFunction):
     def __init__(
         self,
         beta,
@@ -106,7 +114,130 @@ class Conv3Full3_Drop(BaseFunction):
         n1 = 8960
         n2 = 4096
         n3 = 512
-        n4 = 2
+        n4 = 1
+
+        ratio_drop = 0.4
+
+        encode_kernel = 5
+        decode_kernel = 5
+        n_neuron = 4096
+        n_output = 2
+
+        super().__init__()
+        self.down1 = nn.Sequential(
+            nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.down2 = nn.Sequential(
+            nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        # self.down3 = nn.Sequential(
+        #     nn.Conv2d(c3, c3, encode_kernel, padding=encode_kernel // 2),
+        #     nn.MaxPool2d(2, stride=2),
+        #     snn.Leaky(
+        #         beta=beta,
+        #         spike_grad=spike_grad,
+        #         init_hidden=True,
+        #         learn_beta=parm_learn,
+        #         learn_threshold=parm_learn,
+        #         reset_mechanism=reset,
+        #     ),
+        #     nn.Dropout2d(ratio_drop),
+        # ).to(device)
+        self.lenear1 = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(n1, n2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout(ratio_drop),
+        ).to(device)
+        self.lenear2 = nn.Sequential(
+            nn.Linear(n2, n3),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout(ratio_drop),
+        ).to(device)
+        self.lenear3 = nn.Sequential(
+            nn.Linear(n3, n4),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                output=True,
+                learn_threshold=parm_learn,
+                reset_mechanism='none',
+            ),
+        ).to(device)
+        self.network_lst = [
+            self.down1,
+            self.down2,
+            self.lenear1,
+            self.lenear2,
+            self.lenear3,
+        ]
+
+class Conv3Full3_Drop(BaseFunction):
+    def __init__(
+        self,
+        beta,
+        spike_grad,
+        input_channel,
+        device,
+        input_height,
+        input_width,
+        reshape_bool=True,
+        parm_learn=True,
+        reset="subtract",
+        power=False,
+    ):
+        self.parm_learn = parm_learn
+        self.device = device
+        self.input_channel = input_channel
+        self.reshape_bool = reshape_bool
+        self.input_height = input_height
+        self.input_width = input_width
+        self.power = power
+        c0 = input_channel
+        c1 = 16
+        c2 = 32
+        c3 = 64
+        n_class = 2
+        neu = 88064
+        n1 = 2240
+        n2 = 512
+        n3 = 1
 
         ratio_drop = 0.4
 
@@ -169,7 +300,8 @@ class Conv3Full3_Drop(BaseFunction):
             nn.Dropout(ratio_drop),
         ).to(device)
         self.lenear2 = nn.Sequential(
-            nn.Linear(n2, n3),
+            nn.Flatten(),
+            nn.Linear(n1, n3),
             snn.Leaky(
                 beta=beta,
                 spike_grad=spike_grad,
@@ -177,63 +309,20 @@ class Conv3Full3_Drop(BaseFunction):
                 learn_beta=parm_learn,
                 learn_threshold=parm_learn,
                 reset_mechanism=reset,
-            ),
-            nn.Dropout(ratio_drop),
-        ).to(device)
-        self.lenear3 = nn.Sequential(
-            nn.Linear(n3, n4),
-            snn.Leaky(
-                beta=beta,
-                spike_grad=spike_grad,
-                init_hidden=True,
-                learn_beta=parm_learn,
                 output=True,
-                learn_threshold=parm_learn,
-                reset_mechanism=reset,
             ),
+            # nn.Dropout(ratio_drop),
         ).to(device)
         self.network_lst = [
             self.down1,
             self.down2,
-            self.lenear1,
+            self.down3,
+            # self.lenear1,
             self.lenear2,
-            self.lenear3,
+            # self.lenear3,
         ]
 
-    # def forward(self, data, time):
-    #     self.spike_count = 0
-    #     spk_rec = []
-    #     for net in self.network_lst:
-    #         utils.reset(net)
-    #     for step in range(time):
-    #         d1 = self.down1(data[step])
-    #         d2 = self.down2(d1)
-    #         d3 = self.down3(d2)
-    #         d3 = d3.reshape(d3.shape[0], -1)
-    #         l1 = self.lenear1(d3)
-    #         l2 = self.lenear2(l1)
-    #         l3, _ = self.lenear3(l2)
-    #         # output, _ = self.output(u2)
-    #         spk_rec.append(l3)
-    #         if self.power:
-    #             self.spike_count += torch.sum(d1)
-    #             self.spike_count += torch.sum(d2)
-    #             self.spike_count += torch.sum(d3)
-    #             self.spike_count += torch.sum(l1)
-    #             self.spike_count += torch.sum(l2)
-    #             self.spike_count += torch.sum(l3)
-
-    #     # print(self.spike_count)
-    #     spk_rec = torch.stack(spk_rec)
-    #      # print(spk_rec.shape)
-    #     spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel
-
-    #     # print(np.sum(spk_cnt_.reshape(-1)))
-
-    #     pred_pro = F.softmax(spk_cnt, dim=1)
-    #     # print(pred_pro[0])
-    #     # pred_pro = F.sigmoid(spk_cnt)
-    #     return pred_pro
+   
 
 
 class Conv3Full3(nn.Module):
