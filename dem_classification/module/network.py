@@ -82,6 +82,137 @@ class BaseFunction(nn.Module):
                 self.number_neurons += c
         return self.number_neurons
 
+class Conv3GloabalFull2(BaseFunction):
+    def __init__(
+        self,
+        beta,
+        spike_grad,
+        input_channel,
+        device,
+        input_height,
+        input_width,
+        reshape_bool=True,
+        parm_learn=True,
+        reset="subtract",
+        power=False,
+    ):
+        self.parm_learn = parm_learn
+        self.device = device
+        self.input_channel = input_channel
+        self.reshape_bool = reshape_bool
+        self.input_height = input_height
+        self.input_width = input_width
+        self.power = power
+        c0 = input_channel
+        c1 = 16
+        c2 = 64
+        c3 = 512
+        n_class = 2
+        neu = 88064
+        n1 = 512
+        n2 = 128
+        n3 = 1
+        n4 = 1
+
+        ratio_drop = 0.4
+
+        encode_kernel = 5
+        decode_kernel = 5
+        # n_neuron = 4096
+        n_output = 1
+
+        super().__init__()
+        self.down1 = nn.Sequential(
+            nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.down2 = nn.Sequential(
+            nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.down3 = nn.Sequential(
+            nn.Conv2d(c3, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.AdaptiveMaxPool2d((1, 1)),
+            nn.Dropout2d(ratio_drop),
+            
+        ).to(device)
+        self.lenear1 = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(n1, n2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout(ratio_drop),
+        ).to(device)
+        # self.lenear2 = nn.Sequential(
+        #     nn.Flatten(),
+        #     nn.Linear(n2, n3),
+        #     snn.Leaky(
+        #         beta=beta,
+        #         spike_grad=spike_grad,
+        #         init_hidden=True,
+        #         learn_beta=parm_learn,
+        #         learn_threshold=parm_learn,
+        #         reset_mechanism=reset,
+        #     ),
+        #     nn.Dropout(ratio_drop),
+        # ).to(device)
+        self.output = nn.Sequential(
+            # nn.Flatten(),
+            nn.Linear(n2, n_output),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                output=True,
+                learn_threshold=parm_learn,
+                reset_mechanism='none',
+            ),
+        ).to(device)
+        self.network_lst = [
+            self.down1,
+            self.down2,
+            self.down3,
+            self.lenear1,
+            # self.lenear2,
+            self.output
+        ]
+
+   
+
 
 
 class Conv2Full3_Drop(BaseFunction):
@@ -209,6 +340,137 @@ class Conv2Full3_Drop(BaseFunction):
         ]
 
 class Conv3Full3_Drop(BaseFunction):
+    def __init__(
+        self,
+        beta,
+        spike_grad,
+        input_channel,
+        device,
+        input_height,
+        input_width,
+        reshape_bool=True,
+        parm_learn=True,
+        reset="subtract",
+        power=False,
+    ):
+        self.parm_learn = parm_learn
+        self.device = device
+        self.input_channel = input_channel
+        self.reshape_bool = reshape_bool
+        self.input_height = input_height
+        self.input_width = input_width
+        self.power = power
+        c0 = input_channel
+        c1 = 16
+        c2 = 32
+        c3 = 64
+        n_class = 2
+        neu = 88064
+        n1 = 2240
+        n2 = 512
+        n3 = 256
+        n4 = 1
+
+        ratio_drop = 0.4
+
+        encode_kernel = 5
+        decode_kernel = 5
+        n_neuron = 4096
+        n_output = 2
+
+        super().__init__()
+        self.down1 = nn.Sequential(
+            nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.down2 = nn.Sequential(
+            nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.down3 = nn.Sequential(
+            nn.Conv2d(c3, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.lenear1 = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(n1, n2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout(ratio_drop),
+        ).to(device)
+        self.lenear2 = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(n2, n3),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout(ratio_drop),
+        ).to(device)
+        self.lenear3 = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(n3, n4),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                output=True,
+                learn_threshold=parm_learn,
+                reset_mechanism='none',
+            ),
+        ).to(device)
+        self.network_lst = [
+            self.down1,
+            self.down2,
+            self.down3,
+            self.lenear1,
+            self.lenear2,
+            self.lenear3,
+        ]
+
+   
+
+
+
+class Conv3Full1_Drop(BaseFunction):
     def __init__(
         self,
         beta,

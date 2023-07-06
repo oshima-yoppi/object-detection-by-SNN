@@ -31,8 +31,9 @@ import time
 
 
 def main():
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
-    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
+    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=START_STEP)
+    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=START_STEP)
+
 
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
@@ -50,8 +51,8 @@ def main():
     # weights = torch.tensor([0.01, 1]).to(DEVICE)
     # loss_func = nn.BCELoss(weight=weights)[    ]
     # loss_func = compute_loss.BCELoss_Recall(recall_rate=20)
-    # loss_func = compute_loss.DiceLoss()
-    loss_func = compute_loss.WeightedF1Loss(10)
+    loss_func = compute_loss.DiceLoss()
+    # loss_func = compute_loss.WeightedF1Loss(10)
     analyzer = compute_loss.AnalyzerClassification()
     # loss_func = compute_loss.DiceLoss()
     # analyzer = compute_loss.Analyzer()
@@ -70,9 +71,10 @@ def main():
     # return
     
     model_save_path = MODEL_PATH
-    max_recall = -1
+    
     try:
         for time_step in time_step_lst:
+            max_recall = -1
             for epoch in tqdm(range(num_epochs)):
                 for i, (data, label) in enumerate(iter(train_loader)):
                     data = data.to(DEVICE)
@@ -108,7 +110,7 @@ def main():
                 hist['loss'].append(np.mean(loss_log))
 
                 
-                start = time.time()
+                # start = time.time()
                 with torch.no_grad():
                     net.eval()
                     acc_log = []
@@ -159,24 +161,19 @@ def main():
     # # Plot Loss
     # print(hist)
     fig = plt.figure(facecolor="w")
-    ax1 = fig.add_subplot(1, 3, 1)
-    ax2 = fig.add_subplot(1, 3, 2)
-    ax3 = fig.add_subplot(1, 3, 3)
+    ax1 = fig.add_subplot(1, 2, 1)
+    ax2 = fig.add_subplot(1, 2, 2)
     ax1.plot(hist['loss'], label="train")
     ax1.set_title("loss")
     ax1.set_xlabel("Iteration")
     ax1.set_ylabel("Loss (Dice)")
-    # ax2.plot(hist['train'], label="train")
-    # ax2.set_title("Train  accuracy")
-    # ax2.set_xlabel("Iteration")
-    # ax2.set_ylabel("Accuracy(IoU)")
-    ax3.plot(hist['acc'], label='test')
-    ax3.plot(hist['precision'], label='precision')
-    ax3.plot(hist['recall'], label='recall')
-    ax3.set_title("Test acc")
-    ax3.set_xlabel("epoch")
-    ax3.set_ylabel("Accuracy(IoU)")
-    ax3.legend()
+    ax2.plot(hist['acc'], label='acc')
+    ax2.plot(hist['precision'], label='precision')
+    ax2.plot(hist['recall'], label='recall')
+    ax2.set_title("Test acc")
+    ax2.set_xlabel("epoch")
+    ax2.set_ylabel("Accuracy(IoU)")
+    ax2.legend()
     fig.suptitle(f"ModelName:{MODEL_NAME}")
     fig.tight_layout()
     plt.show()

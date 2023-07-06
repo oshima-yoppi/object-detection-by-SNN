@@ -42,7 +42,7 @@ if soft_reset:
 else:
     RESET = 'zero'
 
-TIME_CHANGE = False
+TIME_CHANGE = True
 if TIME_CHANGE:
     START_STEP = 8
 else:
@@ -52,7 +52,7 @@ SPIKE_GRAD = surrogate.atan()
 LR = 1e-4
 CORRECT_RATE = 0.5
 LOSS_RATE = 1e-7
-NET = network.Conv3Full3_Drop(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=SPLITED_INPUT_HEIGHT, input_width=SPLITED_INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET, )
+NET = network.Conv3GloabalFull2(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=SPLITED_INPUT_HEIGHT, input_width=SPLITED_INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET, )
 
 
 
@@ -66,16 +66,16 @@ LABEL_BOULDER_PATH = "label_only_boulder"
 ACCUMULATE_EVENT_MICROTIME= ACCUMULATE_EVENT_MILITIME*1000 #[us]
 DATASET_PATH = 'dataset' # datasetのパス
 # DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIME)) # dataset/〇〇  ←何秒ためるかを表す
-EVENT_TH = 0.15# イベントカメラの閾値
+EVENT_TH = 0.1# イベントカメラの閾値
 RAW_EVENT_PATH = f'raw-data/th-{str(EVENT_TH)}' # v2eから出力されたイベント生データ
 RAW_EVENT_ONLY_BOULDER_PATH = f'raw-data_only_boulder/th-{str(EVENT_TH)}' 
-PROCESSED_EVENT_DATASET_PATH = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_FinTime-{FINISH_STEP}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}'
+PROCESSED_EVENT_DATASET_PATH = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_FinTime-{START_STEP}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}'
 PROCESSED_EVENT_DATASET_ONLY_BOULDER_PATH = f'dataset_boulder/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}'
 ANN_DATASET_PATH = "dataset_ann"
 
 
 NETWORK_CLASS_NAME = NET.__class__.__name__
-MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_FinishTime-{FINISH_STEP}_Reset-{RESET}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}'
+MODEL_NAME = f'{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_FinishTime-{START_STEP}_Reset-{RESET}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}'
 MODEL_PATH = f'models/{MODEL_NAME}.pth'
 
 RESULT_PATH = f'result_img/{MODEL_NAME}'
