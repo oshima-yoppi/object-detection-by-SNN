@@ -23,7 +23,7 @@ ACCUMULATE_EVENT_MILITIME = constants['ACCUMULATE_EVENT_MILITIME']
 EVENT_COUNT = constants['EVENT_COUNT']
 print(f"soft_reset: {soft_reset}", f"parm_learn: {PARM_LEARN}", f"FINISH_STEP: {FINISH_STEP}")
 # イベントかめらの極性を分けるかどうか
-BOOL_DISTINGUISH_EVENT = False
+BOOL_DISTINGUISH_EVENT = True
 INPUT_CHANNEL = 2  if BOOL_DISTINGUISH_EVENT else 1
 
 # network関連の定数
