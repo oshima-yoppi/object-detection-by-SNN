@@ -52,14 +52,14 @@ def main():
     # loss_func = nn.BCELoss(weight=weights)[    ]
     # loss_func = compute_loss.BCELoss_Recall(recall_rate=20)
     loss_func = compute_loss.DiceLoss()
-    # loss_func = compute_loss.WeightedF1Loss(10)
+    loss_func = compute_loss.WeightedF1Loss(100)
     analyzer = compute_loss.AnalyzerClassification()
     # loss_func = compute_loss.DiceLoss()
     # analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
 
-    num_epochs = 50
+    num_epochs = 200
     hist = defaultdict(list)
 
     if TIME_CHANGE:
@@ -82,6 +82,8 @@ def main():
                     loss_log = []
                     label = label.to(DEVICE)
                     batch = len(data[0])
+                    
+                    # print(torch.max(data[0]), torch.min(data))
                     # print(data.shape)
                     # data = data.reshape(num_steps, batch, INPUT_CHANNEL, SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH)
                     # print(data.shape)

@@ -113,7 +113,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         # print(h5py_allfile)
 
         # # 0梅するための対策
-        true_shape = (FINISH_STEP, 2, INPUT_HEIGHT, INPUT_WIDTH)
+        true_shape = (finish_step, 2, INPUT_HEIGHT, INPUT_WIDTH)
         
         if EVENT_COUNT:
 
@@ -222,7 +222,7 @@ class LoadDataset(Dataset):
         # 全てのイベントデータのファイルパスを取得
         self.all_files = glob.glob(f"{processed_event_dataset_path}/*")
         self.divide = int((len(self.all_files)*test_rate))
-        
+        # print(self.all_files)
         if train:
             self.file_lst = self.all_files[self.divide:]
         else:

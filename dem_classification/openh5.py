@@ -22,6 +22,7 @@ def youtube(events, path, bool_split,all_steps=None):
         all_steps = events.shape[0]
     x = events.shape[2]
     y = events.shape[3]
+    # print(torch.max(events))
     if bool_split:
         img_arr = torch.zeros(all_steps, 3, x, y)
         if not BOOL_DISTINGUISH_EVENT:
@@ -68,13 +69,15 @@ if __name__ == "__main__":
     #     print('save sucess')
 
 
-    events = [0.15] # 変な値入れるとぶっ壊れる可能性あり。ちゅいいa
+    events = [0.15,] # 変な値入れるとぶっ壊れる可能性あり。ちゅいいa
     all_steps = FINISH_STEP
     for th in events:
         
         youtube_path = f"gomibako/{th}.gif"
+        # print(PROCESSED_EVENT_DATASET_PATH)
         
         a= LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , finish_step =all_steps,input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
+
         
         while 1:
             number = int(input('何番を読み込む？'))
@@ -82,4 +85,4 @@ if __name__ == "__main__":
             print(events.shape)
             print(label)
             youtube(events, youtube_path, True, all_steps)
-            print('save sucess')
+            # print('save sucess')
