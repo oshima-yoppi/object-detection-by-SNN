@@ -52,7 +52,7 @@ def main():
     # loss_func = nn.BCELoss(weight=weights)[    ]
     # loss_func = compute_loss.BCELoss_Recall(recall_rate=20)
     loss_func = compute_loss.DiceLoss()
-    loss_func = compute_loss.WeightedF1Loss(100)
+    # loss_func = compute_loss.WeightedF1Loss(10000)
     analyzer = compute_loss.AnalyzerClassification()
     # loss_func = compute_loss.DiceLoss()
     # analyzer = compute_loss.Analyzer()

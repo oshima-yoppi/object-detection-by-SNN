@@ -52,7 +52,8 @@ SPIKE_GRAD = surrogate.atan()
 LR = 1e-4
 CORRECT_RATE = 0.5
 LOSS_RATE = 1e-7
-NET = network.Conv3GloabalFull2(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=SPLITED_INPUT_HEIGHT, input_width=SPLITED_INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET, )
+# NET = network.Conv3GloabalFull2(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=SPLITED_INPUT_HEIGHT, input_width=SPLITED_INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET, )
+NET = network.AttentionNetwork(beta=BETA, spike_grad=SPIKE_GRAD, device=DEVICE, input_height=SPLITED_INPUT_HEIGHT, input_width=SPLITED_INPUT_WIDTH, parm_learn=PARM_LEARN, input_channel=INPUT_CHANNEL, power=True, reset=RESET, )
 
 
 

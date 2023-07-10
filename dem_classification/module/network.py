@@ -61,6 +61,8 @@ class BaseFunction(nn.Module):
         # print(pred_pro.shape)
         pred_pro_ = 1 - pred_pro
         pred_pro = torch.cat([pred_pro_, pred_pro], dim=1)
+        # print(mem.item())
+        # print(mem)
         return pred_pro
     def count_neurons(self):
         """
@@ -82,6 +84,249 @@ class BaseFunction(nn.Module):
                 self.number_neurons += c
         return self.number_neurons
 
+class SpatialAttentionBlock(nn.Module):
+    def __init__(
+        self,
+        beta,
+        spike_grad,
+        input_channel,
+        middle_channel,
+        device,
+        input_height,
+        input_width,
+        reshape_bool=True,
+        parm_learn=True,
+        reset="subtract",
+        power=False,
+    ):
+        self.parm_learn = parm_learn
+        self.device = device
+        self.input_channel = input_channel
+        self.middle_channel = middle_channel
+        self.reshape_bool = reshape_bool
+        self.input_height = input_height
+        self.input_width = input_width
+        self.power = power
+        super().__init__()
+        self.branched_net = nn.Sequential(
+            nn.Conv2d(self.input_channel, self.middle_channel, 1),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Conv2d(self.middle_channel, 1, 1),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            ).to(device)
+    def forward(self, x):
+        branched_x = self.branched_net(x)
+        x = x * branched_x
+        return x
+class ChannelAttentionBlock(nn.Module): # SeNet
+    def __init__(
+        self,
+        beta,
+        spike_grad,
+        input_channel,
+        middle_channel,
+        device,
+        input_height,
+        input_width,
+        reshape_bool=True,
+        parm_learn=True,
+        reset="subtract",
+        power=False,
+    ):
+        self.parm_learn = parm_learn
+        self.device = device
+        self.input_channel = input_channel
+        self.middle_channel = middle_channel
+        self.reshape_bool = reshape_bool
+        self.input_height = input_height
+        self.input_width = input_width
+        self.power = power
+        super().__init__()
+        self.branched_net = nn.Sequential(
+            nn.AdaptiveAvgPool2d((1, 1)),
+            nn.Conv2d(self.input_channel, self.middle_channel, 1),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Conv2d(self.middle_channel, self.input_channel, 1),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ), ).to(device)
+        
+    def forward(self, x):
+        branched_x = self.branched_net(x)
+        # print(torch.sum(x), torch.sum(branched_x))
+        x = x * branched_x
+        # print(torch.sum(x).item())
+        return x
+   
+class AttentionNetwork(BaseFunction):
+    def __init__(
+        self,
+        beta,
+        spike_grad,
+        input_channel,
+        device,
+        input_height,
+        input_width,
+        reshape_bool=True,
+        parm_learn=True,
+        reset="subtract",
+        power=False,
+    ):
+        self.parm_learn = parm_learn
+        self.device = device
+        self.input_channel = input_channel
+        self.reshape_bool = reshape_bool
+        self.input_height = input_height
+        self.input_width = input_width
+        self.power = power
+        c0 = input_channel
+        c1 = 64
+        c2 = 128
+        c3 = 512
+        n1 = c3
+        n2 = 128
+        ratio_drop = 0.4
+        encode_kernel = 3
+        n_output = 1
+
+        super().__init__()
+        self.down1 = nn.Sequential(
+            nn.Conv2d(c0, c1, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.down2 = nn.Sequential(
+            nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.down3 = nn.Sequential(
+            nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.MaxPool2d(2, stride=2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.attention1 = nn.Sequential(
+            ChannelAttentionBlock(
+                beta=beta,
+                spike_grad=spike_grad,
+                input_channel=c3,
+                middle_channel=c1,
+                device=device,
+                input_height=input_height,
+                input_width=input_width,
+                reshape_bool=reshape_bool,
+                parm_learn=parm_learn,
+                reset=reset,
+                power=power,
+            ),
+            # nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.attention2 = nn.Sequential(
+            SpatialAttentionBlock(
+                beta=beta,
+                spike_grad=spike_grad,
+                input_channel=c3,
+                middle_channel=c1,
+                device=device,
+                input_height=input_height,
+                input_width=input_width,
+                reshape_bool=reshape_bool,
+                parm_learn=parm_learn,
+                reset=reset,
+                power=power,
+            ),
+            nn.AdaptiveMaxPool2d((1, 1)),
+            nn.Dropout2d(ratio_drop),
+        ).to(device)
+        self.lenear1 = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(n1, n2),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                learn_threshold=parm_learn,
+                reset_mechanism=reset,
+            ),
+            nn.Dropout(ratio_drop),
+        ).to(device)
+        self.output = nn.Sequential(
+            # nn.Flatten(),
+            nn.Linear(n2, n_output),
+            snn.Leaky(
+                beta=beta,
+                spike_grad=spike_grad,
+                init_hidden=True,
+                learn_beta=parm_learn,
+                output=True,
+                learn_threshold=parm_learn,
+                reset_mechanism='none',
+            ),
+        ).to(device)
+
+
+        self.network_lst = [
+            self.down1,
+            self.down2,
+            self.down3,
+            self.attention1,
+            self.attention2,
+            self.lenear1,
+            self.output
+        ]
+        
 class Conv3GloabalFull2(BaseFunction):
     def __init__(
         self,
@@ -176,19 +421,6 @@ class Conv3GloabalFull2(BaseFunction):
             ),
             nn.Dropout(ratio_drop),
         ).to(device)
-        # self.lenear2 = nn.Sequential(
-        #     nn.Flatten(),
-        #     nn.Linear(n2, n3),
-        #     snn.Leaky(
-        #         beta=beta,
-        #         spike_grad=spike_grad,
-        #         init_hidden=True,
-        #         learn_beta=parm_learn,
-        #         learn_threshold=parm_learn,
-        #         reset_mechanism=reset,
-        #     ),
-        #     nn.Dropout(ratio_drop),
-        # ).to(device)
         self.output = nn.Sequential(
             # nn.Flatten(),
             nn.Linear(n2, n_output),
@@ -207,7 +439,6 @@ class Conv3GloabalFull2(BaseFunction):
             self.down2,
             self.down3,
             self.lenear1,
-            # self.lenear2,
             self.output
         ]
 
