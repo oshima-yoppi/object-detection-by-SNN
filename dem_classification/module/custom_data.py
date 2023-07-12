@@ -184,7 +184,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
                         f.create_dataset('events', data=splited_events)
                     # print(i, j)
                     # print(i* spilit_num + j)
-                    if ii* 9 + i* spilit_num + j == 3000:
+                    if not BOOL_LEARGE_DATASET  and ii* 9 + i* spilit_num + j == 3000:
                         return
     except Exception as e:
         import shutil
