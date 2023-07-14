@@ -29,12 +29,39 @@ from collections import defaultdict
 import yaml
 import time
 
-def main():
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=START_STEP)
-    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=START_STEP)
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
+def main():
+    train_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=True,
+        finish_step=START_STEP,
+    )
+    test_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=False,
+        finish_step=START_STEP,
+    )
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=True,
+    )
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=False,
+    )
 
     net = NET
 
@@ -43,13 +70,12 @@ def main():
     optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
 
     class_ration = torch.tensor([977, 1427], dtype=torch.float32).to(DEVICE)
-    weights = 1. / class_ration
+    weights = 1.0 / class_ration
     weights = weights / weights.sum()
     # loss_func = nn.BCELoss(weight=weights)
     loss_func = compute_loss.DiceLoss()
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
-
 
     num_epochs = 200
     # num_epochs = 2
@@ -66,7 +92,7 @@ def main():
     print(time_step_lst)
     # training loop
     # return
-    
+
     model_save_path = MODEL_PATH
     max_acc = -1
     try:
@@ -75,14 +101,16 @@ def main():
             for epoch in tqdm(range(num_epochs)):
                 for i, (data, label) in enumerate(iter(train_loader)):
                     loss_log = []
-                    data = data.to(DEVICE)                    
+                    data = data.to(DEVICE)
                     label = label.to(DEVICE)
                     batch = len(data[0])
                     # print(data.shape)
-                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                    data = data.reshape(
+                        num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
+                    )
                     # print(data.shape)
                     net.train()
-                    pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
+                    pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
                     # print(pred_pro.shape)
                     # print(label.shape)
                     # plt.figure()
@@ -103,11 +131,9 @@ def main():
 
                     # Store loss history for future plotting
                     loss_log.append(loss_val.item())
-                    hist['loss'].append(loss_val.item())
-                hist['loss'].append(np.mean(loss_log))
-                    
-                    
-                
+                    hist["loss"].append(loss_val.item())
+                hist["loss"].append(np.mean(loss_log))
+
                 with torch.no_grad():
                     net.eval()
                     iou_log = []
@@ -117,7 +143,9 @@ def main():
                         data = data.to(DEVICE)
                         label = label.to(DEVICE)
                         batch = len(data[0])
-                        data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                        data = data.reshape(
+                            num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
+                        )
                         pred_pro = net(data, time_step)
 
                         # pred_class = pred_pro.argmax(dim=1)
@@ -127,28 +155,30 @@ def main():
                         iou_log.append(iou)
                         precision_log.append(precision)
                         recall_log.append(recall)
-                    hist['iou'].append(np.mean(iou_log))
-                    hist['precision'].append(np.mean(precision_log))
-                    hist['recall'].append(np.mean(recall_log))
-                    tqdm.write(f'{epoch}:::  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}')
+                    hist["iou"].append(np.mean(iou_log))
+                    hist["precision"].append(np.mean(precision_log))
+                    hist["recall"].append(np.mean(recall_log))
+                    tqdm.write(
+                        f"{epoch}:::  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}"
+                    )
                     # if max_recall < hist['recall'][-1] and hist['recall'][-1] > 0.5:
                     #     max_recall = hist['recall'][-1]
                     #     torch.save(net.state_dict(), model_save_path)
     except Exception as e:
         import traceback
-        print('--------error--------')
+
+        print("--------error--------")
         traceback.print_exc()
-        print('--------error--------')
+        print("--------error--------")
         pass
         # print(e)
     ## save model
     # enddir = MODEL_PATH
     # # if os.path.exists(enddir) == False:
     # #     os.makedirs(enddir)
-    
+
     torch.save(net.state_dict(), model_save_path)
     print("success model saving")
-
 
     # print(MODEL_NAME)
     # print(f'{acc=}')
@@ -175,5 +205,6 @@ def main():
     # plt.show()
     return hist
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
