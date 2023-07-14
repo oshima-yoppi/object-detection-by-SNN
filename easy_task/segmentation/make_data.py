@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import torch 
+import torch
 import h5py
 import pandas as pd
 import torchvision
@@ -10,34 +10,45 @@ import os, shutil
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-def draw_circle(center, radius,time=10, pixel=128):
+
+def draw_circle(center, radius, time=10, pixel=128):
     img = np.zeros((pixel, pixel, 3), dtype=np.uint8)
-    cv2.circle(img, center, radius, color=(255, 255, 255), thickness=1, lineType=cv2.LINE_8, shift=0)
+    cv2.circle(
+        img,
+        center,
+        radius,
+        color=(255, 255, 255),
+        thickness=1,
+        lineType=cv2.LINE_8,
+        shift=0,
+    )
     return img
+
+
 def youtube(events, path):
     images = []
     events = events.to(torch.uint8)
     events *= 255
     for i in range(events.shape[0]):
-        p_ = torchvision.transforms.functional.to_pil_image(events[i,:,:])
+        p_ = torchvision.transforms.functional.to_pil_image(events[i, :, :])
         images.append(p_)
-    images[0].save(path, duration = 100, save_all=True, append_images=images[1:], loop = 50)
+    images[0].save(path, duration=100, save_all=True, append_images=images[1:], loop=50)
 
 
 def SaveEvents(path, events, label):
-    with h5py.File(path, 'w') as f:
-        f.create_dataset('label', data = label)
-        f.create_dataset('input', data = events)
+    with h5py.File(path, "w") as f:
+        f.create_dataset("label", data=label)
+        f.create_dataset("input", data=events)
     return
 
 
 if __name__ == "__main__":
     pixel = 64
     time = 10
-    noize_rate = 0.3#0.1
+    noize_rate = 0.3  # 0.1
     number_of_data = 1000
     numer_list = []
-    radius_list, x_list, y_list = [],[],[]
+    radius_list, x_list, y_list = [], [], []
     label_list = []
     path_list = []
     youtube_dir = "youtube"
@@ -56,25 +67,23 @@ if __name__ == "__main__":
         youtube_path = os.path.join(youtube_dir, f"{str(i).zfill(4)}.gif")
         dataset_path = os.path.join(dataset_dir, f"{str(i).zfill(4)}.h5")
 
+        events = torch.where(torch.rand(time, pixel, pixel) <= noize_rate, 1, 0)
 
-        events = torch.where(torch.rand(time, pixel, pixel)<= noize_rate, 1, 0)
-        
-        x = random.randint(0,pixel)
+        x = random.randint(0, pixel)
         y = random.randint(0, pixel)
-        r = random.randint(4, pixel//2)
+        r = random.randint(4, pixel // 2)
         ## draw random circle
         for t in range(time):
             img = draw_circle((x, y), r + t, pixel=pixel)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img = torch.from_numpy(img.astype(np.float32)).clone()
-            events[t,:,:] = torch.logical_or(img, events[t,:,:])
-            events[t,:,:] = torch.where(events[t,:,:] == True, 1, 0)
+            events[t, :, :] = torch.logical_or(img, events[t, :, :])
+            events[t, :, :] = torch.where(events[t, :, :] == True, 1, 0)
         ## make label. 1 if in circle.
         for i in range(pixel):
             for j in range(pixel):
-                if (i-y)**2 + (j-x)**2 <= r**2:
-                    label[i,j] = 1
-
+                if (i - y) ** 2 + (j - x) ** 2 <= r ** 2:
+                    label[i, j] = 1
 
         youtube(events, youtube_path)
         SaveEvents(dataset_path, events, label)
@@ -84,20 +93,18 @@ if __name__ == "__main__":
         y_list.append(y)
         label_list.append(label)
         path_list.append(dataset_path)
-    
+
     df = pd.DataFrame(
         data={
-            'number':numer_list,
-            'radius':radius_list,
-            'x':x_list,
-            'y':y_list,
+            "number": numer_list,
+            "radius": radius_list,
+            "x": x_list,
+            "y": y_list,
             # 'label':label_list,
-            'path':path_list
+            "path": path_list,
         }
     )
     df.to_csv(csv_path, index=False)
     plt.figure()
     plt.imshow(label)
     plt.show()
-    
-        

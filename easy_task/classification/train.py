@@ -24,8 +24,9 @@ import matplotlib.pyplot as plt
 from IPython.display import HTML
 
 from collections import defaultdict
+
 # Network Architecture
-num_inputs = 28*28
+num_inputs = 28 * 28
 num_hidden = 1000
 num_outputs = 10
 dtype = torch.float
@@ -36,11 +37,21 @@ beta = 0.95
 dataset_path = "dataset/"
 batch_size = 16
 
-train_dataset = LoadDataset(dir = dataset_path, train=True)
-test_dataset = LoadDataset(dir = dataset_path,  train=False)
-# print(train_dataset[data_id][0]) #(784, 100) 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=tonic.collation.PadTensors(batch_first=False), shuffle=False,)
+train_dataset = LoadDataset(dir=dataset_path, train=True)
+test_dataset = LoadDataset(dir=dataset_path, train=False)
+# print(train_dataset[data_id][0]) #(784, 100)
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=batch_size,
+    collate_fn=tonic.collation.PadTensors(batch_first=False),
+    shuffle=True,
+)
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=batch_size,
+    collate_fn=tonic.collation.PadTensors(batch_first=False),
+    shuffle=False,
+)
 
 
 def print_batch_accuracy(data, label, train=False):
@@ -52,10 +63,6 @@ def print_batch_accuracy(data, label, train=False):
         print(f"Train set accuracy for a single minibatch: {acc*100:.2f}%")
     else:
         print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
-
-
-
-
 
 
 spike_grad = surrogate.atan()
@@ -71,6 +78,7 @@ def forward_pass(net, data):
         spk_rec.append(spk_out)
 
     return torch.stack(spk_rec)
+
 
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999))
 loss_fn = SF.mse_count_loss(correct_rate=0.8, incorrect_rate=0.2)
@@ -104,7 +112,7 @@ for epoch in tqdm(range(num_epochs)):
         # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
         acc = SF.accuracy_rate(spk_rec, label)
-        acc_hist['train'].append(acc)
+        acc_hist["train"].append(acc)
         # print(f"Accuracy: {acc * 100:.2f}%/n")
         # break
 
@@ -118,16 +126,16 @@ for epoch in tqdm(range(num_epochs)):
             spk_rec = forward_pass(net, data)
             loss_val = loss_fn(spk_rec, label)
             acc = SF.accuracy_rate(spk_rec, label)
-            acc_hist['test'].append(acc)
+            acc_hist["test"].append(acc)
 # Plot Loss
 fig = plt.figure(facecolor="w")
 ax1 = fig.add_subplot(1, 2, 1)
 ax2 = fig.add_subplot(1, 2, 2)
-ax1.plot(acc_hist['train'], label="train")
+ax1.plot(acc_hist["train"], label="train")
 ax1.set_title("Train Set Accuracy")
 ax1.set_xlabel("Iteration")
 ax1.set_ylabel("Accuracy")
-ax2.plot(acc_hist['test'], label='test')
+ax2.plot(acc_hist["test"], label="test")
 ax2.set_title("Train Set Accuracy")
 ax2.set_xlabel("epoch")
 ax2.set_ylabel("Accuracy")
