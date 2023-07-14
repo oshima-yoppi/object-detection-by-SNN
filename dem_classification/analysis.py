@@ -30,7 +30,7 @@ from IPython.display import HTML
 from collections import defaultdict
 
 import time
-def main(classification=False):
+def main(hist=None):
     # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
 
@@ -95,7 +95,15 @@ def main(classification=False):
         # print(first_frame.shape)
         i, j = number % 9 // 3, number % 9 % 3
         video_height, video_width, _ = first_frame.shape
-        splited_first_frame = first_frame[i*video_height//3:(i+1)*video_height//3, j*video_width//3:(j+1)*video_width//3]
+        splited_first_frame = first_frame[i*video_height//3:(i+1)*video_height//3, j*video_width//3:(j+1)*video_width//3].copy()
+
+        boder_color = (255, 0,0) 
+        boder_thickness = 2
+        x1 = j * video_width//3
+        x2 = (j+1) * video_width//3
+        y1 = i * video_height//3
+        y2 = (i+1) * video_height//3
+        cv2.rectangle(first_frame, (x1, y1), (x2, y2), boder_color, boder_thickness)
         # if number % 4 == 0:
         #     first_frame = first_frame[0:video_height//2, :video_width//2]
         # elif number % 4 == 1:
@@ -116,6 +124,9 @@ def main(classification=False):
 
         first_events = view.get_first_events(events) 
         ax3.set_title('EVS view')
+        # print(first_events.size)
+        if not BOOL_DISTINGUISH_EVENT:
+            first_events = first_events.squeeze()
         ax3.imshow(first_events)
 
         fig.suptitle(f"VideoID:{video_file_number}  No.{number} __ {bool_pred}_ label_class:{label_class.item()}  danger:{danger_pro}%")
@@ -147,6 +158,27 @@ def main(classification=False):
     result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
     os.makedirs(result_FN_path)
     os.makedirs(result_FP_path)
+    if hist is not None:
+        hist_path = os.path.join(RESULT_PATH, 'Loss_hist')
+        os.makedirs(hist_path)
+        fig = plt.figure(facecolor="w")
+        ax1 = fig.add_subplot(1, 2, 1)
+        ax2 = fig.add_subplot(1, 2, 2)
+        ax1.plot(hist['loss'], label="train")
+        ax1.set_title("loss")
+        ax1.set_xlabel("epoch")
+        ax1.set_ylabel("Loss")
+        ax2.plot(hist['acc'], label='acc')
+        ax2.plot(hist['precision'], label='precision')
+        ax2.plot(hist['recall'], label='recall')
+        ax2.set_title("Test acc")
+        ax2.set_xlabel("epoch")
+        ax2.set_ylabel("Accuracy(IoU)")
+        ax2.legend()
+        fig.suptitle(f"ModelName:{MODEL_NAME}")
+        fig.tight_layout()
+        fig.savefig(os.path.join(hist_path, 'loss.png'))
+        fig.savefig(os.path.join(hist_path, 'loss.pdf'))
 
     spikes_lst = []
     # analyzer = compute_loss.Analyzer()
@@ -195,7 +227,6 @@ def main(classification=False):
 
     results['Precision'] = round(results['Precision'], 2)
     results['Recall'] = round(results['Recall'], 2)
-    results['IoU'] = round(results['IoU'], 2)
 
 
 
@@ -214,25 +245,7 @@ def main(classification=False):
     print(f'{jule_per_estimate=}')
 
     # スパイクレート発火率を求める
-    
-    def count_neuron(net):
-        network_lst = net.network_lst
-        neurons = 0
-        for models in network_lst:
-            for layer in models.modules():
-                neurons += utils.count_neurons(layer)
-        return neurons
-        # neurons = 0
-        # width = net.input_width
-        # height = net.input_height
-        # for models in network_lst:
-        #     for layer in models.modules():
-        #         if isinstance(layer, torch.nn.Conv2d):
-        #             neurons += height* width * layer.out_channels
-        #         elif isinstance(layer, torch.nn.Linear):
-        #             neurons += layer.out_features
-        # return neurons
-    n_nerons = count_neuron(net)
+    n_nerons = net.count_neurons()
 
     spike_rate = n_spikes/n_nerons
     results['Spike Rate'] = spike_rate.item()

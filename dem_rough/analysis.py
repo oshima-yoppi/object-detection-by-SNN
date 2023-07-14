@@ -91,21 +91,22 @@ def main(classification=False):
         # ax1.imshow(dem)
         # print(number)
         # video_file_number = number // 4
+        line_color = (150, 150, 0 )
         number = str(number).zfill(5)
         video_filename = f'{number}.avi'
         video_path = os.path.join(VIDEO_PATH, video_filename)
         first_frame = view.get_first_frame(video_path) 
-        # print(first_frame.shape)
+        first_frame = view.draw_edge_of_areas(first_frame, line_color=line_color)
+
         
-        
-        # danger_pro = pred_pro[0, 1].item()
-        # danger_pro = round(danger_pro*100, 2)
+
 
         ax2.set_title('Camera_view')
         # print(first_frame.shape)
         ax2.imshow(first_frame)
 
         first_events = view.get_first_events(events) 
+        first_events = view.draw_edge_of_areas(first_events, line_color=line_color)
         ax3.set_title('EVS view')
         ax3.imshow(first_events)
 
@@ -113,7 +114,7 @@ def main(classification=False):
         ax4.set_title('label')
         ax4.imshow(label)
 
-        pred_pro_ = pred_pro[0,1].reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
+        pred_pro_ = pred_pro[0].reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
         # pred_pro_max = np.max(pred_pro_)
         # pred_pro_max_rounded = np.round(pred_pro_max, 2)
         # pred_pro_min = np.min(pred_pro_)
@@ -121,7 +122,7 @@ def main(classification=False):
         ax5.set_title(f'pred_pro')
         ax5.imshow(pred_pro_, vmin=0, vmax=1)
 
-        pred = torch.where(pred_pro[0,1,]>=CORRECT_RATE, 1, 0)
+        pred = torch.where(pred_pro[0]>CORRECT_RATE, 1, 0)
         pred = pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to('cpu').detach().numpy().copy()
         ax6.set_title('pred')
         ax6.imshow(pred)
@@ -130,15 +131,15 @@ def main(classification=False):
         plt.tight_layout()
         # plt.show()
         # exit()
-        img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.png')
+        img_path = os.path.join(RESULT_PATH, f'{str(number).zfill(5)}.png')
         fig.savefig(img_path)
 
         if results['Recall'][-1] <= 0.9999:
-            img_path = os.path.join(result_recall_path, f'{str(i).zfill(5)}.png')
+            img_path = os.path.join(result_recall_path, f'{str(number).zfill(5)}.png')
             fig.savefig(img_path)
        
         if pdf_output:
-            img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
+            img_path = os.path.join(RESULT_PATH, f'{str(number).zfill(5)}.pdf')
             fig.savefig(img_path)
         # plt.show()
         plt.close()
@@ -163,16 +164,13 @@ def main(classification=False):
         for i, (events, label) in enumerate(tqdm(iter(test_loader))):
             events = events.to(DEVICE)
             label = label.to(DEVICE)
-            # batch = len(events[0])
-            # print(events.shape)# TBCHW
-            # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             pred_pro = net(events, FINISH_STEP)
             iou, prec, recall = analyzer(pred_pro, label)
             # print(iou, prec, recall)
             results['IoU'].append(iou)
             results['Precision'].append(prec)
             results['Recall'].append(recall)
-            
+            # print(iou, prec, recall)
             spikes_lst.append(net.spike_count)  
             # s = time.time()
             save_img(i, events, pred_pro, label, results, result_recall_path, pdf_output=False)
@@ -183,10 +181,7 @@ def main(classification=False):
 
             # break
     # precision recall を求める
-    eps  = 1e-7
-    # results['Precision'] = results['TP']/(results['TP']+results['FP'] + eps) * 100
-    # results['Recall'] = results['TP']/(results['TP']+results['FN'] + eps) * 100
-    # results['Accuracy'] = (results['TP']+results['TN'])/(results['TP']+results['TN']+results['FP']+results['FN'] + eps) * 100
+    
     results['Precision'] = np.mean(results['Precision']) * 100
     results['Recall'] = np.mean(results['Recall']) * 100
     results['IoU'] = np.mean(results['IoU']) * 100
@@ -220,12 +215,12 @@ def main(classification=False):
     def count_neuron(net):
         network_lst = net.network_lst
         neurons = 0
-        width = net.input_width
-        height = net.input_height
+        video_width = net.input_width
+        video_height = net.input_height
         for models in network_lst:
             for layer in models.modules():
                 if isinstance(layer, torch.nn.Conv2d):
-                    neurons += height* width * layer.out_channels
+                    neurons += video_height* video_width * layer.out_channels
         return neurons
     n_nerons = count_neuron(net)
 

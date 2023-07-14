@@ -36,3 +36,23 @@ def get_first_events(events):
                 first_events[:,:,1] = events[0,0,1] * 255
             first_events = first_events.astype(int)
             return first_events
+
+
+
+def draw_edge_of_areas(imgs, line_color=(255, 0, 0,)):
+    height, width, _ = imgs.shape
+    region_width = width // 3
+    region_height = height // 3
+    # 横の線を描画
+    for i in range(1, 3):
+        start_point = (0, i * region_height)
+        end_point = (width, i * region_height)
+        cv2.line(imgs, start_point, end_point, line_color, thickness=2)
+
+# 縦の線を描画
+    for i in range(1, 3):
+        start_point = (i * region_width, 0)
+        end_point = (i * region_width, height)
+        cv2.line(imgs, start_point, end_point, line_color, thickness=2)
+    return imgs 
+

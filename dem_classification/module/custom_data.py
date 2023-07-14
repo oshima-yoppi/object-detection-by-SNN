@@ -23,6 +23,7 @@ import tonic.transforms as transforms
 from torchvision import transforms as transforms_
 import torchvision.transforms as T
 from tqdm import tqdm
+import random
 import shutil
 # from .module import const
 from .const import *
@@ -47,6 +48,13 @@ class Fill0_Tensor():
             return arr
         arr_reshape = torch.zeros(self.true_shape)
         arr_reshape[:shape_time] = arr_reshape[:shape_time] + arr
+        if not BOOL_DISTINGUISH_EVENT:
+            arr_reshape[:,0] = arr_reshape[:,0] + arr_reshape[:,1]
+            arr_reshape = arr_reshape[:,0].unsqueeze(1)
+            arr_reshape = torch.where(arr_reshape>= 1, 1,0)
+            # print(arr_reshape.shape)
+            # exit()
+            # arr_reshape
         
         return arr_reshape
     
@@ -105,7 +113,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         # print(h5py_allfile)
 
         # # 0梅するための対策
-        true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+        true_shape = (finish_step, 2, INPUT_HEIGHT, INPUT_WIDTH)
         
         if EVENT_COUNT:
 
@@ -126,12 +134,12 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
             )
         resizer = transforms_.Resize(size=(INPUT_HEIGHT//3, INPUT_WIDTH//3),interpolation=T.InterpolationMode.NEAREST)
            
-        converter_label = transforms.Compose(
-        [transforms_.ToTensor(),
-        transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
-        ToRoughSegmentation(ROUGH_PIXEL),
-        ]
-        )
+        # converter_label = transforms.Compose(
+        # [transforms_.ToTensor(),
+        # transforms_.Resize(size=(INPUT_HEIGHT, INPUT_WIDTH),interpolation=T.InterpolationMode.NEAREST),
+        # ToRoughSegmentation(ROUGH_PIXEL),
+        # ]
+        # )
 
         for ii, file in enumerate(tqdm(h5py_allfile)):
             with h5py.File(file, "r") as f:
@@ -176,7 +184,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
                         f.create_dataset('events', data=splited_events)
                     # print(i, j)
                     # print(i* spilit_num + j)
-                    if ii* 9 + i* spilit_num + j == 3000:
+                    if not BOOL_LEARGE_DATASET  and ii* 9 + i* spilit_num + j == 3000:
                         return
     except Exception as e:
         import shutil
@@ -190,7 +198,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         exit()
     return 
 class LoadDataset(Dataset):
-    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, finish_step, train:bool, test_rate=0.2, download=False):
+    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, finish_step, train:bool, test_num=600, download=False):
         """
         processed_event_dataset_path: 処理済みのイベントデータのパス
         raw_event_dir: イベントの生データ
@@ -213,21 +221,23 @@ class LoadDataset(Dataset):
         
         # 全てのイベントデータのファイルパスを取得
         self.all_files = glob.glob(f"{processed_event_dataset_path}/*")
-        self.divide = int((len(self.all_files)*test_rate))
-
+        # self.divide = int((len(self.all_files)*test_rate))
+        # print(self.all_files)
         if train:
-            self.file_lst = self.all_files[self.divide:]
+            self.file_lst = self.all_files[test_num:]
         else:
-            self.file_lst = self.all_files[:self.divide]
+            self.file_lst = self.all_files[:test_num]
         # データを丸ごとリストに格納する場合
         if self.download == False:
             self.all_data = []
+            self.count_positive = 0
             print('dataset読み込み開始')
             for path in tqdm(self.file_lst):
                 with h5py.File(path, "r") as f:
                     label = f['label'][()]
                     input = f['events'][()]
-                # print(input.shape, label.shape, label)
+                    if label[1] == 1:
+                        self.count_positive += 1
                 input = torch.from_numpy(input.astype(np.float32)).clone()
                 label = torch.tensor(label, dtype=torch.float32)
                 # if label == 1:
@@ -236,11 +246,25 @@ class LoadDataset(Dataset):
                 #     label = torch.tensor([1,0], dtype=torch.float32)
                 self.all_data.append((input, label))
             print('dataset読み込み終了')
+            self.count_negative = len(self.all_data) - self.count_positive
+            ## 学習データの数を揃える
+            if train:
+                self.all_data_considered = []
+                for (i, l) in self.all_data:
+                    if l[1] == 1:
+                        self.all_data_considered.append((i, l))
+                    else:
+                        if random.random() < self.count_positive/self.count_negative:
+                            self.all_data_considered.append((i, l))
+                self.all_data = self.all_data_considered
+                print(f'学習データの数: {len(self.all_data)}')
+
           
 
 
     def __len__(self):
-        return len(self.file_lst)
+        # return len(self.file_lst)
+        return len(self.all_data)
 
     def __getitem__(self, index):
         if self.download:

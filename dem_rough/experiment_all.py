@@ -13,13 +13,17 @@ csv_path = os.path.join(csv_dir, csv_name)
 
 soft_reset_lst = [True]
 parm_learn_lst = [False]
-finish_step_lst = [1, 2, 4, 8]
-accumulate_event_militime_lst = [10, 40, 80]
-event_count = [False, True]
+# finish_step_lst = [2, 5]
+finish_step_lst = [5]
+# accumulate_event_militime_lst = [10, 40, 80]
+accumulate_event_militime_lst = [80]
+# event_count = [False, True]
+event_count = [False]
+evnet_th = [0.05, 0.1, 0.15]
 # accumulate_event_militime_lst = [40, 60, 80]
-combinations = list(itertools.product(soft_reset_lst, parm_learn_lst, finish_step_lst, accumulate_event_militime_lst, event_count))
+combinations = list(itertools.product(soft_reset_lst, parm_learn_lst, finish_step_lst, accumulate_event_militime_lst, event_count, evnet_th))
 
-for soft_reset, parm_learn, finish_step, accumulate_event_militime , event_count in combinations:
+for soft_reset, parm_learn, finish_step, accumulate_event_militime , event_count, evnet_th in combinations:
     cmd = "python experiment.py"
     if soft_reset:
         cmd += " --soft_reset"
@@ -28,6 +32,7 @@ for soft_reset, parm_learn, finish_step, accumulate_event_militime , event_count
     cmd += f" --FINISH_STEP {finish_step}"
     cmd += f" --ACCUMULATE_EVENT_MILITIME {accumulate_event_militime}"
     cmd += f" --CSV_PATH {csv_path}"
+    cmd += f" --EVENT_TH {evnet_th}"
     if event_count:
         cmd += " --EVENT_COUNT"
     os.system(cmd)
