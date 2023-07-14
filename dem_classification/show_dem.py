@@ -8,9 +8,8 @@ import os
 import shutil
 import pathlib
 import sys
+
 # aaa
-
-
 
 
 def img2plot(np_path):
@@ -23,23 +22,27 @@ def img2plot(np_path):
     verts = []
     for x in range(pix):
         for y in range(pix):
-            verts.append(mathutils.Vector([x*METER_PER_GRID, y*METER_PER_GRID, (data[x, y]*METER_PER_GRID)]))
+            verts.append(
+                mathutils.Vector(
+                    [
+                        x * METER_PER_GRID,
+                        y * METER_PER_GRID,
+                        (data[x, y] * METER_PER_GRID),
+                    ]
+                )
+            )
     fIndexes = []
     for x in range(0, pix - 1):
         for y in range(0, pix - 1):
-            fIndexes.append([x + y * pix,
-                            x + 1 + y * pix,
-                            x + 1 + (y + 1) * pix,
-                            x + (y + 1) * pix])
+            fIndexes.append(
+                [x + y * pix, x + 1 + y * pix, x + 1 + (y + 1) * pix, x + (y + 1) * pix]
+            )
 
     mesh = bpy.data.meshes.new(object_name)
     mesh.from_pydata(verts, [], fIndexes)  # 点と面の情報からメッシュを生成
 
     obj = bpy.data.objects.new(object_name, mesh)  # メッシュ情報を新規オブジェクトに渡す
     bpy.context.scene.collection.objects.link(obj)  # オブジェクトをシーン上にリンク(v2.8)
-    
-   
-
 
 
 if __name__ == "__main__":
@@ -52,15 +55,8 @@ if __name__ == "__main__":
 
     METER_PER_GRID = 0.1
 
-
-
     object_name = "dem"
     file_num = 0
-    path = f"dem.npy" 
+    path = f"dem.npy"
     path = os.path.join(NOW_DIR, path)
     img2plot(path)
-
-
-
-
-

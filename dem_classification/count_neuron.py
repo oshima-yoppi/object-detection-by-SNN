@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils as utils
 
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -24,6 +25,8 @@ class CNN(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
+
+
 model = CNN()
 total_neurons = 0
 for layer in model.modules():

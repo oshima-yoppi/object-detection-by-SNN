@@ -6,15 +6,15 @@ import matplotlib.pyplot as plt
 #   SAMPLE_TYPE = MSB_INTEGER  ... Big endian符号付き整数
 #   SAMPLE_BITS = 16           ... 1画素あたり16bits
 n = int(input())
-data = np.fromfile(f'origin/{n}.img', dtype='>i2')
+data = np.fromfile(f"origin/{n}.img", dtype=">i2")
 
 # lblファイルの以下の記述より配列の形を変更
 #   BANDS = 1
 #   LINES = 10800
 #   LINE_SAMPLES = 10800
 BANDS = 1
-LINES =  12288
-LINE_SAMPLES =  12288
+LINES = 12288
+LINE_SAMPLES = 12288
 image = data.reshape(BANDS, LINE_SAMPLES, LINES)
 
 # lblファイルの以下の記述より、データ加工なしにそのまま使う
@@ -25,5 +25,5 @@ image = data.reshape(BANDS, LINE_SAMPLES, LINES)
 AVERAGE = -1882.145583
 delta = np.abs(AVERAGE) * 0.5
 # データを表示(最初のバンドを表示)
-plt.imshow(image[0], cmap='gray', vmin=AVERAGE-delta, vmax=AVERAGE+delta)
+plt.imshow(image[0], cmap="gray", vmin=AVERAGE - delta, vmax=AVERAGE + delta)
 plt.show()

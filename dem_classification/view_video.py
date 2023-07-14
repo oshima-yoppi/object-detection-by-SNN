@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 n = int(input())
-video_name = f'blender/video/{n:05}.avi'
+video_name = f"blender/video/{n:05}.avi"
 image = view.get_first_frame(video_name)
 
 

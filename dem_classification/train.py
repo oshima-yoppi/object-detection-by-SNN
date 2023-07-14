@@ -31,12 +31,37 @@ import time
 
 
 def main():
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=START_STEP)
-    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=START_STEP)
+    train_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=True,
+        finish_step=START_STEP,
+    )
+    test_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=False,
+        finish_step=START_STEP,
+    )
 
-
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=True,
+    )
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=False,
+    )
 
     net = NET
 
@@ -58,7 +83,6 @@ def main():
     # analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-
     num_epochs = 100
     hist = defaultdict(list)
 
@@ -69,9 +93,9 @@ def main():
     print(time_step_lst)
     # training loop
     # return
-    
+
     model_save_path = MODEL_PATH
-    
+
     try:
         for time_step in time_step_lst:
             max_recall = -1
@@ -82,13 +106,13 @@ def main():
                     loss_log = []
                     label = label.to(DEVICE)
                     batch = len(data[0])
-                    
+
                     # print(torch.max(data[0]), torch.min(data))
                     # print(data.shape)
                     # data = data.reshape(num_steps, batch, INPUT_CHANNEL, SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH)
                     # print(data.shape)
                     net.train()
-                    pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
+                    pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
                     # plt.figure()
                     # plt.imshow(pred_pro[0, 1].detach().cpu().numpy())
                     # plt.show()
@@ -106,25 +130,30 @@ def main():
                     optimizer.step()
 
                     # Store loss history for future plotting
-                    
-                    loss_log.append(loss_val.item())
-                    
-                hist['loss'].append(np.mean(loss_log))
 
-                
+                    loss_log.append(loss_val.item())
+
+                hist["loss"].append(np.mean(loss_log))
+
                 # start = time.time()
                 with torch.no_grad():
                     net.eval()
                     acc_log = []
                     precision_log = []
                     recall_log = []
-                    
+
                     for i, (data, label) in enumerate(iter(test_loader)):
-                        
+
                         data = data.to(DEVICE)
                         label = label.to(DEVICE)
                         batch = len(data[0])
-                        data = data.reshape(num_steps, batch, INPUT_CHANNEL, SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH)
+                        data = data.reshape(
+                            num_steps,
+                            batch,
+                            INPUT_CHANNEL,
+                            SPLITED_INPUT_HEIGHT,
+                            SPLITED_INPUT_WIDTH,
+                        )
                         pred_pro = net(data, time_step)
 
                         acc, precision, recall = analyzer(pred_pro, label)
@@ -134,44 +163,46 @@ def main():
                         acc_log.append(acc)
                         precision_log.append(precision)
                         recall_log.append(recall)
-                    hist['acc'].append(np.mean(acc_log))
-                    hist['precision'].append(np.mean(precision_log))
-                    hist['recall'].append(np.mean(recall_log))
-                    tqdm.write(f'{epoch}:{acc=},  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}')
-                    if max_recall < hist['recall'][-1] and hist['acc'][-1] > 0.5:
-                        max_recall = hist['recall'][-1]
+                    hist["acc"].append(np.mean(acc_log))
+                    hist["precision"].append(np.mean(precision_log))
+                    hist["recall"].append(np.mean(recall_log))
+                    tqdm.write(
+                        f"{epoch}:{acc=},  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}"
+                    )
+                    if max_recall < hist["recall"][-1] and hist["acc"][-1] > 0.5:
+                        max_recall = hist["recall"][-1]
                         torch.save(net.state_dict(), model_save_path)
                 # print(f'{time.time()-start}sec')
     except Exception as e:
         import traceback
-        print('--------error--------')
+
+        print("--------error--------")
         traceback.print_exc()
-        print('--------error--------')
+        print("--------error--------")
         pass
         # print(e)
     ## save model
     # enddir = MODEL_PATH
     # # if os.path.exists(enddir) == False:
     # #     os.makedirs(enddir)
-    
+
     # torch.save(net.state_dict(), enddir)
     # print("success model saving")
 
-
     print(MODEL_NAME)
-    print(f'{acc=}')
+    print(f"{acc=}")
     # # Plot Loss
     # print(hist)
     fig = plt.figure(facecolor="w")
     ax1 = fig.add_subplot(1, 2, 1)
     ax2 = fig.add_subplot(1, 2, 2)
-    ax1.plot(hist['loss'], label="train")
+    ax1.plot(hist["loss"], label="train")
     ax1.set_title("loss")
     ax1.set_xlabel("Iteration")
     ax1.set_ylabel("Loss (Dice)")
-    ax2.plot(hist['acc'], label='acc')
-    ax2.plot(hist['precision'], label='precision')
-    ax2.plot(hist['recall'], label='recall')
+    ax2.plot(hist["acc"], label="acc")
+    ax2.plot(hist["precision"], label="precision")
+    ax2.plot(hist["recall"], label="recall")
     ax2.set_title("Test acc")
     ax2.set_xlabel("epoch")
     ax2.set_ylabel("Accuracy(IoU)")
@@ -181,5 +212,6 @@ def main():
     # plt.show()
     return hist
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

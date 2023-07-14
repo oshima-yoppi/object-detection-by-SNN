@@ -44,18 +44,43 @@ import yaml
 # num_outputs = 10
 # dtype = torch.float
 def main():
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
-    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
+    train_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=True,
+        finish_step=FINISH_STEP,
+    )
+    test_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=False,
+        finish_step=FINISH_STEP,
+    )
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=True,
+    )
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=False,
+    )
 
     net = NET
 
     events, _ = train_dataset[0]
     num_steps = events.shape[0]
     optimizer = torch.optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.999))
-
 
     num_epochs = 50
     num_iters = 50
@@ -80,10 +105,12 @@ def main():
                     label = label.type(torch.int64)
                     label = label.to(DEVICE)
                     batch = len(data[0])
-                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                    data = data.reshape(
+                        num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
+                    )
                     # print(data.shape)
                     net.train()
-                    pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
+                    pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
                     # print(pred_pro.shape)
                     # loss_val = criterion(pred_pro, label)
                     loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
@@ -95,14 +122,12 @@ def main():
                     optimizer.step()
 
                     # Store loss history for future plotting
-                    hist['loss'].append(loss_val.item())
+                    hist["loss"].append(loss_val.item())
                     acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
 
                     # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-                    
-                    
-                    hist['train'].append(acc)
+                    hist["train"].append(acc)
 
                     # print(f"Accuracy: {acc * 100:.2f}%/n")
                     # spk_count_batch = (spk_rec==1).sum().item()
@@ -111,7 +136,7 @@ def main():
                     # plt.figure()
                     # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
                     # plt.show()
-                tqdm.write(f'{epoch}:{acc=}')
+                tqdm.write(f"{epoch}:{acc=}")
                 if i % 10 == 0:
                     with torch.no_grad():
                         net.network.eval()
@@ -120,16 +145,23 @@ def main():
                             label = label.to(DEVICE)
                             label = label.type(torch.int64)
                             batch = len(data[0])
-                            data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                            data = data.reshape(
+                                num_steps,
+                                batch,
+                                INPUT_CHANNEL,
+                                INPUT_HEIGHT,
+                                INPUT_WIDTH,
+                            )
                             pred_pro = net(data, time_step)
                             # loss_val = criterion(pred_pro, label)
                             acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
-                            hist['test'].append(acc)
+                            hist["test"].append(acc)
     except Exception as e:
         import traceback
-        print('--------error--------')
+
+        print("--------error--------")
         traceback.print_exc()
-        print('--------error--------')
+        print("--------error--------")
         pass
         # print(e)
     ## save model
@@ -139,9 +171,8 @@ def main():
     torch.save(net.state_dict(), enddir)
     print("success model saving")
 
-
     print(MODEL_NAME)
-    print(f'{acc=}')
+    print(f"{acc=}")
     # # Plot Loss
     # # print(hist)
     # fig = plt.figure(facecolor="w")
@@ -164,5 +195,6 @@ def main():
     # fig.tight_layout()
     # plt.show()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

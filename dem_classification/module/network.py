@@ -35,9 +35,9 @@ class BaseFunction(nn.Module):
             utils.reset(net)
         # print('---------------------')
         # print(torch.sum(data).item())
-       
+
         for step in range(time):  # data.size(0) = number of time steps
-        
+
             for i, net_ in enumerate(self.network_lst):
                 if i == 0:
                     data_ = net_(data[step])
@@ -54,10 +54,10 @@ class BaseFunction(nn.Module):
         # spk_cnt = compute_loss.spike_count(
         #     spk_rec, channel=True
         # )  # batch channel(n_class) pixel pixel
-       
+
         # pred_pro = F.softmax(spk_cnt, dim=1)
         # pred_pro = torch.sigmoid(spk_cnt)
-        pred_pro = torch.sigmoid(mem-0.5)
+        pred_pro = torch.sigmoid(mem - 0.5)
 
         # print(pred_pro.shape)
         pred_pro_ = 1 - pred_pro
@@ -65,13 +65,16 @@ class BaseFunction(nn.Module):
         # print(mem.item())
         # print(mem)
         return pred_pro
+
     def count_neurons(self):
         """
         ネットワーク内のニューロンの数を数える。発火率を算出する際に使用。
         torchライブラリじゃだめかもしれないから自作
         """
         self.number_neurons = 0
-        input_dummy = torch.zeros(1, self.input_channel, self.input_height, self.input_width).to(self.device)
+        input_dummy = torch.zeros(
+            1, self.input_channel, self.input_height, self.input_width
+        ).to(self.device)
         for i, net in enumerate(self.network_lst):
             if i == len(self.network_lst) - 1:
                 input_dummy, _ = net(input_dummy)
@@ -84,6 +87,8 @@ class BaseFunction(nn.Module):
                 _, c = input_dummy.shape
                 self.number_neurons += c
         return self.number_neurons
+
+
 # class ResBlock(nn.Module):
 #     def __init__(self):
 #         super().__init__()
@@ -131,12 +136,15 @@ class SpatialAttentionBlock(nn.Module):
                 learn_threshold=parm_learn,
                 reset_mechanism=reset,
             ),
-            ).to(device)
+        ).to(device)
+
     def forward(self, x):
         branched_x = self.branched_net(x)
         x = x * branched_x
         return x
-class ChannelAttentionBlock(nn.Module): # SeNet
+
+
+class ChannelAttentionBlock(nn.Module):  # SeNet
     def __init__(
         self,
         beta,
@@ -179,15 +187,17 @@ class ChannelAttentionBlock(nn.Module): # SeNet
                 learn_beta=parm_learn,
                 learn_threshold=parm_learn,
                 reset_mechanism=reset,
-            ), ).to(device)
-        
+            ),
+        ).to(device)
+
     def forward(self, x):
         branched_x = self.branched_net(x)
         # print(torch.sum(x), torch.sum(branched_x))
         x = x * branched_x
         # print(torch.sum(x).item())
         return x
-   
+
+
 class AttentionNetwork(BaseFunction):
     def __init__(
         self,
@@ -315,10 +325,9 @@ class AttentionNetwork(BaseFunction):
                 learn_beta=parm_learn,
                 output=True,
                 learn_threshold=parm_learn,
-                reset_mechanism='none',
+                reset_mechanism="none",
             ),
         ).to(device)
-
 
         self.network_lst = [
             self.down1,
@@ -327,7 +336,7 @@ class AttentionNetwork(BaseFunction):
             self.attention1,
             self.attention2,
             self.lenear1,
-            self.output
+            self.output,
         ]
 
 
@@ -413,7 +422,6 @@ class Conv3Full2BatchNorm(BaseFunction):
             ),
             nn.AdaptiveMaxPool2d((1, 1)),
             nn.Dropout2d(ratio_drop),
-            
         ).to(device)
         self.lenear1 = nn.Sequential(
             nn.Flatten(),
@@ -439,7 +447,7 @@ class Conv3Full2BatchNorm(BaseFunction):
                 learn_beta=parm_learn,
                 output=True,
                 learn_threshold=parm_learn,
-                reset_mechanism='none',
+                reset_mechanism="none",
             ),
         ).to(device)
         self.network_lst = [
@@ -447,12 +455,8 @@ class Conv3Full2BatchNorm(BaseFunction):
             self.down2,
             self.down3,
             self.lenear1,
-            self.output
+            self.output,
         ]
-
-   
-
-
 
 
 class Conv3Full2(BaseFunction):
@@ -534,7 +538,6 @@ class Conv3Full2(BaseFunction):
             ),
             nn.AdaptiveMaxPool2d((1, 1)),
             nn.Dropout2d(ratio_drop),
-            
         ).to(device)
         self.lenear1 = nn.Sequential(
             nn.Flatten(),
@@ -559,7 +562,7 @@ class Conv3Full2(BaseFunction):
                 learn_beta=parm_learn,
                 output=True,
                 learn_threshold=parm_learn,
-                reset_mechanism='none',
+                reset_mechanism="none",
             ),
         ).to(device)
         self.network_lst = [
@@ -567,10 +570,8 @@ class Conv3Full2(BaseFunction):
             self.down2,
             self.down3,
             self.lenear1,
-            self.output
+            self.output,
         ]
-
-   
 
 
 class AnnConv2(nn.Module):
@@ -601,11 +602,7 @@ class AnnConv2(nn.Module):
             nn.Upsample(scale_factor=2),
             nn.Conv2d(c2, c1, decode_kernel, padding=decode_kernel // 2),
             nn.ReLU(),
-            nn.Conv2d(
-                c1,
-                n_class,
-                1,
-            ),
+            nn.Conv2d(c1, n_class, 1,),
             nn.AdaptiveMaxPool2d((self.input_height, self.input_width)),
         ).to(device)
         self.soft = nn.Softmax(dim=1)

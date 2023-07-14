@@ -4,36 +4,43 @@ from PIL import Image
 import matplotlib.animation as animation
 import time
 import scipy.io
-#image = scipy.io.loadmat('bolder/data_0.mat')
-#image = scipy.io.loadmat('terrain_generation/perlin_bolder/data_10.mat')
-#image = scipy.io.loadmat('two_craters_label/data_10.mat')
-#image = scipy.io.loadmat('64pix_(0deg)_dem(noisy)_ver2\image\image(t-70)_1178')
-#image = scipy.io.loadmat(r'64pix_(0deg)_dem(noisy)_evaluate_1124\5deg\image\image_1.mat')
-#image = scipy.io.loadmat(r'64pix_(0-3deg)_dem(lidar_noisy)_boulder\image(t-10)\image_52.mat')
-image = scipy.io.loadmat(r'C:\Users\aki\Documents\GitHub\deep\DEM\simple_crater\image\data_5.mat')
 
-#print(type(image))
-#print(image.keys())
-#print(image.values())
-#print(image.items())
-#print(image['time_data'])
+# image = scipy.io.loadmat('bolder/data_0.mat')
+# image = scipy.io.loadmat('terrain_generation/perlin_bolder/data_10.mat')
+# image = scipy.io.loadmat('two_craters_label/data_10.mat')
+# image = scipy.io.loadmat('64pix_(0deg)_dem(noisy)_ver2\image\image(t-70)_1178')
+# image = scipy.io.loadmat(r'64pix_(0deg)_dem(noisy)_evaluate_1124\5deg\image\image_1.mat')
+# image = scipy.io.loadmat(r'64pix_(0-3deg)_dem(lidar_noisy)_boulder\image(t-10)\image_52.mat')
+image = scipy.io.loadmat(
+    r"C:\Users\aki\Documents\GitHub\deep\DEM\simple_crater\image\data_5.mat"
+)
 
-print(image['time_data'].shape)
+# print(type(image))
+# print(image.keys())
+# print(image.values())
+# print(image.items())
+# print(image['time_data'])
+
+print(image["time_data"].shape)
 
 
 fig, ax = plt.subplots()
 N = 11
+
+
 def update(i):
     if i == 1:
         print("===========")
-    img = image['time_data'][:,:,i]
-    #print(i)
-    
+    img = image["time_data"][:, :, i]
+    # print(i)
+
     plt.clf()
-    
-    plt.imshow(img,cmap='gray')
-hoge = animation.FuncAnimation(fig, update, np.arange(1,  N), interval=10)  # 代入しないと消される
-hoge.save('20_anim.gif', writer='PillowWriter')
+
+    plt.imshow(img, cmap="gray")
+
+
+hoge = animation.FuncAnimation(fig, update, np.arange(1, N), interval=10)  # 代入しないと消される
+hoge.save("20_anim.gif", writer="PillowWriter")
 plt.show()
 
 """

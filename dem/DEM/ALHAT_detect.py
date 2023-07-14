@@ -1,6 +1,6 @@
 import glob
 import scipy.io
-import numpy as  np
+import numpy as np
 import math
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
@@ -9,24 +9,26 @@ import os
 from ransac import *
 from sklearn.preprocessing import MinMaxScaler
 import time
+
 #
-#new_dir_path = r'C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(5deg)_dem(noisy)/alhat_label'
-new_dir_path = r'C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(0deg)_dem(noisy)_evaluate/alhat_label_quantum'
+# new_dir_path = r'C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(5deg)_dem(noisy)/alhat_label'
+new_dir_path = r"C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(0deg)_dem(noisy)_evaluate/alhat_label_quantum"
 os.makedirs(new_dir_path, exist_ok=True)
-#original_DEM_path = r'C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(5deg)_dem(noisy)/model/'
-original_DEM_path = r'C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(0deg)_dem(noisy)_evaluate/model/'
+# original_DEM_path = r'C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(5deg)_dem(noisy)/model/'
+original_DEM_path = (
+    r"C:/Users/aki/Documents/GitHub/deep/DEM/64pix_(0deg)_dem(noisy)_evaluate/model/"
+)
 file_mei = 11
 observed = 1
 if observed:
-    add_path_ = 'observed_model_'+str(file_mei)+'.mat'
-    read_path_ = os.path.join(original_DEM_path,add_path_)
-    rei = scipy.io.loadmat(read_path_)['DEM']
+    add_path_ = "observed_model_" + str(file_mei) + ".mat"
+    read_path_ = os.path.join(original_DEM_path, add_path_)
+    rei = scipy.io.loadmat(read_path_)["DEM"]
 else:
-    add_path_ = 'real_model_'+str(file_mei)+'.mat'
-    read_path_ = os.path.join(original_DEM_path,add_path_)
-    rei = scipy.io.loadmat(read_path_)['true_DEM']
-read_path_ = os.path.join(original_DEM_path,add_path_)
-
+    add_path_ = "real_model_" + str(file_mei) + ".mat"
+    read_path_ = os.path.join(original_DEM_path, add_path_)
+    rei = scipy.io.loadmat(read_path_)["true_DEM"]
+read_path_ = os.path.join(original_DEM_path, add_path_)
 
 
 print(rei)
@@ -35,55 +37,68 @@ width = rei.shape[1]
 # ウィンドウ大きさ
 F = 9
 
+
 def min_max(x, axis=None):
     min = x.min(axis=axis, keepdims=True)
     max = x.max(axis=axis, keepdims=True)
-    result = (x-min)/(max-min)
+    result = (x - min) / (max - min)
     return result
+
 
 def augment(xyzs):
     axyz = np.ones((len(xyzs), 4))
     axyz[:, :3] = xyzs
     return axyz
 
+
 def estimate(xyzs):
     axyz = augment(xyzs[:3])
     return np.linalg.svd(axyz)[-1][-1, :]
 
+
 def is_inlier(coeffs, xyz, threshold):
     return np.abs(coeffs.dot(augment([xyz]).T)) < threshold
 
+
 def plot_plane(a, b, c, d):
     xx, yy = np.mgrid[:10, :10]
-    smooth=1e-6
-    return xx, yy, (-d - a * xx - b * yy) / (c+smooth)
-    
+    smooth = 1e-6
+    return xx, yy, (-d - a * xx - b * yy) / (c + smooth)
+
+
 def Get_Slope(roi):
 
     n = 100
     max_iterations = 500
     goal_inliers = n * 0.1
-    xyzs = np.zeros((F**2, 3))
+    xyzs = np.zeros((F ** 2, 3))
 
-    #print(roi.shape)
-    #print(roi)
+    # print(roi.shape)
+    # print(roi)
     i = 0
     for x in range(F):
         for y in range(F):
-    
+
             z = roi[x][y]
-            #print(i,x,y,z)
-            xyzs[i][0] = x 
+            # print(i,x,y,z)
+            xyzs[i][0] = x
             xyzs[i][1] = y
             xyzs[i][2] = z
             i += 1
-    #print(xyzs)
+    # print(xyzs)
 
     # RANSAC
-    m, best_inliers = run_ransac(xyzs, estimate, lambda x, y: is_inlier(x, y, 0.01), 3, goal_inliers, max_iterations)
+    m, best_inliers = run_ransac(
+        xyzs,
+        estimate,
+        lambda x, y: is_inlier(x, y, 0.01),
+        3,
+        goal_inliers,
+        max_iterations,
+    )
     a, b, c, d = m
 
-    #描画
+    # 描画
     xx, yy, zz = plot_plane(a, b, c, d)
     """
     fig = plt.figure()
@@ -92,26 +107,25 @@ def Get_Slope(roi):
     ax.plot_surface(xx, yy, zz, color=(0, 1, 0, 0.5))
     """
     smooth = 1e-6
-    #ans = math.degrees(math.atan(abs(a/(c+smooth))) + math.degrees(math.atan(abs(b/(c+smooth)))))
-    #ans_tate = math.degrees(math.atan(abs(a/(c+smooth))))
-    #ans = math.degrees(math.atan(abs(b/(c+smooth))))
-    #ax.set_title("tate,yoko")
+    # ans = math.degrees(math.atan(abs(a/(c+smooth))) + math.degrees(math.atan(abs(b/(c+smooth)))))
+    # ans_tate = math.degrees(math.atan(abs(a/(c+smooth))))
+    # ans = math.degrees(math.atan(abs(b/(c+smooth))))
+    # ax.set_title("tate,yoko")
     # 9/10変更
-    
-    #print('roi',roi.shape)
-    center = roi[4,4]
-    W = roi[0,4]
-    E = roi[8,4]
-    S = roi[4,8]
-    N = roi[4,0]
-    SE = roi[8,8]
-    SW = roi[0,8]
-    NE = roi[8,0]
-    NW = roi[0,0]
-    fx = ((SE-SW+np.sqrt(2))*(E-W)+NE-NW)/(4+2*np.sqrt(2))
-    fy = ((NW-SW+np.sqrt(2))*(N-S)+NE-SE)/(4+2*np.sqrt(2))
-    theta = np.arctan(fx**2+fy**2)
 
+    # print('roi',roi.shape)
+    center = roi[4, 4]
+    W = roi[0, 4]
+    E = roi[8, 4]
+    S = roi[4, 8]
+    N = roi[4, 0]
+    SE = roi[8, 8]
+    SW = roi[0, 8]
+    NE = roi[8, 0]
+    NW = roi[0, 0]
+    fx = ((SE - SW + np.sqrt(2)) * (E - W) + NE - NW) / (4 + 2 * np.sqrt(2))
+    fy = ((NW - SW + np.sqrt(2)) * (N - S) + NE - SE) / (4 + 2 * np.sqrt(2))
+    theta = np.arctan(fx ** 2 + fy ** 2)
 
     """
     #ロバスト平面の方程式から
@@ -123,76 +137,73 @@ def Get_Slope(roi):
     print('SLOPE:a:b:c:d',ans,a,b,c,d)
     plt.show()
     """
-    #一枚当たりの処理時間を表示
+    # 一枚当たりの処理時間を表示
 
     return theta, m
 
-    
 
 def Get_Roughness(cropped, m, x_ary, y_ary):
 
-    a,b,c,d = m
+    a, b, c, d = m
     smooth = 1e-6
 
     diff = [0]
     for x in range(F):
         for y in range(F):
-            z = (-a/(c+smooth))*x + (-b/(c+smooth))*y + (-d/(c+smooth))
-            #print("z",z)
-            #print("cropped[x][y]-z",cropped[x][y]-z)
-            diff_ = cropped[x][y]-z
+            z = (-a / (c + smooth)) * x + (-b / (c + smooth)) * y + (-d / (c + smooth))
+            # print("z",z)
+            # print("cropped[x][y]-z",cropped[x][y]-z)
+            diff_ = cropped[x][y] - z
             if diff_ > 5:
                 pass
             else:
-                diff.append(cropped[x][y]-z)
-    
-    roughness = max(diff) 
+                diff.append(cropped[x][y] - z)
+
+    roughness = max(diff)
     return roughness
 
+
 # Get_roughness内の計算用配列
-x_ary = np.array([range(i,i+8) for i in [0,1,2,3,4,5,6,7]])
-y_ary = np.array([range(i,i+8) for i in [0,1,2,3,4,5,6,7]])
+x_ary = np.array([range(i, i + 8) for i in [0, 1, 2, 3, 4, 5, 6, 7]])
+y_ary = np.array([range(i, i + 8) for i in [0, 1, 2, 3, 4, 5, 6, 7]])
 
 for file_num in range(1000):
 
     if observed:
-        add_path_ = 'observed_model_'+str(file_num)+'.mat'
-        read_path_ = os.path.join(original_DEM_path,add_path_)
-        DEM = scipy.io.loadmat(read_path_)['DEM']
+        add_path_ = "observed_model_" + str(file_num) + ".mat"
+        read_path_ = os.path.join(original_DEM_path, add_path_)
+        DEM = scipy.io.loadmat(read_path_)["DEM"]
     else:
-        add_path_ = 'real_model_'+str(file_num)+'.mat'
-        read_path_ = os.path.join(original_DEM_path,add_path_)
-        DEM = scipy.io.loadmat(read_path_)['true_DEM'] 
-    
+        add_path_ = "real_model_" + str(file_num) + ".mat"
+        read_path_ = os.path.join(original_DEM_path, add_path_)
+        DEM = scipy.io.loadmat(read_path_)["true_DEM"]
 
-    print('READ_PATH:',read_path_)
+    print("READ_PATH:", read_path_)
     start = time.time()
 
-
-    #print(DEM.dtype)
-    DEM = np.array(DEM, dtype='float32')
+    # print(DEM.dtype)
+    DEM = np.array(DEM, dtype="float32")
     mu = np.mean(DEM)
     sigma = np.std(DEM)
 
     scale = 1.0
-   
 
     rotate_list = [0.0, 45.0, 90.0, 135.0, 180.0]
 
-    V = np.zeros((height,width)) # safety for each pixel
-    S = np.zeros((height,width)) # slope for each pixel
-    R = np.zeros((height,width)) # roughness for each pixel
-    size = (F,F)
-    for row in range(F//2+1, height-(F//2)-1, 1):
-        for col in range(F//2+1, width-(F//2)-1, 1):
+    V = np.zeros((height, width))  # safety for each pixel
+    S = np.zeros((height, width))  # slope for each pixel
+    R = np.zeros((height, width))  # roughness for each pixel
+    size = (F, F)
+    for row in range(F // 2 + 1, height - (F // 2) - 1, 1):
+        for col in range(F // 2 + 1, width - (F // 2) - 1, 1):
             for angle in rotate_list:
                 center = (int(col), int(row))
-                #print(center)
+                # print(center)
                 trans = cv2.getRotationMatrix2D(center, angle, scale)
-                DEM2 = cv2.warpAffine(DEM, trans, (width,height),cv2.INTER_CUBIC)
-              
-                #roi = DEM2[(row-F//2):(row+F//2),(col-F//2):(col+F//2)]
-                    # 切り抜く。
+                DEM2 = cv2.warpAffine(DEM, trans, (width, height), cv2.INTER_CUBIC)
+
+                # roi = DEM2[(row-F//2):(row+F//2),(col-F//2):(col+F//2)]
+                # 切り抜く。
                 cropped = cv2.getRectSubPix(DEM2, size, center)
 
                 """
@@ -208,74 +219,70 @@ for file_num in range(1000):
                 """
                 suiheido, m = Get_Slope(cropped)
 
-                if suiheido > S[row][col]: # ワーストケースを記録
+                if suiheido > S[row][col]:  # ワーストケースを記録
                     S[row][col] = suiheido
-                    #print("suiheido",suiheido)
-                
+                    # print("suiheido",suiheido)
+
                 # 画像外枠境界線で粗さの取得を禁止する
-                if row==F//2+1 or col==F//2+1:
-                    heitando=0
-                elif row==height-(F//2)-2 or col==width-(F//2)-2:
-                    heitando=0
+                if row == F // 2 + 1 or col == F // 2 + 1:
+                    heitando = 0
+                elif row == height - (F // 2) - 2 or col == width - (F // 2) - 2:
+                    heitando = 0
                 else:
-                    heitando = Get_Roughness(cropped, m, x_ary, y_ary)   
+                    heitando = Get_Roughness(cropped, m, x_ary, y_ary)
 
                 if heitando > R[row][col]:
                     R[row][col] = heitando
-                
 
-    #S = min_max(S)
-    #R = min_max(R)
-    #np.set_printoptions(threshold=np.inf)
-    #print("S:",S)
-    #print("R:",R)
+    # S = min_max(S)
+    # R = min_max(R)
+    # np.set_printoptions(threshold=np.inf)
+    # print("S:",S)
+    # print("R:",R)
     fig = plt.figure()
-    ax1 = fig.add_subplot(2,3,1)
-    ax2 = fig.add_subplot(2,3,2)
-    ax3 = fig.add_subplot(2,3,3)
-    ax1.set_title('original')
+    ax1 = fig.add_subplot(2, 3, 1)
+    ax2 = fig.add_subplot(2, 3, 2)
+    ax3 = fig.add_subplot(2, 3, 3)
+    ax1.set_title("original")
     ax1.imshow(DEM)
-    ax2.set_title('slope'+str(np.mean(S)))
-    ax2.imshow(S,cmap='jet') 
-    ax3.set_title('roughness'+str(np.mean(R)))
-    ax3.imshow(R,cmap='jet')
-    
+    ax2.set_title("slope" + str(np.mean(S)))
+    ax2.imshow(S, cmap="jet")
+    ax3.set_title("roughness" + str(np.mean(R)))
+    ax3.imshow(R, cmap="jet")
 
-    '''
+    """
     Vthm = np.mean(S)
     Vths = np.mean(R)
     S = S>1.5*Vthm # SLOPE
     print("1.5*Vthm",1.5*Vthm)
     R = R>1.5*Vths # ROUGHNESS
     print("1.5*Vths",1.5*Vths)
-    '''
-    #print("max S",np.max(S))
-    #print("max R",np.max(R))
-    ## 12/13 ISTS 標準閾値　S = S>0.98　R = R>2　
+    """
+    # print("max S",np.max(S))
+    # print("max R",np.max(R))
+    ## 12/13 ISTS 標準閾値　S = S>0.98　R = R>2
     ## 12/13 高い閾値　 S = S>1.5 R = R>5
-    S = S>0.98
-    R = R>2
+    S = S > 0.98
+    R = R > 2
 
+    hazard = S | R
 
-    hazard = (S|R)
+    save_path = new_dir_path + "/label_" + str(file_num) + ".mat"
+    print("SAVE_PATH:", save_path)
+    scipy.io.savemat(save_path, {"label_data": hazard})
 
-    save_path = new_dir_path + '/label_'+ str(file_num) + '.mat'
-    print('SAVE_PATH:',save_path)
-    scipy.io.savemat(save_path, {'label_data':hazard})
-
-    ax4 = fig.add_subplot(2,3,4)
-    ax4.set_title('hazard_thr')
+    ax4 = fig.add_subplot(2, 3, 4)
+    ax4.set_title("hazard_thr")
     ax4.imshow(hazard)
-    ax5 = fig.add_subplot(2,3,5)
-    ax5.set_title('slope_thr')
+    ax5 = fig.add_subplot(2, 3, 5)
+    ax5.set_title("slope_thr")
     ax5.imshow(S)
-    ax6 = fig.add_subplot(2,3,6)
-    ax6.set_title('roughness_thr')
+    ax6 = fig.add_subplot(2, 3, 6)
+    ax6.set_title("roughness_thr")
     ax6.imshow(R)
-    save_path = new_dir_path + '/label_'+ str(file_num) + '.jpg'
+    save_path = new_dir_path + "/label_" + str(file_num) + ".jpg"
     plt.savefig(save_path)
 
-    #一枚当たりの処理時間を表示
+    # 一枚当たりの処理時間を表示
     elapsed_time = time.time() - start
-    print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
-    
+    print("elapsed_time:{0}".format(elapsed_time) + "[sec]")

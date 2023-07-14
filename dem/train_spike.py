@@ -28,6 +28,7 @@ from collections import defaultdict
 
 import yaml
 
+
 def print_batch_accuracy(data, label, train=False):
     output, _ = net(data.view(BATCH_SIZE, -1))
     _, idx = output.sum(dim=0).max(1)
@@ -38,17 +39,42 @@ def print_batch_accuracy(data, label, train=False):
     else:
         print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
 
+
 # Network Architecture
 # num_inputs = 28*28
 # num_hidden = 1000
 # num_outputs = 10
 # dtype = torch.float
 
-train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True)
-test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
+train_dataset = LoadDataset(
+    processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+    raw_event_dir=RAW_EVENT_PATH,
+    accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+    input_height=INPUT_HEIGHT,
+    input_width=INPUT_WIDTH,
+    train=True,
+)
+test_dataset = LoadDataset(
+    processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+    raw_event_dir=RAW_EVENT_PATH,
+    accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+    input_height=INPUT_HEIGHT,
+    input_width=INPUT_WIDTH,
+    train=False,
+)
 
-train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=BATCH_SIZE,
+    collate_fn=custom_data.custom_collate,
+    shuffle=True,
+)
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=BATCH_SIZE,
+    collate_fn=custom_data.custom_collate,
+    shuffle=False,
+)
 
 net = NET
 net.load_state_dict(torch.load(MODEL_PATH))
@@ -81,14 +107,16 @@ try:
                 label = label.type(torch.int64)
                 label = label.to(DEVICE)
                 batch = len(data[0])
-                data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                data = data.reshape(
+                    num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
+                )
                 # print(data.shape)
                 net.train()
-                pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
+                pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
                 # print(pred_pro.shape)
                 # loss_val = criterion(pred_pro, label)
                 loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
-                loss_val += net.spike_count*LOSS_RATE
+                loss_val += net.spike_count * LOSS_RATE
                 # loss_val = 1 - acc
 
                 # Gradient calculation + weight update
@@ -97,13 +125,12 @@ try:
                 optimizer.step()
 
                 # Store loss history for future plotting
-                hist['loss'].append(loss_val.item())
+                hist["loss"].append(loss_val.item())
                 acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
 
                 # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
 
-                
-                hist['train'].append(acc)
+                hist["train"].append(acc)
 
                 # print(f"Accuracy: {acc * 100:.2f}%/n")
                 # spk_count_batch = (spk_rec==1).sum().item()
@@ -112,8 +139,8 @@ try:
                 # plt.figure()
                 # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
                 # plt.show()
-            tqdm.write(f'{epoch}:{acc=}')
-            tqdm.write(f'{epoch}:{net.spike_count=}')
+            tqdm.write(f"{epoch}:{acc=}")
+            tqdm.write(f"{epoch}:{net.spike_count=}")
             if i % 10 == 0:
                 with torch.no_grad():
                     net.network.eval()
@@ -122,16 +149,19 @@ try:
                         label = label.to(DEVICE)
                         label = label.type(torch.int64)
                         batch = len(data[0])
-                        data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                        data = data.reshape(
+                            num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
+                        )
                         pred_pro = net(data, time_step)
                         # loss_val = criterion(pred_pro, label)
                         acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
-                        hist['test'].append(acc)
+                        hist["test"].append(acc)
 except Exception as e:
     import traceback
-    print('--------error--------')
+
+    print("--------error--------")
     traceback.print_exc()
-    print('--------error--------')
+    print("--------error--------")
     pass
     # print(e)
 ## save model
@@ -141,22 +171,22 @@ enddir = MODEL_PATH
 # torch.save(net.state_dict(), enddir)
 # print("success model saving")
 # print(MODEL_NAME)
-print(f'{acc=}')
+print(f"{acc=}")
 # Plot Loss
 # print(hist)
 fig = plt.figure(facecolor="w")
 ax1 = fig.add_subplot(1, 3, 1)
 ax2 = fig.add_subplot(1, 3, 2)
 ax3 = fig.add_subplot(1, 3, 3)
-ax1.plot(hist['loss'], label="train")
+ax1.plot(hist["loss"], label="train")
 ax1.set_title("loss")
 ax1.set_xlabel("Iteration")
 ax1.set_ylabel("Loss (Dice)")
-ax2.plot(hist['train'], label="train")
+ax2.plot(hist["train"], label="train")
 ax2.set_title("Train  IoU")
 ax2.set_xlabel("Iteration")
 ax2.set_ylabel("Accuracy(IoU)")
-ax3.plot(hist['test'], label='test')
+ax3.plot(hist["test"], label="test")
 ax3.set_title("Test IoU")
 ax3.set_xlabel("epoch")
 ax3.set_ylabel("Accuracy(IoU)")
@@ -165,11 +195,15 @@ fig.tight_layout()
 plt.show()
 
 
-
 # %%
 spikes_lst = []
 ious = []
-test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE_TEST, collate_fn=custom_data.custom_collate, shuffle=False,)
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=BATCH_SIZE_TEST,
+    collate_fn=custom_data.custom_collate,
+    shuffle=False,
+)
 with torch.no_grad():
     net.eval()
     for i, (events, label) in enumerate(tqdm(iter(test_loader))):
@@ -179,34 +213,34 @@ with torch.no_grad():
         # print(events.shape)# TBCHW
         # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
         pred_pro = net(events, FINISH_TIME)
-        
+
         iou = compute_loss.culc_iou(pred_pro, label, CORRECT_RATE)
         ious.append(iou)
         # pred_pro = compute_loss.show_pred(pred_pro, correct_rate)
-        spikes_lst.append(net.spike_count)  
-      
+        spikes_lst.append(net.spike_count)
+
         # save_img(i, events, pred_pro, label,  iou, pdf_output=False)
         # break
 # %%
-iou_mean = sum(ious)/len(ious)
+iou_mean = sum(ious) / len(ious)
 print(MODEL_NAME, iou_mean)
 # %%
-n_spikes = sum(spikes_lst)/len(spikes_lst)
-print(f'{n_spikes=}')
+n_spikes = sum(spikes_lst) / len(spikes_lst)
+print(f"{n_spikes=}")
 # %%
-jules_per_spike = 0.9e-12 #J
+jules_per_spike = 0.9e-12  # J
 # jules_per_spike = 0.45e-9 #J hide
-n_spikes*jules_per_spike
+n_spikes * jules_per_spike
 # %%
 params = 0
 for p in net.parameters():
     if p.requires_grad:
         params += p.numel()
-        
+
 print(params)  # 121898
-jules_ = params*FINISH_TIME*2.19e-9
+jules_ = params * FINISH_TIME * 2.19e-9
 jules_
 # %%
-spike_rate = n_spikes/params
+spike_rate = n_spikes / params
 spike_rate
 # %%
