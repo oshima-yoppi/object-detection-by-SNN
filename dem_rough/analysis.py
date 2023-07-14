@@ -30,7 +30,7 @@ from IPython.display import HTML
 from collections import defaultdict
 
 import time
-def main(classification=False):
+def main(hist = None,):
     # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
 
@@ -66,7 +66,24 @@ def main(classification=False):
     #     FN = np.sum(np.where((pred<CORRECT_RATE) & (label==1), 1, 0))/all_pixel
     #     # iou = compute_loss.culc_iou(pred, label, CORRECT_RATE)
     #     return TP, TN, FP, FN
-
+    def save_train_process(path, hist):
+        fig = plt.figure(facecolor="w")
+        ax1 = fig.add_subplot(1, 2, 1)
+        ax2 = fig.add_subplot(1, 2, 2)
+        ax1.plot(hist['loss'], label="train")
+        ax1.set_title("loss")
+        ax1.set_xlabel("Iteration")
+        ax1.set_ylabel("Loss (Dice)")
+        ax2.plot(hist['acc'], label='acc')
+        ax2.plot(hist['precision'], label='precision')
+        ax2.plot(hist['recall'], label='recall')
+        ax2.set_title("Test acc")
+        ax2.set_xlabel("epoch")
+        ax2.set_ylabel("Accuracy(IoU)")
+        ax2.legend()
+        fig.suptitle(f"ModelName:{MODEL_NAME}")
+        fig.tight_layout()
+        plt.savefig(path)
 
     def save_img(number, events, pred_pro, label, results, result_recall_path,pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
@@ -152,10 +169,11 @@ def main(classification=False):
     os.makedirs(RESULT_PATH)
     result_recall_path = os.path.join(RESULT_PATH, 'recall_failed')
     os.makedirs(result_recall_path)
-    # result_FN_path = os.path.join(RESULT_PATH, 'FN_images')
-    # result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
-    # os.makedirs(result_FN_path)
-    # os.makedirs(result_FP_path)
+    if hist is not None:
+        train_process_dir = os.path.join(RESULT_PATH, 'process')
+        os.makedirs(train_process_dir)
+        train_process_path = os.path.join(train_process_dir, 'train_process.png')
+        save_train_process(train_process_path, hist)
 
     spikes_lst = []
     analyzer = compute_loss.Analyzer()
@@ -227,8 +245,7 @@ def main(classification=False):
     spike_rate = n_spikes/n_nerons
     results['Spike Rate'] = spike_rate.item()
     # results['Spike Rate'] = round(results['Spike Rate'], 2)
-    if classification == False:
-        return results
+    
     
 
 

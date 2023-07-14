@@ -131,7 +131,7 @@ def main():
 
                     # Store loss history for future plotting
                     loss_log.append(loss_val.item())
-                    hist["loss"].append(loss_val.item())
+                    # hist["loss"].append(loss_val.item())
                 hist["loss"].append(np.mean(loss_log))
 
                 with torch.no_grad():
