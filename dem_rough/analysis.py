@@ -33,9 +33,7 @@ from collections import defaultdict
 import time
 
 
-def main(
-    hist=None,
-):
+def main(hist=None,):
     # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,

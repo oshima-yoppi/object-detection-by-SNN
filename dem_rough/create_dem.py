@@ -36,7 +36,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
     def calculate_sigma(self, n):
         sigma_n = (
-            self.sigma0 * (1 - 2 ** (2 * self.harst - 2)) / (2**n) ** (2 * self.harst)
+            self.sigma0 * (1 - 2 ** (2 * self.harst - 2)) / (2 ** n) ** (2 * self.harst)
         )
         return sigma_n
 
@@ -100,8 +100,9 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         eps = 1e-6
         n_crater = random.randint(0, self.max_crater)
         for i in range(n_crater):
-            center_x, center_y = random.uniform(-5, self.shape + 5), random.uniform(
-                -5, self.shape + 5
+            center_x, center_y = (
+                random.uniform(-5, self.shape + 5),
+                random.uniform(-5, self.shape + 5),
             )
             minimum_detection_crater_size = 0.3  # 見つけたい障害物の最小の大きさ[m]
             min_pix_of_crater = minimum_detection_crater_size / METER_PER_GRID  # [pix]
@@ -118,10 +119,10 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
             alpha = (H_c + H_r) * radius / (H_c + H_ro + eps)
             beta = radius + (1 - (H_c + H_r) / (H_c + H_ro + eps)) * W_r
             A = (
-                -3 * radius**3
-                + 2 * radius**2 * beta
-                + 2 * radius * beta**2
-                + 2 * beta**3
+                -3 * radius ** 3
+                + 2 * radius ** 2 * beta
+                + 2 * radius * beta ** 2
+                + 2 * beta ** 3
             )
 
             for i in range(self.shape):
@@ -130,26 +131,30 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
                     r = math.sqrt(abs(i - center_x) ** 2 + abs(j - center_y) ** 2)
 
                     if r <= alpha:
-                        h = (H_c + H_ro) * (r**2 / radius**2) - H_c
+                        h = (H_c + H_ro) * (r ** 2 / radius ** 2) - H_c
                     elif r <= radius:
                         h = ((H_c + H_ro) ** 2 / (H_r - H_ro + eps) - H_c + eps) * (
                             (r / radius) - 1 + eps
                         ) ** 2 + H_r
                     elif r <= beta:
-                        h = (H_r * (radius + W_r) ** 3 * A) / (
-                            W_r
-                            * beta**4
-                            * (radius - beta) ** 2
-                            * (3 * radius**2 + 3 * radius * W_r + W_r**2)
-                            + eps
-                        ) * (r - radius) ** 2 * (
-                            r - beta * (1 + (beta**3 - radius**3) / A)
-                        ) + H_r
+                        h = (
+                            (H_r * (radius + W_r) ** 3 * A)
+                            / (
+                                W_r
+                                * beta ** 4
+                                * (radius - beta) ** 2
+                                * (3 * radius ** 2 + 3 * radius * W_r + W_r ** 2)
+                                + eps
+                            )
+                            * (r - radius) ** 2
+                            * (r - beta * (1 + (beta ** 3 - radius ** 3) / A))
+                            + H_r
+                        )
                     elif r <= radius + W_r:
                         h = H_r * (radius + W_r) ** 3 / (
-                            (radius + W_r) ** 3 - radius**3 + eps
-                        ) * (r / radius) ** (-3) - (H_r * radius**3) / (
-                            (radius + W_r) ** 3 - radius**3
+                            (radius + W_r) ** 3 - radius ** 3 + eps
+                        ) * (r / radius) ** (-3) - (H_r * radius ** 3) / (
+                            (radius + W_r) ** 3 - radius ** 3
                         )
 
                     self.dem[i, j] += h
@@ -157,8 +162,9 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
     def put_boulder(self):
         for i in range(self.max_boulder):
-            center_x, center_y = random.uniform(0, self.shape), random.uniform(
-                0, self.shape
+            center_x, center_y = (
+                random.uniform(0, self.shape),
+                random.uniform(0, self.shape),
             )
 
             min_detection_boulder_size = 0.15  # 見つけたい障害物の最小の大きさ[m]
@@ -187,14 +193,14 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
                     # 楕円方程式無いに存在するか
                     # print(x_axis)
                     # print(x_/x_axis)
-                    if y_**2 <= y_axis**2 * (1 - (x_ / x_axis) ** 2):
+                    if y_ ** 2 <= y_axis ** 2 * (1 - (x_ / x_axis) ** 2):
                         self.dem[i, j] += self.generate_elllipsoid(
                             i, j, center_x, center_y, x_axis, y_axis, z_axis
                         )
         return
 
     def generate_elllipsoid(self, x, y, xc, yc, xr, yr, zr):
-        return zr * math.sqrt(1 - ((x - xc) ** 2 / xr**2) - ((y - yc) ** 2 / yr**2))
+        return zr * math.sqrt(1 - ((x - xc) ** 2 / xr ** 2) - ((y - yc) ** 2 / yr ** 2))
 
     def generate_dem(self):
         self.put_fractal()
@@ -227,7 +233,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
 
 n = 8
-shape = 2**n + 1  # The array must be square with edge length 2**n + 1
+shape = 2 ** n + 1  # The array must be square with edge length 2**n + 1
 max_crater = 0
 max_boulder = 3
 # harst=0.2 sigma 3 is best..?

@@ -9,14 +9,14 @@ class CalcSigma:
 
     def __call__(self, n):
         sigma_n = (
-            self.sigma0 * (1 - 2 ** (2 * self.harst - 2)) / (2**n) ** (2 * self.harst)
+            self.sigma0 * (1 - 2 ** (2 * self.harst - 2)) / (2 ** n) ** (2 * self.harst)
         )
         return sigma_n
 
 
 # The array must be square with edge length 2**n + 1
 n = 7
-N = 2**n + 1
+N = 2 ** n + 1
 # f scales the random numbers at each stage of the algorithm
 f = 1.0
 step = 1
