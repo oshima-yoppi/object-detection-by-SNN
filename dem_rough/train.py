@@ -105,9 +105,7 @@ def main():
                     label = label.to(DEVICE)
                     batch = len(data[0])
                     # print(data.shape)
-                    data = data.reshape(
-                        num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
-                    )
+                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                     # print(data.shape)
                     net.train()
                     pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
@@ -143,9 +141,7 @@ def main():
                         data = data.to(DEVICE)
                         label = label.to(DEVICE)
                         batch = len(data[0])
-                        data = data.reshape(
-                            num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
-                        )
+                        data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                         pred_pro = net(data, time_step)
 
                         # pred_class = pred_pro.argmax(dim=1)
