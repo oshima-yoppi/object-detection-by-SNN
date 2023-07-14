@@ -28,24 +28,10 @@ from collections import defaultdict
 
 import yaml
 import time
-# def print_batch_accuracy(data, label, train=False):
-#     output, _ = net(data.view(BATCH_SIZE, -1))
-#     _, idx = output.sum(dim=0).max(1)
-#     acc = np.mean((label == idx).detach().cpu().numpy())
 
-#     if train:
-#         print(f"Train set accuracy for a single minibatch: {acc*100:.2f}%")
-#     else:
-#         print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
-
-# Network Architecture
-# num_inputs = 28*28
-# num_hidden = 1000
-# num_outputs = 10
-# dtype = torch.float
 def main():
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
-    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
+    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=START_STEP)
+    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=START_STEP)
 
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
@@ -65,7 +51,7 @@ def main():
     # loss_func = nn.BCELoss()
 
 
-    num_epochs = 20
+    num_epochs = 200
     # num_epochs = 2
     num_iters = 50
     # pixel = 64
@@ -85,11 +71,11 @@ def main():
     max_acc = -1
     try:
         for time_step in time_step_lst:
+            max_recall = -1
             for epoch in tqdm(range(num_epochs)):
                 for i, (data, label) in enumerate(iter(train_loader)):
-                    data = data.to(DEVICE)
-                    # label = torch.tensor(label, dtype=torch.int64)
-                    
+                    loss_log = []
+                    data = data.to(DEVICE)                    
                     label = label.to(DEVICE)
                     batch = len(data[0])
                     # print(data.shape)
@@ -97,6 +83,8 @@ def main():
                     # print(data.shape)
                     net.train()
                     pred_pro = net(data, time_step)# batch, channel, pixel ,pixel
+                    # print(pred_pro.shape)
+                    # print(label.shape)
                     # plt.figure()
                     # plt.imshow(pred_pro[0, 1].detach().cpu().numpy())
                     # plt.show()
@@ -114,48 +102,38 @@ def main():
                     optimizer.step()
 
                     # Store loss history for future plotting
+                    loss_log.append(loss_val.item())
                     hist['loss'].append(loss_val.item())
-                    # acc = compute_loss.culc_iou(pred_pro, label, correct_rate)
-
-
-                    # print(f"Epoch {epoch}, Iteration {i} /nTrain Loss: {loss_val.item():.2f}")
-
+                hist['loss'].append(np.mean(loss_log))
                     
                     
-                    hist['train'].append(1 - loss_val.item())
-
-                    # print(f"Accuracy: {acc * 100:.2f}%/n")
-                    # spk_count_batch = (spk_rec==1).sum().item()
-                    # spk_count_batch /= batch
-                    # tqdm.write(f'{spk_count_batch}')
-                    # plt.figure()
-                    # plt.imshow(pred_pro[0,1,:,:].to('cpu').detach().numpy())
-                    # plt.show()
                 
-                if epoch % 1 == 0:
-                    start = time.time()
-                    with torch.no_grad():
-                        net.eval()
-                        for i, (data, label) in enumerate(iter(test_loader)):
-                            data = data.to(DEVICE)
-                            label = label.to(DEVICE)
-                            batch = len(data[0])
-                            data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
-                            pred_pro = net(data, time_step)
+                with torch.no_grad():
+                    net.eval()
+                    iou_log = []
+                    precision_log = []
+                    recall_log = []
+                    for i, (data, label) in enumerate(iter(test_loader)):
+                        data = data.to(DEVICE)
+                        label = label.to(DEVICE)
+                        batch = len(data[0])
+                        data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                        pred_pro = net(data, time_step)
 
-                            # pred_class = pred_pro.argmax(dim=1)
-                            # label_class = label.argmax(dim=1)
-                            # acc = (pred_class == label_class).sum().item() / batch
-                            iou, precision, recall = analyzer(pred_pro, label)
-                            # loss_val = criterion(pred_pro, label)
-                            # acc = compute_loss.culc_iou(pred_pro, label, correct_rate)a
-                            acc = iou
-                            hist['test'].append(acc)
-                        tqdm.write(f'{epoch}:{acc=}')
-                        if max_acc < acc:
-                            max_acc = acc
-                            torch.save(net.state_dict(), model_save_path)
-                    # print(f'{time.time()-start}sec')
+                        # pred_class = pred_pro.argmax(dim=1)
+                        # label_class = label.argmax(dim=1)
+                        # acc = (pred_class == label_class).sum().item() / batch
+                        iou, precision, recall = analyzer(pred_pro, label)
+                        iou_log.append(iou)
+                        precision_log.append(precision)
+                        recall_log.append(recall)
+                    hist['iou'].append(np.mean(iou_log))
+                    hist['precision'].append(np.mean(precision_log))
+                    hist['recall'].append(np.mean(recall_log))
+                    tqdm.write(f'{epoch}:::  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}')
+                    # if max_recall < hist['recall'][-1] and hist['recall'][-1] > 0.5:
+                    #     max_recall = hist['recall'][-1]
+                    #     torch.save(net.state_dict(), model_save_path)
     except Exception as e:
         import traceback
         print('--------error--------')
@@ -168,8 +146,8 @@ def main():
     # # if os.path.exists(enddir) == False:
     # #     os.makedirs(enddir)
     
-    # torch.save(net.state_dict(), enddir)
-    # print("success model saving")
+    torch.save(net.state_dict(), model_save_path)
+    print("success model saving")
 
 
     # print(MODEL_NAME)
@@ -195,6 +173,7 @@ def main():
     # fig.suptitle(f"ModelName:{MODEL_NAME}")
     # fig.tight_layout()
     # plt.show()
+    return hist
 
 if __name__ == '__main__':
     main()

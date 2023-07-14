@@ -47,6 +47,13 @@ class Fill0_Tensor():
             return arr
         arr_reshape = torch.zeros(self.true_shape)
         arr_reshape[:shape_time] = arr_reshape[:shape_time] + arr
+        if not BOOL_DISTINGUISH_EVENT:
+            arr_reshape[:,0] = arr_reshape[:,0] + arr_reshape[:,1]
+            arr_reshape = arr_reshape[:,0].unsqueeze(1)
+            arr_reshape = torch.where(arr_reshape>= 1, 1,0)
+            # print(arr_reshape.shape)
+            # exit()
+            # arr_reshape
         
         return arr_reshape
     
@@ -105,7 +112,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         # print(h5py_allfile)
 
         # # 0梅するための対策
-        true_shape = (FINISH_STEP, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+        true_shape = (finish_step, 2, INPUT_HEIGHT, INPUT_WIDTH)
         
         if EVENT_COUNT:
 

@@ -44,33 +44,17 @@ class BaseFunction(nn.Module):
                 elif i < len(self.network_lst)-1:
                     data_ = net_(data_)
                 elif i == len(self.network_lst)-1:
-                    data_, _ = net_(data_)
+                    data_, mem = net_(data_)
                 # print(data_.shape)
                 
                 if self.power:
                     self.spike_count += torch.sum(data_)
             spk_rec.append(data_)
         spk_rec = torch.stack(spk_rec)
-        spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel
         # print(spk_cnt.shape)
-        spk_cnt_resize = F.interpolate(spk_cnt, size=(self.rough_pixel, self.rough_pixel), mode='bilinear', align_corners=False)
         # print(spk_cnt_resize.shape)
-        pred_pro = F.softmax(spk_cnt_resize, dim=1)
-        # print(data.shape)
+        pred_pro = torch.sigmoid(mem - 0.5)
 
-        # for step in range(time):  # data.size(0) = number of time steps
-        #     spk_out, mem_out = self.network(data[step])
-        #     # print(spk_out.shape)
-        #     if self.reshape_bool:
-        #         batch = len(spk_out)
-        #         spk_out = spk_out.reshape(batch, 2, self.input_height, self.input_width)
-
-        #     spk_rec.append(spk_out)
-
-        # spk_rec = torch.stack(spk_rec)
-        # # print(spk_rec.shape)
-        # spk_cnt = compute_loss.spike_count(spk_rec, channel=True)# batch channel(n_class) pixel pixel 
-        # pred_pro = F.softmax(spk_cnt, dim=1)
         
         
         return pred_pro
@@ -90,7 +74,7 @@ class RoughConv3(BaseFunction):
         c2 = 32
         c3 = 64
         c4 = 128
-        n_class=2
+        n_class=1
         encode_kernel = 5
         decode_kernel = 5
         n_neuron = 4096
@@ -111,6 +95,7 @@ class RoughConv3(BaseFunction):
                     nn.MaxPool2d(2, stride=2),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, reset_mechanism=reset),).to(device)
         self.down5 = nn.Sequential(
+                    nn.AdaptiveMaxPool2d((rough_pixel, rough_pixel)),
                     nn.Conv2d(c4, n_class, 1, padding=0),
                     snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, learn_beta=parm_learn, learn_threshold=parm_learn, output=True, reset_mechanism=reset),                    
         ).to(device)

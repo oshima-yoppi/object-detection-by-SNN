@@ -30,7 +30,7 @@ from IPython.display import HTML
 from collections import defaultdict
 
 import time
-def main(classification=False):
+def main(hist=None):
     # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
 
@@ -158,6 +158,27 @@ def main(classification=False):
     result_FP_path = os.path.join(RESULT_PATH, 'FP_images')
     os.makedirs(result_FN_path)
     os.makedirs(result_FP_path)
+    if hist is not None:
+        hist_path = os.path.join(RESULT_PATH, 'Loss_hist')
+        os.makedirs(hist_path)
+        fig = plt.figure(facecolor="w")
+        ax1 = fig.add_subplot(1, 2, 1)
+        ax2 = fig.add_subplot(1, 2, 2)
+        ax1.plot(hist['loss'], label="train")
+        ax1.set_title("loss")
+        ax1.set_xlabel("epoch")
+        ax1.set_ylabel("Loss")
+        ax2.plot(hist['acc'], label='acc')
+        ax2.plot(hist['precision'], label='precision')
+        ax2.plot(hist['recall'], label='recall')
+        ax2.set_title("Test acc")
+        ax2.set_xlabel("epoch")
+        ax2.set_ylabel("Accuracy(IoU)")
+        ax2.legend()
+        fig.suptitle(f"ModelName:{MODEL_NAME}")
+        fig.tight_layout()
+        fig.savefig(os.path.join(hist_path, 'loss.png'))
+        fig.savefig(os.path.join(hist_path, 'loss.pdf'))
 
     spikes_lst = []
     # analyzer = compute_loss.Analyzer()

@@ -455,7 +455,7 @@ class Conv3Full2BatchNorm(BaseFunction):
 
 
 
-class Conv3GloabalFull2(BaseFunction):
+class Conv3Full2(BaseFunction):
     def __init__(
         self,
         beta,
@@ -496,7 +496,7 @@ class Conv3GloabalFull2(BaseFunction):
 
         super().__init__()
         self.down1 = nn.Sequential(
-            nn.Conv2d(c0, c2, encode_kernel, padding=encode_kernel // 2),
+            nn.Conv2d(c0, c1, encode_kernel, padding=encode_kernel // 2),
             nn.MaxPool2d(2, stride=2),
             snn.Leaky(
                 beta=beta,
@@ -509,7 +509,7 @@ class Conv3GloabalFull2(BaseFunction):
             nn.Dropout2d(ratio_drop),
         ).to(device)
         self.down2 = nn.Sequential(
-            nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel // 2),
             nn.MaxPool2d(2, stride=2),
             snn.Leaky(
                 beta=beta,
@@ -522,7 +522,7 @@ class Conv3GloabalFull2(BaseFunction):
             nn.Dropout2d(ratio_drop),
         ).to(device)
         self.down3 = nn.Sequential(
-            nn.Conv2d(c3, c3, encode_kernel, padding=encode_kernel // 2),
+            nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
             nn.MaxPool2d(2, stride=2),
             snn.Leaky(
                 beta=beta,

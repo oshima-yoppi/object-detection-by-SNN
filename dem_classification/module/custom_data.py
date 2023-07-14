@@ -198,7 +198,7 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         exit()
     return 
 class LoadDataset(Dataset):
-    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, finish_step, train:bool, test_rate=0.2, download=False):
+    def __init__(self, processed_event_dataset_path, raw_event_dir,accumulate_time : int, input_height, input_width, finish_step, train:bool, test_num=600, download=False):
         """
         processed_event_dataset_path: 処理済みのイベントデータのパス
         raw_event_dir: イベントの生データ
@@ -221,12 +221,12 @@ class LoadDataset(Dataset):
         
         # 全てのイベントデータのファイルパスを取得
         self.all_files = glob.glob(f"{processed_event_dataset_path}/*")
-        self.divide = int((len(self.all_files)*test_rate))
+        # self.divide = int((len(self.all_files)*test_rate))
         # print(self.all_files)
         if train:
-            self.file_lst = self.all_files[self.divide:]
+            self.file_lst = self.all_files[test_num:]
         else:
-            self.file_lst = self.all_files[:self.divide]
+            self.file_lst = self.all_files[:test_num]
         # データを丸ごとリストに格納する場合
         if self.download == False:
             self.all_data = []

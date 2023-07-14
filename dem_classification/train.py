@@ -59,7 +59,7 @@ def main():
     # loss_func = nn.BCELoss()
 
 
-    num_epochs = 200
+    num_epochs = 100
     hist = defaultdict(list)
 
     if TIME_CHANGE:
@@ -178,7 +178,8 @@ def main():
     ax2.legend()
     fig.suptitle(f"ModelName:{MODEL_NAME}")
     fig.tight_layout()
-    plt.show()
+    # plt.show()
+    return hist
 
 if __name__ == '__main__':
     main()

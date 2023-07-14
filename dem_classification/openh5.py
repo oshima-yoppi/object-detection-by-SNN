@@ -69,7 +69,7 @@ if __name__ == "__main__":
     #     print('save sucess')
 
 
-    events = [0.15,] # 変な値入れるとぶっ壊れる可能性あり。ちゅいいa
+    events = [0.05] # 変な値入れるとぶっ壊れる可能性あり。ちゅいいa
     all_steps = FINISH_STEP
     for th in events:
         
