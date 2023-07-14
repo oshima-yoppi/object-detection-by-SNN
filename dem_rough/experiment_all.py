@@ -1,4 +1,4 @@
-import os 
+import os
 import itertools
 
 
@@ -21,9 +21,25 @@ accumulate_event_militime_lst = [80]
 event_count = [False]
 evnet_th = [0.05, 0.1, 0.15]
 # accumulate_event_militime_lst = [40, 60, 80]
-combinations = list(itertools.product(soft_reset_lst, parm_learn_lst, finish_step_lst, accumulate_event_militime_lst, event_count, evnet_th))
+combinations = list(
+    itertools.product(
+        soft_reset_lst,
+        parm_learn_lst,
+        finish_step_lst,
+        accumulate_event_militime_lst,
+        event_count,
+        evnet_th,
+    )
+)
 
-for soft_reset, parm_learn, finish_step, accumulate_event_militime , event_count, evnet_th in combinations:
+for (
+    soft_reset,
+    parm_learn,
+    finish_step,
+    accumulate_event_militime,
+    event_count,
+    evnet_th,
+) in combinations:
     cmd = "python experiment.py"
     if soft_reset:
         cmd += " --soft_reset"
@@ -36,4 +52,3 @@ for soft_reset, parm_learn, finish_step, accumulate_event_militime , event_count
     if event_count:
         cmd += " --EVENT_COUNT"
     os.system(cmd)
-

@@ -38,28 +38,54 @@ import yaml
 #     else:
 #         print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
 
+
 # Network Architecture
 # num_inputs = 28*28
 # num_hidden = 1000
 # num_outputs = 10
 # dtype = torch.float
 def main():
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
-    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
+    train_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=True,
+        finish_step=FINISH_STEP,
+    )
+    test_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=False,
+        finish_step=FINISH_STEP,
+    )
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, collate_fn=custom_data.custom_collate, shuffle=False,)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=True,
+    )
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=custom_data.custom_collate,
+        shuffle=False,
+    )
 
- 
     counts = defaultdict(int)
     for i, (data, label) in enumerate(iter(train_loader)):
         label_class = label.argmax(dim=1)
         for i in label_class:
             counts[i.item()] += 1
-    print(counts) #defaultdict(<class 'int'>, {0: 977, 1: 1423})
-
+    print(counts)  # defaultdict(<class 'int'>, {0: 977, 1: 1423})
 
     # return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

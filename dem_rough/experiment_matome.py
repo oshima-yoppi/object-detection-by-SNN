@@ -1,8 +1,8 @@
-#%%
+# %%
 import re
 import pandas as pd
 
-data = '''
+data = """
 -------------
 conditions
 	soft_reset: True
@@ -114,10 +114,10 @@ results
 	Spike Rate: 0.2616356909275055
 -------------
 
-'''
+"""
 
 # パターンマッチングを使用して値を抽出
-pattern = r'([A-Za-z_ ]+):\s*([0-9.e-]+)'
+pattern = r"([A-Za-z_ ]+):\s*([0-9.e-]+)"
 matches = re.findall(pattern, data)
 
 # 結果をディクショナリに格納

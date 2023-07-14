@@ -1,4 +1,4 @@
-#%%import snntorch as snn
+# %%import snntorch as snn
 from snntorch import spikeplot as splt
 from snntorch import spikegen
 from snntorch import utils
@@ -18,6 +18,7 @@ import numpy as np
 import itertools
 import cv2
 from tqdm import tqdm
+
 # from collections import defaultdict
 
 from module.custom_data import LoadDataset
@@ -31,7 +32,9 @@ from collections import defaultdict
 
 net = NET
 net.load_state_dict(torch.load(MODEL_PATH))
-#%%
+
+
+# %%
 def count_neuron(net):
     network_lst = net.network_lst
     neurons = 0
@@ -40,10 +43,12 @@ def count_neuron(net):
     for models in network_lst:
         for layer in models.modules():
             if isinstance(layer, torch.nn.Conv2d):
-                neurons += height* width * layer.out_channels
+                neurons += height * width * layer.out_channels
                 print(neurons)
+
+
 count_neuron(net)
-#%%
+# %%
 # Define your network model here
 model = torch.nn.Sequential(
     torch.nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3),
@@ -63,6 +68,8 @@ for layer in model.modules():
     elif isinstance(layer, torch.nn.Conv2d):
         # print(layer.kernel_size)
         # print(layer.kernel_size[0] * layer.kernel_size[1] * layer.out_channels)
-        total_neurons += layer.kernel_size[0] * layer.kernel_size[1] * layer.out_channels
+        total_neurons += (
+            layer.kernel_size[0] * layer.kernel_size[1] * layer.out_channels
+        )
 
 print(f"Total number of neurons in the model: {total_neurons}")

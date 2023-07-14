@@ -1,12 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
-class CalcSigma():
+
+
+class CalcSigma:
     def __init__(self, sigma, h):
         self.sigma0 = sigma
         self.harst = h
+
     def __call__(self, n):
-        sigma_n = self.sigma0*(1-2**(2*self.harst-2))/(2**n)**(2*self.harst)
+        sigma_n = (
+            self.sigma0 * (1 - 2 ** (2 * self.harst - 2)) / (2**n) ** (2 * self.harst)
+        )
         return sigma_n
+
+
 # The array must be square with edge length 2**n + 1
 n = 7
 N = 2**n + 1
@@ -16,8 +23,8 @@ step = 1
 
 # Initialise the array with random numbers at its corners
 arr = np.zeros((N, N))
-arr[0::N-1,0::N-1] = np.random.uniform(-1, 1, (2,2))
-side = N-1
+arr[0 :: N - 1, 0 :: N - 1] = np.random.uniform(-1, 1, (2, 2))
+side = N - 1
 
 HARST = 0.5
 SIGMA0 = 5
@@ -29,39 +36,39 @@ while side > 1:
     # Diamond step
     for ix in range(nsquares):
         for iy in range(nsquares):
-            x0, x1, y0, y1 = ix*side, (ix+1)*side, iy*side, (iy+1)*side
+            x0, x1, y0, y1 = ix * side, (ix + 1) * side, iy * side, (iy + 1) * side
             xc, yc = x0 + sideo2, y0 + sideo2
             # Set this pixel to the mean of its "diamond" neighbours plus
             # a random offset.
-            arr[yc,xc] = (arr[y0,x0] + arr[y0,x1] + arr[y1,x0] + arr[y1,x1])/4
+            arr[yc, xc] = (arr[y0, x0] + arr[y0, x1] + arr[y1, x0] + arr[y1, x1]) / 4
             # arr[yc,xc] += f * np.random.uniform(-1,1)
             # arr[yc,xc] += np.random.normal(0, sigma(step))
     step += 1
     # Square step: NB don't do this step until the pixels from the preceding
     # diamond step have been set.
-    for iy in range(2*nsquares+1):
+    for iy in range(2 * nsquares + 1):
         yc = sideo2 * iy
-        for ix in range(nsquares+1):
+        for ix in range(nsquares + 1):
             xc = side * ix + sideo2 * (1 - iy % 2)
             if not (0 <= xc < N and 0 <= yc < N):
                 continue
-            tot, ntot = 0., 0
+            tot, ntot = 0.0, 0
             # Set this pixel to the mean of its "square" neighbours plus
             # a random offset. At the edges, it has only three neighbours
-            for (dx, dy) in ((-1,0), (1,0), (0,-1), (0,1)):
-                xs, ys = xc + dx*sideo2, yc + dy*sideo2
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                xs, ys = xc + dx * sideo2, yc + dy * sideo2
                 if not (0 <= xs < N and 0 <= ys < N):
                     continue
                 else:
                     tot += arr[ys, xs]
                     ntot += 1
-            arr[yc, xc] += tot / ntot 
+            arr[yc, xc] += tot / ntot
             # arr[yc,xc] += np.random.normal(0, sigma(step))
     side = sideo2
     nsquares *= 2
     f /= 2
     step += 1
 # np.save(f'blender/kaguya/np_fractal_{HARST}_{SIGMA0}.npy', arr)
-plt.imshow(arr, cmap='gray')
+plt.imshow(arr, cmap="gray")
 # plt.axis('off')
 plt.show()

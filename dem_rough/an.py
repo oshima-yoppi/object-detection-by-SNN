@@ -16,10 +16,12 @@ for i, file in enumerate(fiellst):
     #     ;abe;
     label = np.load(file)
     h, w = label.shape
-    rough_label = np.zeros((3,3))
+    rough_label = np.zeros((3, 3))
     for i in range(3):
         for j in range(3):
-            splited_label = label[i*h//3:(i+1)*h//3, j*w//3:(j+1)*w//3]
+            splited_label = label[
+                i * h // 3 : (i + 1) * h // 3, j * w // 3 : (j + 1) * w // 3
+            ]
             contain_one = np.any(splited_label == 1)
             if contain_one:
                 rough_label[i, j] = 1
@@ -31,4 +33,3 @@ for i, file in enumerate(fiellst):
     plt.subplot(1, 2, 2)
     plt.imshow(rough_label)
     plt.show()
-

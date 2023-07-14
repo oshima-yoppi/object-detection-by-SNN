@@ -2,6 +2,8 @@ import argparse
 import json
 import csv
 import os
+
+
 # const.jsonの中身が変更される
 def update_constant(args):
     # 変更したデータを保存
@@ -11,13 +13,14 @@ def update_constant(args):
         "FINISH_STEP": args.FINISH_STEP,
         "ACCUMULATE_EVENT_MILITIME": args.ACCUMULATE_EVENT_MILITIME,
         "EVENT_COUNT": args.EVENT_COUNT,
-        "EVENT_TH": args.EVENT_TH
-        
+        "EVENT_TH": args.EVENT_TH,
     }
-    with open('module/const_base.json', 'w') as file:
+    with open("module/const_base.json", "w") as file:
         json.dump(constants, file)
+
+
 def log_experiment(constants, results):
-    with open('experiment_log.txt', 'a') as file:
+    with open("experiment_log.txt", "a") as file:
         file.write("-------------\n")
         file.write("conditions\n")
         for key, value in constants.items():
@@ -28,13 +31,16 @@ def log_experiment(constants, results):
             file.write(f"\t{key}: {value}\n")
         file.write("-------------\n")
 
+
 def check_csv_file(filne_name):
-    with open(filne_name, 'r') as file:
+    with open(filne_name, "r") as file:
         reader = csv.reader(file)
         header = next(reader)
         if header is None:
             return False
         return True
+
+
 def write_csv(constants, results, csv_file):
     # カラム名と値のリストを作成
     columns = list(constants.keys()) + list(results.keys())
@@ -54,36 +60,38 @@ def write_csv(constants, results, csv_file):
     #     writer.writerow(values)
     # CSVファイルが存在しない場合のみカラム名を書き込む
     if not os.path.isfile(csv_file):
-        with open(csv_file, 'a', newline='') as file:
+        with open(csv_file, "a", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(columns)
 
     # データを書き込む
-    with open(csv_file, 'a', newline='') as file:
+    with open(csv_file, "a", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(values)
 
+
 parser = argparse.ArgumentParser()
-parser.add_argument('--soft_reset', action='store_true') # store_true: 引数があればTrue, なければFalse.これしないと正しく出ない。https://qiita.com/hirorin/items/fbcf76c1119da24e2eeb
-parser.add_argument('--PARM_LEARN', action='store_true')
-parser.add_argument('--FINISH_STEP', type=int)
-parser.add_argument('--ACCUMULATE_EVENT_MILITIME', type=int)
-parser.add_argument('--CSV_PATH', type=str)
-parser.add_argument('--EVENT_COUNT', action='store_true')
-parser.add_argument('--EVENT_TH', type=float)
+parser.add_argument(
+    "--soft_reset", action="store_true"
+)  # store_true: 引数があればTrue, なければFalse.これしないと正しく出ない。https://qiita.com/hirorin/items/fbcf76c1119da24e2eeb
+parser.add_argument("--PARM_LEARN", action="store_true")
+parser.add_argument("--FINISH_STEP", type=int)
+parser.add_argument("--ACCUMULATE_EVENT_MILITIME", type=int)
+parser.add_argument("--CSV_PATH", type=str)
+parser.add_argument("--EVENT_COUNT", action="store_true")
+parser.add_argument("--EVENT_TH", type=float)
 args = parser.parse_args()
 print(args.soft_reset)
 CSV_PATH = args.CSV_PATH
-delattr(args, 'CSV_PATH')
+delattr(args, "CSV_PATH")
 update_constant(args)
 
 import train
+
 hist = train.main()
 
 import analysis
+
 results = analysis.main(hist=hist)
 log_experiment(vars(args), results)
 write_csv(vars(args), results, CSV_PATH)
-
-
-

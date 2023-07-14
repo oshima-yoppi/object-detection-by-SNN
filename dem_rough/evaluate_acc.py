@@ -18,6 +18,7 @@ import numpy as np
 import itertools
 import cv2
 from tqdm import tqdm
+
 # from collections import defaultdict
 
 from module.custom_data import LoadDataset
@@ -29,15 +30,39 @@ from IPython.display import HTML
 
 from collections import defaultdict
 
+
 def main():
-    train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
-    test_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False, finish_step=FINISH_STEP)
+    train_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=True,
+        finish_step=FINISH_STEP,
+    )
+    test_dataset = LoadDataset(
+        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+        raw_event_dir=RAW_EVENT_PATH,
+        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+        input_height=INPUT_HEIGHT,
+        input_width=INPUT_WIDTH,
+        train=False,
+        finish_step=FINISH_STEP,
+    )
 
-
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE_TEST, collate_fn=custom_data.custom_collate, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE_TEST, collate_fn=custom_data.custom_collate, shuffle=False,)
-
-
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE_TEST,
+        collate_fn=custom_data.custom_collate,
+        shuffle=True,
+    )
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE_TEST,
+        collate_fn=custom_data.custom_collate,
+        shuffle=False,
+    )
 
     net = NET
     net.load_state_dict(torch.load(MODEL_PATH))
@@ -46,6 +71,7 @@ def main():
     num_steps = events.shape[0]
 
     ious = []
+
     def save_img(number, events, pred_pro, label, iou, pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
@@ -61,48 +87,53 @@ def main():
         ax5 = fig.add_subplot(235)
         ax6 = fig.add_subplot(236)
 
-
         # dem_filename = f'dem_{str(number).npy}'
         # dem_path = os.path.join(DEM_NP_PATH, dem_filename)
         # dem = np.load(dem_path)
         # ax1.imshow(dem)
 
-        video_filename = f'{number_str}.avi'
+        video_filename = f"{number_str}.avi"
         video_path = os.path.join(VIDEO_PATH, video_filename)
-        first_frame = view.get_first_frame(video_path) 
-        ax2.set_title('Camera_view')
+        first_frame = view.get_first_frame(video_path)
+        ax2.set_title("Camera_view")
         ax2.imshow(first_frame)
 
-        first_events = view.get_first_events(events) 
-        ax3.set_title('EVS view')
+        first_events = view.get_first_events(events)
+        ax3.set_title("EVS view")
         ax3.imshow(first_events)
 
-        label_ =label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu')
+        label_ = label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to("cpu")
         ax4.imshow(label_)
-        ax4.set_title('label')
+        ax4.set_title("label")
 
         pred_pro_ = pred_pro[:, 1, :, :]
-        pred_pro_ = pred_pro_.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
+        pred_pro_ = (
+            pred_pro_.reshape((INPUT_HEIGHT, INPUT_WIDTH))
+            .to("cpu")
+            .detach()
+            .numpy()
+            .copy()
+        )
         ax5.imshow(pred_pro_)
-        ax5.set_title('Estimated Probability')
+        ax5.set_title("Estimated Probability")
 
-        ax6.imshow(np.where(pred_pro_>=CORRECT_RATE, 1, 0))
-        ax6.set_title('Safe or Dangerous')
+        ax6.imshow(np.where(pred_pro_ >= CORRECT_RATE, 1, 0))
+        ax6.set_title("Safe or Dangerous")
 
         fig.suptitle(f"No.{number} IoU:{round(iou, 3)}  ModelName:{MODEL_NAME}")
         plt.tight_layout()
         # plt.show()
         # exit()
-        img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.png')
+        img_path = os.path.join(RESULT_PATH, f"{str(i).zfill(5)}.png")
         fig.savefig(img_path)
         if pdf_output:
-            img_path = os.path.join(RESULT_PATH, f'{str(i).zfill(5)}.pdf')
+            img_path = os.path.join(RESULT_PATH, f"{str(i).zfill(5)}.pdf")
             fig.savefig(img_path)
         plt.close()
 
     hist = defaultdict(list)
     if os.path.exists(RESULT_PATH):
-            shutil.rmtree(RESULT_PATH)
+        shutil.rmtree(RESULT_PATH)
     os.makedirs(RESULT_PATH)
     spikes_lst = []
     with torch.no_grad():
@@ -114,32 +145,32 @@ def main():
             # print(events.shape)# TBCHW
             # events = events.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
             pred_pro = net(events, FINISH_STEP)
-            
+
             iou = compute_loss.culc_iou(pred_pro, label, CORRECT_RATE)
             ious.append(iou)
             # pred_pro = compute_loss.show_pred(pred_pro, correct_rate)
-            spikes_lst.append(net.spike_count)  
-        
-            save_img(i, events, pred_pro, label,  iou, pdf_output=False)
+            spikes_lst.append(net.spike_count)
+
+            save_img(i, events, pred_pro, label, iou, pdf_output=False)
             # break
 
     results = {}
     # iouの平均を求める
-    iou_mean = sum(ious)/len(ious)
-    results['IoU'] = iou_mean
+    iou_mean = sum(ious) / len(ious)
+    results["IoU"] = iou_mean
     print(MODEL_NAME, iou_mean)
 
     # スパイク数の平均を求める
-    n_spikes = sum(spikes_lst)/len(spikes_lst)
+    n_spikes = sum(spikes_lst) / len(spikes_lst)
     # results['Number of Spikes'] = n_spikes
-    print(f'{n_spikes=}')
+    print(f"{n_spikes=}")
 
     # 1推論あたりのエネルギーを求める
-    jules_per_spike = 0.9e-12 #J
+    jules_per_spike = 0.9e-12  # J
     # jules_per_spike = 0.45e-9 #J hide
-    jule_per_estimate = n_spikes*jules_per_spike
-    results['Energy per inference'] = jule_per_estimate.item()
-    print(f'{jule_per_estimate=}')
+    jule_per_estimate = n_spikes * jules_per_spike
+    results["Energy per inference"] = jule_per_estimate.item()
+    print(f"{jule_per_estimate=}")
 
     # スパイクレート発火率を求める
     def count_neuron(net):
@@ -150,14 +181,16 @@ def main():
         for models in network_lst:
             for layer in models.modules():
                 if isinstance(layer, torch.nn.Conv2d):
-                    neurons += height* width * layer.out_channels
+                    neurons += height * width * layer.out_channels
         return neurons
+
     n_nerons = count_neuron(net)
 
-    spike_rate = n_spikes/n_nerons
-    results['Spike Rate'] = spike_rate.item()
-    
+    spike_rate = n_spikes / n_nerons
+    results["Spike Rate"] = spike_rate.item()
+
     return results
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
