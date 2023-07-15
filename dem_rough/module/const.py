@@ -47,7 +47,7 @@ if soft_reset:
 else:
     RESET = "zero"
 
-TIME_CHANGE = False
+TIME_CHANGE = True
 if TIME_CHANGE:
     START_STEP = 8
 else:

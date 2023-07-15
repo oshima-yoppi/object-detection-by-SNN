@@ -86,7 +86,7 @@ def main():
     hist = defaultdict(list)
 
     if TIME_CHANGE:
-        time_step_lst = np.linspace(events.shape[0], FINISH_STEP, 3).astype(int)
+        time_step_lst = np.linspace(START_STEP, FINISH_STEP, 3).astype(int)
     else:
         time_step_lst = [FINISH_STEP]
     print(time_step_lst)
@@ -105,9 +105,7 @@ def main():
                     label = label.to(DEVICE)
                     batch = len(data[0])
                     # print(data.shape)
-                    data = data.reshape(
-                        num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
-                    )
+                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                     # print(data.shape)
                     net.train()
                     pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
@@ -143,9 +141,7 @@ def main():
                         data = data.to(DEVICE)
                         label = label.to(DEVICE)
                         batch = len(data[0])
-                        data = data.reshape(
-                            num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH
-                        )
+                        data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                         pred_pro = net(data, time_step)
 
                         # pred_class = pred_pro.argmax(dim=1)
@@ -158,9 +154,7 @@ def main():
                     hist["iou"].append(np.mean(iou_log))
                     hist["precision"].append(np.mean(precision_log))
                     hist["recall"].append(np.mean(recall_log))
-                    tqdm.write(
-                        f"{epoch}:::  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}"
-                    )
+                    tqdm.write(f"{epoch}:::  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}")
                     # if max_recall < hist['recall'][-1] and hist['recall'][-1] > 0.5:
                     #     max_recall = hist['recall'][-1]
                     #     torch.save(net.state_dict(), model_save_path)
