@@ -2706,3 +2706,33 @@ results
 	Energy per inference: 1.3434612355922582e-07
 	Spike Rate: 8.830137252807617
 -------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+	EVENT_TH: 0.05
+results
+	IoU: 89.74
+	Precision: 94.95
+	Recall: 94.16
+	Energy per inference: 4.720468638197417e-08
+	Spike Rate: 3.102611780166626
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 80
+	EVENT_COUNT: False
+	EVENT_TH: 0.1
+results
+	IoU: 90.81
+	Precision: 97.05
+	Recall: 93.58
+	Energy per inference: 1.939433857955919e-08
+	Spike Rate: 1.27472722530365
+-------------
