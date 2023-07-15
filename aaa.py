@@ -1,7 +1,6 @@
-import os
+import random
 
-cmd = "python all.py --time 10 "
-os.system(cmd)
+random.seed(123)
 
-cmd = "python all.py --time 1000 "
-os.system(cmd)
+for i in range(10):
+    print(random.uniform(0, 360))

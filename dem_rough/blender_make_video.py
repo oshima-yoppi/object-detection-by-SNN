@@ -5,11 +5,28 @@ import numpy as np
 import math
 import mathutils
 import shutil
+import random
 
+random.seed(123)
 dir = os.path.dirname(bpy.data.filepath)
 if not dir in sys.path:
     sys.path.append(dir)
 from module.const_blender import *
+
+
+def put_sun(theta_x=80, theta_y=0, theta_z=0):
+    """
+    太陽の設定を行う。
+    """
+    light = bpy.data.objects["Light"]
+    light.data.type = "SUN"
+    light.location = (0, 0, 0)
+    light.data.energy = 10
+    theta_x = math.radians(theta_x)  # 仰角に変換
+    theta_y = math.radians(theta_y)  # 方位角に変換
+    theta_z = math.radians(theta_z)  # 方位角に変換
+    light.rotation_euler = (theta_x, theta_y, theta_z)
+    return
 
 
 def init(theta, save_dir):
@@ -71,12 +88,7 @@ def init(theta, save_dir):
     bpy.context.scene.render.image_settings.color_mode = "BW"
 
     # 太陽光の設定
-    light = bpy.data.objects["Light"]
-    light.data.type = "SUN"
-    light.location = (0, 0, 0)
-    light.data.energy = 10
-    theta = math.radians(90 - theta)  # 仰角に変換
-    light.rotation_euler = (theta, 0, 0)
+    put_sun(theta_x=theta)
 
 
 def img2plot(np_path):
@@ -101,9 +113,7 @@ def img2plot(np_path):
     fIndexes = []
     for x in range(0, pix - 1):
         for y in range(0, pix - 1):
-            fIndexes.append(
-                [x + y * pix, x + 1 + y * pix, x + 1 + (y + 1) * pix, x + (y + 1) * pix]
-            )
+            fIndexes.append([x + y * pix, x + 1 + y * pix, x + 1 + (y + 1) * pix, x + (y + 1) * pix])
 
     mesh = bpy.data.meshes.new(object_name)
     mesh.from_pydata(verts, [], fIndexes)  # 点と面の情報からメッシュを生成
@@ -130,12 +140,11 @@ def remove(name):
 
 
 if __name__ == "__main__":
-    dem_path_abs = bpy.path.abspath(
-        DEM_NP_PATH_BLENDER
-    )  # https://twitter.com/Bookyakuno/status/1457726187745153038
+    dem_path_abs = bpy.path.abspath(DEM_NP_PATH_BLENDER)  # https://twitter.com/Bookyakuno/status/1457726187745153038
     video_path_abs = bpy.path.abspath(VIDEO_PATH_BLENDER)
     print(dem_path_abs)
-    init(theta=10, save_dir=video_path_abs)
+    THETA_X_SUN = 80  # 太陽の高度
+    init(theta=THETA_X_SUN, save_dir=video_path_abs)
 
     DATA_NUM = 3000
     object_name = "dem"
@@ -143,9 +152,14 @@ if __name__ == "__main__":
         number = str(i).zfill(5)
         dem_path = os.path.join(dem_path_abs, f"{number}.npy")
         a = 1
+        theta_z = random.uniform(0, 360)
+        put_sun(theta_x=THETA_X_SUN, theta_y=0, theta_z=theta_z)
+
         img2plot(dem_path)
 
         save_video_path = os.path.join(video_path_abs, f"{number}.avi")
         render(save_video_path)
 
         remove(object_name)
+        if i == 2:
+            break
