@@ -161,5 +161,3 @@ if __name__ == "__main__":
         render(save_video_path)
 
         remove(object_name)
-        if i == 2:
-            break
