@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # %%
-csv_path = "result_experiment\experiment_009.csv"
+csv_path = "result_experiment\experiment_010.csv"
 data = pd.read_csv(csv_path)
 
 
@@ -19,6 +19,7 @@ for i, th in enumerate(data["EVENT_TH"].unique()):
     plt.plot(data["FINISH_STEP"].unique(), precision, label="Precision", linestyle="solid", marker="x", color="red")
     plt.plot(data["FINISH_STEP"].unique(), recall, label="Recall", linestyle="solid", marker="x", color="blue")
     plt.ylim(80, 100)
+    plt.xlim(1, 8)
     plt.title("EVENT_TH: {}".format(th))
 
 
