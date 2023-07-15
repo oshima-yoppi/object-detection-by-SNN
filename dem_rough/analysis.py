@@ -253,23 +253,12 @@ def main(hist=None,):
     results["Energy per inference"] = jule_per_estimate.item()
     print(f"{jule_per_estimate=}")
 
-    # スパイクレート発火率を求める
-    def count_neuron(net):
-        network_lst = net.network_lst
-        neurons = 0
-        video_width = net.input_width
-        video_height = net.input_height
-        for models in network_lst:
-            for layer in models.modules():
-                if isinstance(layer, torch.nn.Conv2d):
-                    neurons += video_height * video_width * layer.out_channels
-        return neurons
+    n_neurons = net.count_neurons()
 
-    n_nerons = count_neuron(net)
-
-    spike_rate = n_spikes / n_nerons
+    spike_rate = n_spikes / n_neurons
     results["Spike Rate"] = spike_rate.item()
     # results['Spike Rate'] = round(results['Spike Rate'], 2)
+    return results
 
 
 if __name__ == "__main__":

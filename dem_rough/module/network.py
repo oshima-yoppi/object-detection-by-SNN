@@ -54,6 +54,30 @@ class BaseFunction(nn.Module):
 
         return pred_pro
 
+    def count_neurons(self):
+        """
+        ネットワーク内のニューロンの数を数える。発火率を算出する際に使用。
+        torchライブラリじゃだめかもしれないから自作
+        """
+        for net in self.network_lst:
+            utils.reset(net)
+        self.number_neurons = 0
+        input_dummy = torch.zeros(
+            1, self.input_channel, self.input_height, self.input_width
+        ).to(self.device)
+        for i, net in enumerate(self.network_lst):
+            if i == len(self.network_lst) - 1:
+                input_dummy, _ = net(input_dummy)
+            else:
+                input_dummy = net(input_dummy)
+            if input_dummy.dim() == 4:
+                _, c, h, w = input_dummy.shape
+                self.number_neurons += c * h * w
+            elif input_dummy.dim() == 2:
+                _, c = input_dummy.shape
+                self.number_neurons += c
+        return self.number_neurons
+
 
 class RoughConv3(BaseFunction):
     def __init__(
@@ -77,6 +101,8 @@ class RoughConv3(BaseFunction):
         self.input_width = input_width
         self.rough_pixel = rough_pixel
         self.power = power
+        self.input_channel = input_channel
+        self.device = device
         c0 = input_channel
         c1 = 16
         c2 = 32
