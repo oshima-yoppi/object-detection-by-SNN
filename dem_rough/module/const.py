@@ -22,6 +22,7 @@ FINISH_STEP = constants["FINISH_STEP"]
 ACCUMULATE_EVENT_MILITIME = constants["ACCUMULATE_EVENT_MILITIME"]
 EVENT_COUNT = constants["EVENT_COUNT"]
 EVENT_TH = constants["EVENT_TH"]
+TIME_CHANGE = constants["TIME_CHANGE"]
 print(
     f"soft_reset: {soft_reset}",
     f"parm_learn: {PARM_LEARN}",
@@ -47,7 +48,6 @@ if soft_reset:
 else:
     RESET = "zero"
 
-TIME_CHANGE = True
 if TIME_CHANGE:
     START_STEP = 8
 else:

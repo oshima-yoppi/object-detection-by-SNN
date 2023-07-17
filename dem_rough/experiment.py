@@ -14,6 +14,7 @@ def update_constant(args):
         "ACCUMULATE_EVENT_MILITIME": args.ACCUMULATE_EVENT_MILITIME,
         "EVENT_COUNT": args.EVENT_COUNT,
         "EVENT_TH": args.EVENT_TH,
+        "TIME_CHANGE": args.TIME_CHANGE,
     }
     with open("module/const_base.json", "w") as file:
         json.dump(constants, file)
@@ -80,6 +81,7 @@ parser.add_argument("--ACCUMULATE_EVENT_MILITIME", type=int)
 parser.add_argument("--CSV_PATH", type=str)
 parser.add_argument("--EVENT_COUNT", action="store_true")
 parser.add_argument("--EVENT_TH", type=float)
+parser.add_argument("--TIME_CHANGE", type=float)
 args = parser.parse_args()
 print(args.soft_reset)
 CSV_PATH = args.CSV_PATH
@@ -87,9 +89,11 @@ delattr(args, "CSV_PATH")
 update_constant(args)
 
 import train
+
 hist = train.main()
 
 import analysis
+
 results = analysis.main(hist=hist)
 
 
