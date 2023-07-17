@@ -81,7 +81,7 @@ parser.add_argument("--ACCUMULATE_EVENT_MILITIME", type=int)
 parser.add_argument("--CSV_PATH", type=str)
 parser.add_argument("--EVENT_COUNT", action="store_true")
 parser.add_argument("--EVENT_TH", type=float)
-parser.add_argument("--TIME_CHANGE", type=float)
+parser.add_argument("--TIME_CHANGE", action='store_true')
 args = parser.parse_args()
 print(args.soft_reset)
 CSV_PATH = args.CSV_PATH
