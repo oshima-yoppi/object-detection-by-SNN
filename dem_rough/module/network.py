@@ -114,7 +114,6 @@ class RoughConv3(BaseFunction):
         n_neuron = 4096
         self.down1 = nn.Sequential(
             nn.Conv2d(c0, c1, encode_kernel, padding=encode_kernel // 2),
-            nn.MaxPool2d(2, stride=2),
             snn.Leaky(
                 beta=beta,
                 spike_grad=spike_grad,
@@ -123,10 +122,10 @@ class RoughConv3(BaseFunction):
                 learn_threshold=parm_learn,
                 reset_mechanism=reset,
             ),
+            nn.MaxPool2d(2, stride=2),
         ).to(device)
         self.down2 = nn.Sequential(
             nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel // 2),
-            nn.MaxPool2d(2, stride=2),
             snn.Leaky(
                 beta=beta,
                 spike_grad=spike_grad,
@@ -135,10 +134,10 @@ class RoughConv3(BaseFunction):
                 learn_threshold=parm_learn,
                 reset_mechanism=reset,
             ),
+            nn.MaxPool2d(2, stride=2),
         ).to(device)
         self.down3 = nn.Sequential(
             nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
-            nn.MaxPool2d(2, stride=2),
             snn.Leaky(
                 beta=beta,
                 spike_grad=spike_grad,
@@ -147,10 +146,10 @@ class RoughConv3(BaseFunction):
                 learn_threshold=parm_learn,
                 reset_mechanism=reset,
             ),
+            nn.MaxPool2d(2, stride=2),
         ).to(device)
         self.down4 = nn.Sequential(
             nn.Conv2d(c3, c4, encode_kernel, padding=encode_kernel // 2),
-            nn.MaxPool2d(2, stride=2),
             snn.Leaky(
                 beta=beta,
                 spike_grad=spike_grad,
@@ -159,6 +158,7 @@ class RoughConv3(BaseFunction):
                 learn_threshold=parm_learn,
                 reset_mechanism=reset,
             ),
+            nn.MaxPool2d(2, stride=2),
         ).to(device)
         self.down5 = nn.Sequential(
             nn.AdaptiveMaxPool2d((rough_pixel, rough_pixel)),
