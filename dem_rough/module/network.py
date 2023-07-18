@@ -62,9 +62,7 @@ class BaseFunction(nn.Module):
         for net in self.network_lst:
             utils.reset(net)
         self.number_neurons = 0
-        input_dummy = torch.zeros(
-            1, self.input_channel, self.input_height, self.input_width
-        ).to(self.device)
+        input_dummy = torch.zeros(1, self.input_channel, self.input_height, self.input_width).to(self.device)
         for i, net in enumerate(self.network_lst):
             if i == len(self.network_lst) - 1:
                 input_dummy, _ = net(input_dummy)
@@ -104,12 +102,13 @@ class RoughConv3(BaseFunction):
         self.input_channel = input_channel
         self.device = device
         c0 = input_channel
-        c1 = 16
-        c2 = 32
-        c3 = 64
-        c4 = 128
+        c1 = 64
+        c2 = 128
+        c3 = 256
+        c4 = 512
         n_class = 1
         encode_kernel = 5
+        ratio_dropout = 0.2
         decode_kernel = 5
         n_neuron = 4096
         self.down1 = nn.Sequential(
@@ -123,6 +122,7 @@ class RoughConv3(BaseFunction):
                 reset_mechanism=reset,
             ),
             nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(ratio_dropout),
         ).to(device)
         self.down2 = nn.Sequential(
             nn.Conv2d(c1, c2, encode_kernel, padding=encode_kernel // 2),
@@ -135,6 +135,7 @@ class RoughConv3(BaseFunction):
                 reset_mechanism=reset,
             ),
             nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(ratio_dropout),
         ).to(device)
         self.down3 = nn.Sequential(
             nn.Conv2d(c2, c3, encode_kernel, padding=encode_kernel // 2),
@@ -147,6 +148,7 @@ class RoughConv3(BaseFunction):
                 reset_mechanism=reset,
             ),
             nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(ratio_dropout),
         ).to(device)
         self.down4 = nn.Sequential(
             nn.Conv2d(c3, c4, encode_kernel, padding=encode_kernel // 2),
@@ -159,6 +161,7 @@ class RoughConv3(BaseFunction):
                 reset_mechanism=reset,
             ),
             nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(ratio_dropout),
         ).to(device)
         self.down5 = nn.Sequential(
             nn.AdaptiveMaxPool2d((rough_pixel, rough_pixel)),
@@ -323,9 +326,7 @@ class Conv3Full3_Drop(nn.Module):
         # print(self.spike_count)
         spk_rec = torch.stack(spk_rec)
         # print(spk_rec.shape)
-        spk_cnt = compute_loss.spike_count(
-            spk_rec, channel=True
-        )  # batch channel(n_class) pixel pixel
+        spk_cnt = compute_loss.spike_count(spk_rec, channel=True)  # batch channel(n_class) pixel pixel
 
         # print(np.sum(spk_cnt_.reshape(-1)))
 
@@ -475,9 +476,7 @@ class Conv3Full3(nn.Module):
         # print(self.spike_count)
         spk_rec = torch.stack(spk_rec)
         # print(spk_rec.shape)
-        spk_cnt = compute_loss.spike_count(
-            spk_rec, channel=True
-        )  # batch channel(n_class) pixel pixel
+        spk_cnt = compute_loss.spike_count(spk_rec, channel=True)  # batch channel(n_class) pixel pixel
 
         # print(np.sum(spk_cnt_.reshape(-1)))
 
@@ -610,9 +609,7 @@ class Conv3Full2(nn.Module):
         # print(self.spike_count)
         spk_rec = torch.stack(spk_rec)
         # print(spk_rec.shape)
-        spk_cnt = compute_loss.spike_count(
-            spk_rec, channel=True
-        )  # batch channel(n_class) pixel pixel
+        spk_cnt = compute_loss.spike_count(spk_rec, channel=True)  # batch channel(n_class) pixel pixel
 
         # print(np.sum(spk_cnt_.reshape(-1)))
 
@@ -691,7 +688,11 @@ class FullyConv2(BaseFunction):
                 learn_beta=parm_learn,
                 learn_threshold=parm_learn,
             ),
-            nn.Conv2d(c0, n_class, 1,),
+            nn.Conv2d(
+                c0,
+                n_class,
+                1,
+            ),
             nn.AdaptiveMaxPool2d((self.input_height, self.input_width)),
             snn.Leaky(
                 beta=beta,
@@ -791,7 +792,11 @@ class FullyConv3(BaseFunction):
                 learn_beta=parm_learn,
                 learn_threshold=parm_learn,
             ),
-            nn.Conv2d(c0, n_class, 1,),
+            nn.Conv2d(
+                c0,
+                n_class,
+                1,
+            ),
             nn.AdaptiveMaxPool2d((self.input_height, self.input_width)),
             snn.Leaky(
                 beta=beta,
@@ -832,7 +837,11 @@ class AnnConv2(nn.Module):
             nn.Upsample(scale_factor=2),
             nn.Conv2d(c2, c1, decode_kernel, padding=decode_kernel // 2),
             nn.ReLU(),
-            nn.Conv2d(c1, n_class, 1,),
+            nn.Conv2d(
+                c1,
+                n_class,
+                1,
+            ),
             nn.AdaptiveMaxPool2d((self.input_height, self.input_width)),
         ).to(device)
         self.soft = nn.Softmax(dim=1)
