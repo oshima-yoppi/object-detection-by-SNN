@@ -120,7 +120,7 @@ def make_imgdataset_for_akida(akida_dataset_dir, img_raw_dir):
     )
     with open(save_path, mode="wb") as f:
         pickle.dump((input_lst, label_lst), f)
-
+    print(len(input_lst))
     return
 
 
