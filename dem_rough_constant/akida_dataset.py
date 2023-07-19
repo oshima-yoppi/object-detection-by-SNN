@@ -31,9 +31,7 @@ import pickle
 INPUT_HEIGHT, INPUT_WIDTH = 50, 50
 
 
-def make_dataset_for_akida(
-    akida_dataset_dir, events_raw_dir, accumulate_time, finish_step=1, count=False
-):
+def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, finish_step=1, count=False):
     SENSOR_SIZE = (IMG_WIDTH, IMG_HEIGHT, 2)  # (WHP)
     input_lst = []
     label_lst = []
@@ -49,27 +47,19 @@ def make_dataset_for_akida(
         with h5py.File(file, "r") as f:
             label = f["label"][()]
             raw_events = f["events"][()]
-        input = np.zeros_like(label)
+        input = np.zeros((INPUT_WIDTH, INPUT_HEIGHT))
+        # input = np.zeros_like(label)
         # print(input.shape)
-        for time, y, x, p in raw_events:
-            # print(x,y )
-            input[x, y] += 1
+        for event_pertime in raw_events:
+            input = input + event_pertime
         # print(raw_events.shape)
         # print(label.shape)
-        if count:
-            input = cv2.resize(
-                input, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_LINEAR
-            )
-            label = cv2.resize(
-                label, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST
-            )
-        else:
-            input = cv2.resize(
-                input, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST
-            )
-            label = cv2.resize(
-                label, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST
-            )
+        # if count:
+        #     input = cv2.resize(input, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_LINEAR)
+        #     label = cv2.resize(label, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST)
+        # else:
+        #     input = cv2.resize(input, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST)
+        #     label = cv2.resize(label, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST)
 
         # print(input.shape)
         # break
@@ -79,12 +69,9 @@ def make_dataset_for_akida(
         input_lst.append(input)
         label_lst.append(label)
         # break
-    save_path = os.path.join(
-        akida_dataset_dir, f"dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_count-{count}.pickle"
-    )
+    save_path = os.path.join(akida_dataset_dir, f"dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_count-{count}.pickle")
     with open(save_path, mode="wb") as f:
         pickle.dump((input_lst, label_lst), f)
-
     return
 
 
@@ -105,19 +92,13 @@ def make_imgdataset_for_akida(akida_dataset_dir, img_raw_dir):
             # print(f.keys())
             label = f["label"][()]
             input = f["input"][()]
-        input = cv2.resize(
-            input, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_LINEAR
-        )
-        label = cv2.resize(
-            label, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST
-        )
+        input = cv2.resize(input, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_LINEAR)
+        label = cv2.resize(label, (INPUT_WIDTH, INPUT_HEIGHT), interpolation=cv2.INTER_NEAREST)
 
         input_lst.append(input)
         label_lst.append(label)
         # break
-    save_path = os.path.join(
-        akida_dataset_dir, f"dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_ann.pickle"
-    )
+    save_path = os.path.join(akida_dataset_dir, f"dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_ann.pickle")
     with open(save_path, mode="wb") as f:
         pickle.dump((input_lst, label_lst), f)
 
@@ -127,13 +108,13 @@ def make_imgdataset_for_akida(akida_dataset_dir, img_raw_dir):
 if __name__ == "__main__":
     AKIDA_DATASET_DIR = "akida"
     img_raw_dir = "dataset_ann"
-    event_dir = RAW_EVENT_PATH
-    count = True
+    event_dir = "80000_(130,173)_th-0.15_startstep-8_EventCount-False_Distinguish-True_LeargeData-True"
+    count = False
     make_dataset_for_akida(
         akida_dataset_dir=AKIDA_DATASET_DIR,
-        events_raw_dir=RAW_EVENT_PATH,
-        accumulate_time=1e6,
-        finish_step=1,
+        events_raw_dir=event_dir,
+        accumulate_time=100,
+        finish_step=5,
         count=count,
     )
 
