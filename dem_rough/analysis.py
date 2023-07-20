@@ -160,7 +160,7 @@ def main(hist=None,):
             pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
         )
         ax6.set_title("pred")
-        ax6.imshow(pred)
+        ax6.imshow(pred, vmin=0, vmax=1)
 
         fig.suptitle(f"No.{number} ModelName:{MODEL_NAME}")
         plt.tight_layout()

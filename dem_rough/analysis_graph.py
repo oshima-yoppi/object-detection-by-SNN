@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # %%
-csv_path = "result_experiment/experiment_011.csv"
+csv_path = "result_experiment/experiment_012.csv"
 data = pd.read_csv(csv_path)
 
 
 # accuracy = []
 event_th = [0.05, 0.1, 0.15]
 time_change_lst = [False, True]
+time_change_lst = [False]
 for i, time_change in enumerate(time_change_lst):
     for j, th in enumerate(data["EVENT_TH"].unique()):
         precision = []
