@@ -1,3 +1,9 @@
+*.pickle
+*.avi
+*.npy
+*.h5
+*.png
+
 easy_task/classification/dataset/*.h5
 easy_task/segmentation/dataset/*.h5
 easy_task/segmentation/youtube/*.gif
@@ -30,7 +36,10 @@ dem/akida
 
 akida/*.pickle
 *.pickle
-
+*.avi
+*.npy
+*.h5
+*.png
 dem_classification/blender/dem/*.npy
 dem_classification/blender/kaguya
 dem_classification/blender/video/*.avi

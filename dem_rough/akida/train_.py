@@ -3,19 +3,20 @@ from tensorflow import keras
 import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 # from google.colab.patches import cv2_imshow #cv2_imshow(img)
 
 
 
 # %%
 # Load MNIST dataset
-INPUT_HEIGHT, INPUT_WIDTH = 50 ,50
-# INPUT_HEIGHT, INPUT_WIDTH = 130 ,173
+# INPUT_HEIGHT, INPUT_WIDTH = 50 ,50
+INPUT_HEIGHT, INPUT_WIDTH = 130 ,173
 COUNT = False
 # COUNT = True
-RESIZE = True
+
 # dataset_path = f"dataset/dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_count-{COUNT}.pickle"
-dataset_path = f"dataset_173_130_count-{COUNT}_resize-{RESIZE}.pickle"
+dataset_path = f"dataset_173_130_count-False.pickle"
 
 with open(dataset_path, 'rb') as f:
     train_lst, label_lst = pickle.load(f)
@@ -53,8 +54,9 @@ x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
 x_train = (x_train - b) / a
 x_test = (x_test - b) / a
-#%%
-x_train.max()
+
+y_train = tf.squeeze(y_train)
+y_test = tf.squeeze(y_test)
 #%%
 import matplotlib.pyplot as plt
 fig = plt.figure()
@@ -67,33 +69,30 @@ ax2.imshow(y_train[2].reshape(3,3))
 ax3.hist(x_train[0].reshape(-1))
 # plt.show()
 # %%
-
-drop_rate = 0.7
 model_keras = keras.models.Sequential([
     keras.layers.Conv2D(
-        filters=16, kernel_size=3, input_shape=(INPUT_HEIGHT, INPUT_WIDTH, 1), strides=1, ),
+        filters=16, kernel_size=5, input_shape=(INPUT_HEIGHT, INPUT_WIDTH, 1), strides=1, ),
     keras.layers.BatchNormalization(),
     keras.layers.ReLU(),
-    keras.layers.Dropout(drop_rate),
     keras.layers.Conv2D(
         filters=32, kernel_size=5, strides=2),
     keras.layers.BatchNormalization(),
     keras.layers.ReLU(),
-    keras.layers.Dropout(drop_rate),
     keras.layers.Conv2D(
         filters=64, kernel_size=5, strides=2),
     keras.layers.BatchNormalization(),
     keras.layers.ReLU(),
-    keras.layers.Dropout(drop_rate),
-    keras.layers.Conv2D(   
-        filters=32, kernel_size=5, strides=2),
+    keras.layers.Conv2D(
+        filters=128, kernel_size=5, strides=2),
     keras.layers.BatchNormalization(),
     keras.layers.ReLU(),
     keras.layers.Conv2D(
-        filters=1, kernel_size=1, strides=1),
+        filters=32, kernel_size=1, strides=1),
     keras.layers.BatchNormalization(),
+    keras.layers.ReLU(),
+    keras.layers.Conv2D(
+        filters=2, kernel_size=1, strides=1),
 ],)
-
 
 
 
@@ -113,9 +112,14 @@ import tensorflow as tf
 import keras.backend as K
 
 def change_output(x):
-    x = K.sigmoid(x)
     # print(x.shape)
-    # x = tf.image.resize(x, [3,3])
+    # print(x.shape)
+    x = K.softmax(x, axis=-1)
+    x = x[:,:,:,1]
+    x = tf.expand_dims(x, axis=-1)
+    x = tf.image.resize(x, [3,3])
+    # print(x.shape)
+    # x = K.sigmoid(x-0.25)
     return x
 def Dice(targets, inputs, smooth=1e-6):
     # targets = targets.astye('float')
@@ -138,6 +142,7 @@ def DiceLoss(targets, inputs, smooth=1e-6):
 
     inputs = change_output(inputs)
     # inputs = K.softmax(inputs, axis=-1)
+    # print(inputs.shape, targets.shape)
     inputs = K.flatten(inputs)
     targets = K.flatten(targets)
     intersection = tf.reduce_sum(inputs*targets) # https://tensorflow.classcat.com/2018/09/07/tensorflow-tutorials-images-segmentation/
@@ -189,7 +194,7 @@ model_keras.compile(
     optimizer=optimizer,
     metrics=[IoU_eval]
     )
-model_keras.fit(x_train, y_train, epochs=100, validation_split=0.1, batch_size=20)
+model_keras.fit(x_train, y_train, epochs=50, validation_split=0.1, batch_size=30)
 
 
 # score = model_keras.evaluate(x_test, y_test, verbose=0)
@@ -199,9 +204,12 @@ print(x_test.shape)
 score = model_keras.evaluate(x_test, y_test, verbose=0)
 print('Test accuracy:', score[1])
 # %%
+
 for i in range(10):
     out = model_keras.predict(x_test[i:i+1])
+    print(out.shape)
     pre = change_output(out[0])
+    print(pre.shape)
     plt.subplot(1,3,1)
     plt.imshow(x_test[i])
     plt.subplot(1,3,2)  

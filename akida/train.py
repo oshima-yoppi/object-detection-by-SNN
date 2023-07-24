@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 INPUT_HEIGHT, INPUT_WIDTH = 50 ,50
 # INPUT_HEIGHT, INPUT_WIDTH = 130 ,173
 COUNT = False
-COUNT = True
+# COUNT = True
 
 dataset_path = f"dataset/dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_count-{COUNT}.pickle"
 # dataset_path = f"/content/drive/MyDrive/akida/segmentation/dataset_50_50_ann.pickle"
