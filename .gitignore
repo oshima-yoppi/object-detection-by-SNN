@@ -3,6 +3,7 @@
 *.npy
 *.h5
 *.png
+*.pdf
 
 easy_task/classification/dataset/*.h5
 easy_task/segmentation/dataset/*.h5

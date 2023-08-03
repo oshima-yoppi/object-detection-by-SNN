@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # %%
-csv_path = "result_experiment/experiment_016.csv"
+csv_path = "result_experiment/experiment_017.csv"
 data = pd.read_csv(csv_path)
 
 

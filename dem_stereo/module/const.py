@@ -85,9 +85,11 @@ DATASET_PATH = "dataset"  # datasetのパス
 # DATASET_ACCEVENT_PATH = os.path.join(DATASET_PATH, str(ACCUMULATE_EVENT_MICROTIME)) # dataset/〇〇  ←何秒ためるかを表す
 
 RAW_EVENT_PATH = f"raw-data/th-{str(EVENT_TH)}"  # v2eから出力されたイベント生データ
-RAW_EVENT_ONLY_BOULDER_PATH = f"raw-data_only_boulder/th-{str(EVENT_TH)}"
-
-PROCESSED_EVENT_DATASET_PATH = f"dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_startstep-{START_STEP}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}_LeargeData-{BOOL_LEARGE_DATASET}"
+RAW_EVENT_LEFT_PATH = f"raw-data/th-{str(EVENT_TH)}/left"
+RAW_EVENT_RIGHT_PATH = f"raw-data/th-{str(EVENT_TH)}/right"
+RAW_EVENT_DIR = f"raw-data/th-{str(EVENT_TH)}/"
+MAX_STEP = 8
+PROCESSED_EVENT_DATASET_PATH = f"dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_MaxStep-{MAX_STEP}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}_LeargeData-{BOOL_LEARGE_DATASET}"
 
 
 NETWORK_CLASS_NAME = NET.__class__.__name__

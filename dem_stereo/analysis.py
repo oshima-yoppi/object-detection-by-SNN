@@ -33,7 +33,10 @@ from collections import defaultdict
 import time
 
 
-def main(hist=None,):
+def main(
+    hist=None,
+    pdf_output=False,
+):
     # train_dataset = LoadDataset(processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH, raw_event_dir=RAW_EVENT_PATH, accumulate_time=ACCUMULATE_EVENT_MICROTIME , input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH,train=True, finish_step=FINISH_STEP)
     test_dataset = LoadDataset(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
@@ -97,9 +100,7 @@ def main(hist=None,):
         fig.tight_layout()
         plt.savefig(path)
 
-    def save_img(
-        number, events, pred_pro, label, results, result_recall_path, pdf_output
-    ):
+    def save_img(number, events, pred_pro, label, results, result_recall_path, pdf_output):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
         # number_str = str(number).zfill(5)
@@ -121,7 +122,7 @@ def main(hist=None,):
         line_color = (150, 150, 0)
         number = str(number).zfill(5)
         video_filename = f"{number}.avi"
-        video_path = os.path.join(VIDEO_PATH, video_filename)
+        video_path = os.path.join(VIDEO_CENTER_PATH, video_filename)
         first_frame = view.get_first_frame(video_path)
         first_frame = view.draw_edge_of_areas(first_frame, line_color=line_color)
 
@@ -134,20 +135,11 @@ def main(hist=None,):
         ax3.set_title("EVS view")
         ax3.imshow(first_events)
 
-        label = (
-            label.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
-        )
+        label = label.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
         ax4.set_title("label")
         ax4.imshow(label)
 
-        pred_pro_ = (
-            pred_pro[0]
-            .reshape((ROUGH_PIXEL, ROUGH_PIXEL))
-            .to("cpu")
-            .detach()
-            .numpy()
-            .copy()
-        )
+        pred_pro_ = pred_pro[0].reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
         # pred_pro_max = np.max(pred_pro_)
         # pred_pro_max_rounded = np.round(pred_pro_max, 2)
         # pred_pro_min = np.min(pred_pro_)
@@ -156,9 +148,7 @@ def main(hist=None,):
         ax5.imshow(pred_pro_, vmin=0, vmax=1)
 
         pred = torch.where(pred_pro[0] > CORRECT_RATE, 1, 0)
-        pred = (
-            pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
-        )
+        pred = pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
         ax6.set_title("pred")
         ax6.imshow(pred, vmin=0, vmax=1)
 
@@ -215,7 +205,7 @@ def main(hist=None,):
                 label,
                 results,
                 result_recall_path,
-                pdf_output=False,
+                pdf_output=pdf_output,
             )
             # print(time.time()-s)
 
@@ -262,4 +252,4 @@ def main(hist=None,):
 
 
 if __name__ == "__main__":
-    main()
+    main(pdf_output=True)

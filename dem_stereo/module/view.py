@@ -11,13 +11,14 @@ def get_first_frame(video_path):
 
 
 def get_first_events(events):
-
+    # print(events.shape)
+    height, width = events.shape[-2], events.shape[-1]
     if events.dim() == 5:  # [TBCHW]
         events = events.to("cpu")
         if BOOL_DISTINGUISH_EVENT:
-            first_events = np.zeros((INPUT_HEIGHT, INPUT_WIDTH, 3))  # bgr
+            first_events = np.zeros((height, width, 3))  # bgr
             if EVENT_COUNT:
-                first_events = np.zeros((INPUT_HEIGHT, INPUT_WIDTH))
+                first_events = np.zeros((height, width))
                 # first_events[:,:,0] = events[0,0,0]# r
                 # first_events[:,:,1] = events[0,0,1]
                 first_events[:, :] = events[0, 0, 1]
@@ -29,7 +30,7 @@ def get_first_events(events):
     elif events.dim() == 4:  # [TCHW]
         events = events.to("cpu")
         if BOOL_DISTINGUISH_EVENT:
-            first_events = np.zeros((INPUT_HEIGHT, INPUT_WIDTH, 3))  # bgr
+            first_events = np.zeros((height, width, 3))  # bgr
             if EVENT_COUNT:
                 first_events[:, :, 0] = events[0, 0, 0]  # r
                 first_events[:, :, 1] = events[0, 0, 1]
@@ -40,7 +41,14 @@ def get_first_events(events):
             return first_events
 
 
-def draw_edge_of_areas(imgs, line_color=(255, 0, 0,)):
+def draw_edge_of_areas(
+    imgs,
+    line_color=(
+        255,
+        0,
+        0,
+    ),
+):
     height, width, _ = imgs.shape
     region_width = width // 3
     region_height = height // 3

@@ -33,7 +33,7 @@ import time
 def main():
     train_dataset = LoadDataset(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
-        raw_event_dir=RAW_EVENT_PATH,
+        raw_event_dir=RAW_EVENT_DIR,
         accumulate_time=ACCUMULATE_EVENT_MICROTIME,
         input_height=INPUT_HEIGHT,
         input_width=INPUT_WIDTH,
@@ -42,7 +42,7 @@ def main():
     )
     test_dataset = LoadDataset(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
-        raw_event_dir=RAW_EVENT_PATH,
+        raw_event_dir=RAW_EVENT_DIR,
         accumulate_time=ACCUMULATE_EVENT_MICROTIME,
         input_height=INPUT_HEIGHT,
         input_width=INPUT_WIDTH,
@@ -73,11 +73,12 @@ def main():
     weights = 1.0 / class_ration
     weights = weights / weights.sum()
     # loss_func = nn.BCELoss(weight=weights)
-    loss_func = compute_loss.DiceLoss()
+    # loss_func = compute_loss.DiceLoss()
+    loss_func = compute_loss.WeightedF1Loss(beta=1.5)
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-    num_epochs = 30
+    num_epochs = 50
     # num_epochs = 2
     num_iters = 50
     # pixel = 64
@@ -105,7 +106,7 @@ def main():
                     label = label.to(DEVICE)
                     batch = len(data[0])
                     # print(data.shape)
-                    data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                    # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                     # print(data.shape)
                     net.train()
                     pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
@@ -141,7 +142,7 @@ def main():
                         data = data.to(DEVICE)
                         label = label.to(DEVICE)
                         batch = len(data[0])
-                        data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
+                        # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                         pred_pro = net(data, time_step)
 
                         # pred_class = pred_pro.argmax(dim=1)
@@ -175,22 +176,22 @@ def main():
     print("success model saving")
 
     # print(MODEL_NAME)
-    # print(f'{acc=}')
-    # # # Plot Loss
-    # # print(hist)
+    # print(f"{acc=}")
+    # # Plot Loss
+    # print(hist)
     # fig = plt.figure(facecolor="w")
     # ax1 = fig.add_subplot(1, 3, 1)
     # ax2 = fig.add_subplot(1, 3, 2)
     # ax3 = fig.add_subplot(1, 3, 3)
-    # ax1.plot(hist['loss'], label="train")
+    # ax1.plot(hist["loss"], label="train")
     # ax1.set_title("loss")
     # ax1.set_xlabel("Iteration")
     # ax1.set_ylabel("Loss (Dice)")
-    # ax2.plot(hist['train'], label="train")
+    # ax2.plot(hist["train"], label="train")
     # ax2.set_title("Train  accuracy")
     # ax2.set_xlabel("Iteration")
     # ax2.set_ylabel("Accuracy(IoU)")
-    # ax3.plot(hist['test'], label='test')
+    # ax3.plot(hist["test"], label="test")
     # ax3.set_title("Test acc")
     # ax3.set_xlabel("epoch")
     # ax3.set_ylabel("Accuracy(IoU)")

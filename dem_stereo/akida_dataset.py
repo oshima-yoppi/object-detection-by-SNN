@@ -27,11 +27,12 @@ from tqdm import tqdm
 import shutil
 import pickle
 from matplotlib import pyplot as plt
-INPUT_HEIGHT, INPUT_WIDTH = 130, 173
+
+INPUT_HEIGHT, INPUT_WIDTH = 130, 162
 # INPUT_HEIGHT, INPUT_WIDTH = 50, 50
 
 
-def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, finish_step=1, count=False, resize= True):
+def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, finish_step=1, count=False, resize=True):
     SENSOR_SIZE = (IMG_WIDTH, IMG_HEIGHT, 2)  # (WHP)
     input_lst = []
     label_lst = []
@@ -51,8 +52,10 @@ def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, f
         input = np.zeros((INPUT_HEIGHT, INPUT_WIDTH))
         # input = np.zeros_like(label)
         # print(input.shape)
-        for event_pertime in raw_events:
+        for count, event_pertime in enumerate(raw_events):
             input = input + event_pertime[0] + event_pertime[1]
+            if count == 1:
+                break
         # print(raw_events.shape)
         # print(label.shape)
         # if count:
@@ -66,17 +69,17 @@ def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, f
         # break
         # print(np.max(input))
         if count == False:
-            input = np.where(input >= 1, 1., 0.)
+            input = np.where(input >= 1, 1.0, 0.0)
         # print(np.max(input))
         # plt.imshow(input)
         # plt.show()
         if resize:
-            input = cv2.resize(input, (50,50), interpolation=cv2.INTER_LINEAR)
+            input = cv2.resize(input, (200, 200), interpolation=cv2.INTER_LINEAR)
 
         input_lst.append(input)
         label_lst.append(label)
         # break
-    save_path = os.path.join(akida_dataset_dir, f"dataset_{INPUT_WIDTH}_{INPUT_HEIGHT}_count-{count}_resize-{resize}.pickle")
+    save_path = os.path.join(akida_dataset_dir, f"dataset.pickle")
     with open(save_path, mode="wb") as f:
         pickle.dump((input_lst, label_lst), f)
     print(len(input_lst))
@@ -116,7 +119,7 @@ def make_imgdataset_for_akida(akida_dataset_dir, img_raw_dir):
 if __name__ == "__main__":
     AKIDA_DATASET_DIR = "akida"
     img_raw_dir = "dataset_ann"
-    event_dir = "dataset/80000_(130,173)_th-0.15_startstep-8_EventCount-False_Distinguish-True_LeargeData-True"
+    event_dir = "dataset/80000_(130,173)_th-0.15_MaxStep-8_EventCount-False_Distinguish-True_LeargeData-True"
     count = False
     resize = True
     make_dataset_for_akida(
