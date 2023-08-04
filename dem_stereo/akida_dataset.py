@@ -52,10 +52,11 @@ def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, f
         input = np.zeros((INPUT_HEIGHT, INPUT_WIDTH))
         # input = np.zeros_like(label)
         # print(input.shape)
+        # print(raw_events.shape)
         for count, event_pertime in enumerate(raw_events):
             input = input + event_pertime[0] + event_pertime[1]
-            if count == 1:
-                break
+            # if count == 1:
+            #     break
         # print(raw_events.shape)
         # print(label.shape)
         # if count:
@@ -74,7 +75,7 @@ def make_dataset_for_akida(akida_dataset_dir, events_raw_dir, accumulate_time, f
         # plt.imshow(input)
         # plt.show()
         if resize:
-            input = cv2.resize(input, (200, 200), interpolation=cv2.INTER_LINEAR)
+            input = cv2.resize(input, (INPUT_HEIGHT, INPUT_WIDTH), interpolation=cv2.INTER_LINEAR)
 
         input_lst.append(input)
         label_lst.append(label)
@@ -121,7 +122,7 @@ if __name__ == "__main__":
     img_raw_dir = "dataset_ann"
     event_dir = "dataset/80000_(130,173)_th-0.15_MaxStep-8_EventCount-False_Distinguish-True_LeargeData-True"
     count = False
-    resize = True
+    resize = False
     make_dataset_for_akida(
         akida_dataset_dir=AKIDA_DATASET_DIR,
         events_raw_dir=event_dir,

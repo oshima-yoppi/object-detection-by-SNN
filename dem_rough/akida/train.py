@@ -118,12 +118,12 @@ model_keras = keras.models.Sequential(
         keras.layers.BatchNormalization(),
         keras.layers.ReLU(),
         keras.layers.Dropout(drop_rate),
-        keras.layers.Conv2D(filters=16, kernel_size=5, strides=2),
+        keras.layers.Conv2D(filters=1, kernel_size=5, strides=2),
         keras.layers.BatchNormalization(),
-        keras.layers.ReLU(),
-        keras.layers.Dropout(drop_rate),
-        keras.layers.Conv2D(filters=1, kernel_size=1, strides=1),
-        keras.layers.BatchNormalization(),
+        # keras.layers.ReLU(),
+        # keras.layers.Dropout(drop_rate),
+        # keras.layers.Conv2D(filters=1, kernel_size=1, strides=1),
+        # keras.layers.BatchNormalization(),
     ],
 )
 
@@ -142,9 +142,21 @@ import keras.backend as K
 
 
 def change_output(x):
+    """
+    出力サイズを（３，３）にするための関数
+    """
     x = K.sigmoid(x)
     # print(x.shape)
-    x = tf.image.resize(x, [3, 3])
+    if len(x.shape) == 4:
+        _, w, h, _ = x.shape
+    else:
+        w, h, _ = x.shape
+    padding_h = w % 3
+    padding_w = h % 3
+    stride_h = (h + padding_h * 2) // 3
+    stride_w = (w + padding_w * 2) // 3
+    x = tf.keras.layers.MaxPool2D(pool_size=(stride_h, stride_w), strides=(stride_h, stride_w))(x)
+    # x = tf.image.resize(x, [3, 3])
     return x
 
 
@@ -251,7 +263,7 @@ def precission_eval(targets, inputs, smooth=1e-6):
 #     return  iou
 optimizer = keras.optimizers.Adam(learning_rate=0.01)
 model_keras.compile(loss=DiceLoss, optimizer=optimizer, metrics=[precission_eval, recall_eval])
-model_keras.fit(x_train, y_train, epochs=100, validation_split=0.1, batch_size=20)
+model_keras.fit(x_train, y_train, epochs=1, validation_split=0.1, batch_size=20)
 
 
 # score = model_keras.evaluate(x_test, y_test, verbose=0)
@@ -263,7 +275,7 @@ print("Test accuracy:", score[1])
 # %%
 for i in range(10):
     out = model_keras.predict(x_test[i : i + 1])
-    pre = change_output(out[0])
+    pre = change_output(out)[0]
     plt.subplot(1, 3, 1)
     plt.imshow(x_test[i])
     plt.subplot(1, 3, 2)
@@ -275,7 +287,7 @@ out = model_keras.predict(x_test[1:2])
 # %%
 for i in range(10):
     out = model_keras.predict(x_train[i : i + 1])
-    pre = change_output(out[0])
+    pre = change_output(out)[0]
     plt.subplot(1, 3, 1)
     plt.imshow(x_train[i])
     plt.subplot(1, 3, 2)
