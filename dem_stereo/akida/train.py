@@ -169,11 +169,12 @@ def change_output(x):
     stride_h = (h + padding_h * 2) // 3
     stride_w = (w + padding_w * 2) // 3
     paddinger = CustomPaddingLayer()
+    # print(x.shape)
     x = paddinger(x, padding=(padding_h, padding_w))
-    print(x.shape)
-    print(f"padding_h:{padding_h},padding_w:{padding_w},stride_h:{stride_h},stride_w:{stride_w}")
+    # print(x.shape)
+    # print(f"padding_h:{padding_h},padding_w:{padding_w},stride_h:{stride_h},stride_w:{stride_w}")
     x = tf.keras.layers.MaxPool2D(pool_size=(stride_h, stride_w), strides=(stride_h, stride_w))(x)
-    print(x.shape)
+    # print(x.shape)
     # x = tf.image.resize(x, [3, 3])
     return x
 
