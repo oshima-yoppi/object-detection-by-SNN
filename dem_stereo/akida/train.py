@@ -334,3 +334,42 @@ print("Test accuracy:", score[1])
 #     plt.show()
 
 # %%
+
+from cnn2snn import quantize
+
+model_quantized = quantize(model_keras, input_weight_quantization=8, weight_quantization=4, activ_quantization=4)
+model_quantized.summary()
+
+######################################################################
+# Check the quantized model accuracy.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+model_quantized.compile(loss=DiceLoss, optimizer="adam", metrics=[IoU])
+
+score = model_quantized.evaluate(x_test, y_test, verbose=0)
+print("Test accuracy after 8-4-4 quantization:", score[1])
+
+# %%
+# 5. Model fine tuning (quantization-aware training)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+model_quantized.fit(x_train, y_train, epochs=50, validation_split=0.1)  # 5
+
+score = model_quantized.evaluate(x_test, y_test, verbose=0)
+print("Test loss after fine tuning", score[0])
+print("Test accuracy after fine tuning:", score[1])
+# %%
+# 6. Model conversion
+# ~~~~~~~~~~~~~~~~~~~
+
+
+from cnn2snn import convert
+
+akida_model_file = "model_akida.h5"
+
+model_akida = convert(model_quantized, input_scaling=input_scaling, file_path=akida_model_file)
+model_akida.summary()
+
+accuracy = model_akida.evaluate(raw_x_test, raw_y_test)
+print("Test accuracy after conversion:", accuracy)
