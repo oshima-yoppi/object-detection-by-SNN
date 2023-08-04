@@ -4,5 +4,8 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"python.linting.enabled": false,
+		"python.linting.lintOnSave": false
+	}
 }

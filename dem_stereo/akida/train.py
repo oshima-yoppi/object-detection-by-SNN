@@ -141,11 +141,13 @@ print("Model compatible for Akida conversion:", check_model_compatibility(model_
 import tensorflow as tf
 import keras.backend as K
 from tensorflow.keras.layers import Layer
+
+
 class CustomPaddingLayer(Layer):
     def __init__(self, **kwargs):
         super(CustomPaddingLayer, self).__init__(**kwargs)
 
-    def call(self, inputs, padding= (1,1)):
+    def call(self, inputs, padding=(1, 1)):
         padded_inputs = tf.pad(
             inputs,
             paddings=[[0, 0], [padding[0], padding[0]], [padding[1], padding[1]], [0, 0]],
@@ -153,6 +155,7 @@ class CustomPaddingLayer(Layer):
             constant_values=0,
         )
         return padded_inputs
+
 
 def change_output(x):
     """
@@ -165,9 +168,11 @@ def change_output(x):
     padding_w = w % 3
     stride_h = (h + padding_h * 2) // 3
     stride_w = (w + padding_w * 2) // 3
+    paddinger = CustomPaddingLayer()
+    x = paddinger(x, padding=(padding_h, padding_w))
     print(x.shape)
     print(f"padding_h:{padding_h},padding_w:{padding_w},stride_h:{stride_h},stride_w:{stride_w}")
-    x = tf.keras.layers.MaxPool2D(pool_size=(stride_h, stride_w), strides=(stride_h, stride_w)m padding=)(x)
+    x = tf.keras.layers.MaxPool2D(pool_size=(stride_h, stride_w), strides=(stride_h, stride_w))(x)
     print(x.shape)
     # x = tf.image.resize(x, [3, 3])
     return x
