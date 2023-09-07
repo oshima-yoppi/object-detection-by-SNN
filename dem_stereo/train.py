@@ -78,7 +78,7 @@ def main():
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-    num_epochs = 50
+    num_epochs = 100
     # num_epochs = 2
     num_iters = 50
     # pixel = 64

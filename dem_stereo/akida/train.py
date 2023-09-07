@@ -114,12 +114,12 @@ model_keras = keras.models.Sequential(
         keras.layers.BatchNormalization(),
         keras.layers.ReLU(),
         keras.layers.Dropout(drop_rate),
-        keras.layers.Conv2D(filters=1, kernel_size=5, strides=2),
+        keras.layers.Conv2D(filters=32, kernel_size=5, strides=2),
         keras.layers.BatchNormalization(),
-        # keras.layers.ReLU(),
-        # keras.layers.Dropout(drop_rate),
-        # keras.layers.Conv2D(filters=1, kernel_size=5, strides=2),
-        # keras.layers.BatchNormalization(),
+        keras.layers.ReLU(),
+        keras.layers.Dropout(drop_rate),
+        keras.layers.Conv2D(filters=1, kernel_size=1, strides=1),
+        keras.layers.BatchNormalization(),
         # keras.layers.ReLU(),
         # keras.layers.Dropout(drop_rate),
         # keras.layers.Conv2D(filters=1, kernel_size=1, strides=1),
@@ -300,7 +300,7 @@ def precission_eval(targets, inputs, smooth=1e-6):
 optimizer = keras.optimizers.Adam(learning_rate=0.01)
 model_keras.compile(loss=DiceLoss, optimizer=optimizer, metrics=[precission_eval, recall_eval])
 # model_keras.compile(loss=weighted_focal_Loss, optimizer=optimizer, metrics=[precission_eval, recall_eval])
-model_keras.fit(x_train, y_train, epochs=50, validation_split=0.1, batch_size=20)
+model_keras.fit(x_train, y_train, epochs=100, validation_split=0.1, batch_size=20)
 
 
 # score = model_keras.evaluate(x_test, y_test, verbose=0)
@@ -344,7 +344,7 @@ model_quantized.summary()
 # Check the quantized model accuracy.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-model_quantized.compile(loss=DiceLoss, optimizer="adam", metrics=[IoU])
+model_quantized.compile(loss=DiceLoss, optimizer="adam", metrics=[precission_eval, recall_eval])
 
 score = model_quantized.evaluate(x_test, y_test, verbose=0)
 print("Test accuracy after 8-4-4 quantization:", score[1])
@@ -366,10 +366,10 @@ print("Test accuracy after fine tuning:", score[1])
 
 from cnn2snn import convert
 
-akida_model_file = "model_akida.h5"
+akida_model_file = "akidamodel.fbz"
 
 model_akida = convert(model_quantized, input_scaling=input_scaling, file_path=akida_model_file)
 model_akida.summary()
 
-accuracy = model_akida.evaluate(raw_x_test, raw_y_test)
-print("Test accuracy after conversion:", accuracy)
+# accuracy = model_akida.evaluate(raw_x_test, raw_y_test)
+# print("Test accuracy after conversion:", accuracy)

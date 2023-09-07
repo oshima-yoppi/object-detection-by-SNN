@@ -73,6 +73,7 @@ NET = network.RoughConv3(
 
 
 LABEL_PATH = "label_only"
+# LABEL_PATH = "blender/"
 LABEL_BOULDER_PATH = "label_only_boulder"
 
 # BOOL_LEARGE_DATASET = False

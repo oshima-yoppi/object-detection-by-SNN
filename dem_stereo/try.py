@@ -101,9 +101,7 @@ def img2plot(np_path):
     fIndexes = []
     for x in range(0, pix - 1):
         for y in range(0, pix - 1):
-            fIndexes.append(
-                [x + y * pix, x + 1 + y * pix, x + 1 + (y + 1) * pix, x + (y + 1) * pix]
-            )
+            fIndexes.append([x + y * pix, x + 1 + y * pix, x + 1 + (y + 1) * pix, x + (y + 1) * pix])
 
     mesh = bpy.data.meshes.new(object_name)
     mesh.from_pydata(verts, [], fIndexes)  # 点と面の情報からメッシュを生成
@@ -130,9 +128,7 @@ def remove(name):
 
 
 if __name__ == "__main__":
-    dem_path_abs = bpy.path.abspath(
-        DEM_NP_PATH_BLENDER
-    )  # https://twitter.com/Bookyakuno/status/1457726187745153038
+    dem_path_abs = bpy.path.abspath(DEM_NP_PATH_BLENDER)  # https://twitter.com/Bookyakuno/status/1457726187745153038
     video_path_abs = bpy.path.abspath(VIDEO_PATH_BLENDER)
     print(dem_path_abs)
     init(theta=10, save_dir=video_path_abs)

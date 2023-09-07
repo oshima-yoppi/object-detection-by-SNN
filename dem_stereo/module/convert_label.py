@@ -50,7 +50,7 @@ class Dem2Img:
         ----------
         dem_label : torch.tensor
             デム座標系のラベル
-        
+
         Return
         ---------
         label : torch.tensor
@@ -61,21 +61,13 @@ class Dem2Img:
         label = np.zeros((self.img_height, self.img_width))
         for x_pix in range(self.img_height):
             for y_pix in range(self.img_width):
-                x_cam = (
-                    (x_pix - self.img_height / 2) * self.sensor_height / self.img_height
-                )  # スクリーン上のグローバル座標を求める。なお、原点は画像中心
-                y_cam = (
-                    (y_pix - self.img_width / 2) * self.sensor_width / self.img_width
-                )
+                x_cam = (x_pix - self.img_height / 2) * self.sensor_height / self.img_height  # スクリーン上のグローバル座標を求める。なお、原点は画像中心
+                y_cam = (y_pix - self.img_width / 2) * self.sensor_width / self.img_width
 
-                dem_x_from_center = (
-                    x_cam * self.cam_z / self.focal
-                )  # デムのグローバル座標を求める。なお、原点は画像中心とする
+                dem_x_from_center = x_cam * self.cam_z / self.focal  # デムのグローバル座標を求める。なお、原点は画像中心とする
                 dem_y_from_center = y_cam * self.cam_z / self.focal
 
-                dem_pix_x_from_center = (
-                    dem_x_from_center // self.meter_per_grid
-                )  # ピクセルに変換
+                dem_pix_x_from_center = dem_x_from_center // self.meter_per_grid  # ピクセルに変換
                 dem_pix_y_from_center = dem_y_from_center // self.meter_per_grid
                 # dem_pix_x = dem_pix_x_from_center + self.dem_height // 2
                 # dem_pix_y = dem_pix_y_from_center + self.dem_width // 2

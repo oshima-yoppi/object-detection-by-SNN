@@ -40,15 +40,17 @@ def init(theta, camera_name_lst, video_dir_lst):
     camera_y = IMG_HEIGHT
     bpy.context.scene.render.resolution_x = camera_x
     bpy.context.scene.render.resolution_y = camera_y
-    distance_between_camera = 1  # [m]
-    viewing_radian = math.radians(38.2)  # カメラの視野角。
-    radian_tilt = math.atan(distance_between_camera / CAM_Z) + viewing_radian / 2  # 左右のカメラをどのくらい傾けるか。ど真ん中に左右のカメラの端が来るようにする
+    distance_between_camera = 2  # 左右のカメラの間の距離[m]
+    viewing_radian = math.radians(CAMERA_THETA)  # カメラの視野角。
+    overlap_length = 0.4  # 二つのカメラが見る範囲をどれくらい被らせるか[m](0.3m で高度1mの誤差、0.4m で高度1.5mの誤差、0.5m で高度2mの誤差、が許容できる)
+    radian_tilt = math.atan((distance_between_camera - overlap_length) / 2 / CAM_Z) + viewing_radian / 2  # 左右のカメラをどのくらい傾けるか。
     for camera_name in camera_name_lst:
         camera = bpy.data.objects[camera_name]
         camera.data.lens = FOCAL * 1000  # not [m] but [mm]
-        camera.data.sensor_fit = "HORIZONTAL"
-        camera.data.sensor_width = camera_x / 10
-        camera.data.sensor_height = camera_y / 10
+        camera.data.sensor_fit = "AUTO"
+        # camera.data.sensor_fit = "HORIZONTAL"
+        camera.data.sensor_width = SENSOR_WIDTH * 1000
+        camera.data.sensor_height = SENSOR_HEIGHT * 1000
         camera.data.clip_end = 10
         # camera.location = (CAM_X, CAM_Y + (i - 1) * distance_between_camera, CAM_Z)
 
@@ -90,13 +92,13 @@ def init(theta, camera_name_lst, video_dir_lst):
             camera.rotation_mode = "ZXY"
             if camera_name == "Camera_left":
                 camera.rotation_euler = (radian_tilt, 0, math.radians(90))
-                camera.location = (CAM_X, CAM_Y + -1 * distance_between_camera, z_frame)
+                camera.location = (CAM_X, CAM_Y + -1 * distance_between_camera / 2, z_frame)
             elif camera_name == "Camera_center":
                 camera.rotation_euler = (0, 0, math.radians(90))
                 camera.location = (CAM_X, CAM_Y + 0 * distance_between_camera, z_frame)
             elif camera_name == "Camera_right":
                 camera.rotation_euler = (-radian_tilt, 0, math.radians(90))
-                camera.location = (CAM_X, CAM_Y + 1 * distance_between_camera, z_frame)
+                camera.location = (CAM_X, CAM_Y + 1 * distance_between_camera / 2, z_frame)
 
             # camera = bpy.data.objects[camera_name]
             print(camera_name, camera.location)
@@ -187,12 +189,12 @@ if __name__ == "__main__":
     # video_path_abs = bpy.path.abspath(VIDEO_PATH_BLENDER)
     video_dir_lst = [
         bpy.path.abspath(VIDEO_LEFT_PATH_BLENDER),
-        # bpy.path.abspath(VIDEO_CENTER_PATH_BLENDER),
+        bpy.path.abspath(VIDEO_CENTER_PATH_BLENDER),
         bpy.path.abspath(VIDEO_RIGHT_PATH_BLENDER),
     ]
     camera_name_lst = [
         "Camera_left",
-        # "Camera_center",
+        "Camera_center",
         "Camera_right",
     ]
     THETA_X_SUN = 80  # 太陽の高度

@@ -65,7 +65,7 @@ def change_from_TopView(y, h, focal, distance_between_camera, theta):
 print(math.degrees(math.atan(0.0342 / 2 / 0.05)))
 focal = 0.05
 viewing_angle = 38.2
-distance_between_camera = 1
+distance_between_camera = 2
 viewing_radian = math.radians(viewing_angle)  # カメラの視野角。
 radian_tilt = math.atan(distance_between_camera / CAM_Z) + viewing_radian / 2  # 左右のカメラをどのくらい傾けるか。ど真ん中に左右のカメラの端が来るようにする
 print(88)
@@ -80,7 +80,7 @@ print(delta_right)
 # 左側の計算
 focal = 0.05
 viewing_angle = 38.2
-distance_between_camera = 1
+distance_between_camera = 2
 viewing_radian = math.radians(viewing_angle)  # カメラの視野角。
 radian_tilt = math.atan(distance_between_camera / CAM_Z) + viewing_radian / 2  # 左右のカメラをどのくらい傾けるか。ど真ん中に左右のカメラの端が来るようにする
 radian_tilt *= -1
