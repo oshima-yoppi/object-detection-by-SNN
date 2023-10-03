@@ -75,26 +75,27 @@ class ToRoughSegmentation:
         return
 
     def __call__(self, arr):
+        arr = torch.from_numpy(arr)
         # print(arr.shape, INPUT_HEIGHT, INPUT_WIDTH)
         rough_label = torch.zeros((1, self.rough_pix, self.rough_pix))
         for i in range(self.rough_pix):
             for j in range(self.rough_pix):
                 splited_label = arr[
                     0,
-                    i * INPUT_HEIGHT // self.rough_pix : (i + 1) * INPUT_HEIGHT // self.rough_pix,
-                    j * INPUT_WIDTH // self.rough_pix : (j + 1) * INPUT_WIDTH // self.rough_pix,
+                    i
+                    * INPUT_HEIGHT
+                    // self.rough_pix : (i + 1)
+                    * INPUT_HEIGHT
+                    // self.rough_pix,
+                    j
+                    * INPUT_WIDTH
+                    // self.rough_pix : (j + 1)
+                    * INPUT_WIDTH
+                    // self.rough_pix,
                 ]
                 contein_one = torch.any(splited_label == 1)
                 if contein_one:
                     rough_label[0, i, j] = 1
-
-        # rough_label_ = rough_label.to('cpu').detach().numpy().copy()
-        # plt.figure()
-        # plt.subplot(1, 2, 1)
-        # plt.imshow(arr_[0])
-        # plt.subplot(1, 2, 2)
-        # plt.imshow(rough_label_[0])
-        # plt.show()
 
         return rough_label
 
@@ -132,7 +133,9 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         if EVENT_COUNT:
             converter_event = transforms.Compose(
                 [
-                    transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+                    transforms.ToFrame(
+                        sensor_size=SENSOR_SIZE, time_window=accumulate_time
+                    ),
                     num2torch(),
                     transforms_.Resize(
                         size=(INPUT_HEIGHT, INPUT_WIDTH),
@@ -144,7 +147,9 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
         else:
             converter_event = transforms.Compose(
                 [
-                    transforms.ToFrame(sensor_size=SENSOR_SIZE, time_window=accumulate_time),
+                    transforms.ToFrame(
+                        sensor_size=SENSOR_SIZE, time_window=accumulate_time
+                    ),
                     num2torch(),
                     Number2one(),
                     transforms_.Resize(
@@ -162,21 +167,30 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
                     size=(INPUT_HEIGHT, INPUT_WIDTH),
                     interpolation=T.InterpolationMode.NEAREST,
                 ),
-                ToRoughSegmentation(ROUGH_PIXEL),
+                # ToRoughSegmentation(ROUGH_PIXEL),
             ]
         )
-        for i, (leftfile, rightfile) in enumerate(zip(tqdm(h5py_leftfile), h5py_rightfile)):
+        converter_rough_label = ToRoughSegmentation(ROUGH_PIXEL)
+        for i, (leftfile, rightfile) in enumerate(
+            zip(tqdm(h5py_leftfile), h5py_rightfile)
+        ):
             with h5py.File(leftfile, "r") as f:
-                label = f["label"][()]
+                label_left = f["label"][()]
+                # label = f["label"][()]
                 raw_events_left = f["events"][()]
             with h5py.File(rightfile, "r") as f:
+                label_right = f["label"][()]
                 raw_events_right = f["events"][()]
 
             # with h5py.File(file, "r") as f:
             #     label = f["label"][()]
             #     raw_events = f["events"][()]
-            raw_events_left = get_until_finishtime(raw_events_left, finish_time=finish_time)
-            raw_events_right = get_until_finishtime(raw_events_right, finish_time=finish_time)
+            raw_events_left = get_until_finishtime(
+                raw_events_left, finish_time=finish_time
+            )
+            raw_events_right = get_until_finishtime(
+                raw_events_right, finish_time=finish_time
+            )
             raw_events_len_left = raw_events_left.shape[0]
             raw_events_len_right = raw_events_right.shape[0]
             # raw_event_len = raw_events.shape[0]
@@ -200,20 +214,32 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
                 acc_events_right = converter_event(processed_events_right)
             # print(acc_events_left.shape, acc_events_right.shape)  # torch.Size([8, 2, 130, 173]) torch.Size([8, 2, 130, 173])
             # 鳥瞰図(真ん中のカメラから見た風景)からはみ出ている部分を削除。数字の決定はaffin.pyで手作業で行った。(実際はホモグラフィー変換とかやろうとしたけどうまくできず、、)
-            # plt.subplot(1, 3, 1)
+            # plt.subplot(2, 3, 1)
             # plt.imshow(acc_events_left[0, 0])
-            # plt.subplot(1, 3, 2)
+            # plt.subplot(2, 3, 2)
             # plt.imshow(acc_events_right[0, 0])
-            right_idx = int(182 * INPUT_WIDTH // IMG_WIDTH)
-            left_idx = int(160 * INPUT_WIDTH // IMG_WIDTH)
-            acc_events_left = acc_events_left[:, :, :, :left_idx]
+            # plt.show()
+            # print(acc_events_left.shape, acc_events_right.shape)
+            # right_idx = int(182 * INPUT_WIDTH // IMG_WIDTH)
+            # left_idx = int(160 * INPUT_WIDTH // IMG_WIDTH)
+            width = acc_events_left.shape[3]
+            right_idx = RIGHT_IDX
+            left_idx = LEFT_IDX
+            acc_events_left = acc_events_left[
+                :, :, :, :left_idx
+            ]  # time, channel, height, width
             acc_events_right = acc_events_right[:, :, :, right_idx:]
             acc_events = np.concatenate([acc_events_right, acc_events_left], axis=3)
-            # plt.subplot(1, 3, 3)
-            # plt.imshow(acc_events[0, 0])
             # plt.show()
             # print(acc_events.shape)  # torch.Size([8, 2, 130, 160])
-            label = converter_label(label)
+            # label = converter_label(label)
+            label_left = converter_label(label_left)
+            label_right = converter_label(label_right)
+
+            label_left = label_left[:, :, :left_idx]
+            label_right = label_right[:, :, right_idx:]
+            label = np.concatenate([label_right, label_left], axis=2)
+            label = converter_rough_label(label)
 
             file_name = f"{str(i).zfill(5)}.h5"
             new_file_path = os.path.join(new_dir, file_name)
@@ -281,7 +307,8 @@ class LoadDataset(Dataset):
         finish_step: 何ステップをSNNに入力するか
         test_rate: 全体のデータに対するテストデータの割合
         train: 学習データかテストデータか
-        download: データを一基にメモリに読み取らせるか。もちろんFalseにした方が早い。ただメモリエラーが起きたときはTrueにして、一回一回読み込ませるようにする(__getitem__時に読み込む必要がなくなるので早くなる)"""  #
+        download: データを一基にメモリに読み取らせるか。もちろんFalseにした方が早い。ただメモリエラーが起きたときはTrueにして、一回一回読み込ませるようにする(__getitem__時に読み込む必要がなくなるので早くなる)
+        """  #
         self.accumulate_time = accumulate_time
         self.input_height = input_height
         self.input_width = input_width

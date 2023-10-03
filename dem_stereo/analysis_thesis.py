@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # %%
-csv_path = "result_experiment/experiment_003.csv"
+csv_path = "result_experiment/experiment_006.csv"
 data = pd.read_csv(csv_path)
 
 
@@ -20,16 +20,40 @@ for j, th in enumerate(event_th):
     recall_time = []
     for fin_step in data["FINISH_STEP"].unique():
         precision.append(
-            data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == False), "Precision"].values[0]
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == False),
+                "Precision",
+            ].values[0]
         )
-        recall.append(data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == False), "Recall"].values[0])
+        recall.append(
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == False),
+                "Recall",
+            ].values[0]
+        )
         # print(type(fin_step))
         if fin_step == 8:
             continue
         precision_time.append(
-            data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == True), "Precision"].values[0]
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == True),
+                "Precision",
+            ].values[0]
         )
-        recall_time.append(data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == True), "Recall"].values[0])
+        recall_time.append(
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == True),
+                "Recall",
+            ].values[0]
+        )
     plt_width = len(data["EVENT_TH"].unique())
     plt_width = len(event_th)
     x_lst = data["FINISH_STEP"].unique()
@@ -87,7 +111,7 @@ plt.savefig("result_two.pdf")
 plt.savefig("result_two.png")
 plt.show()
 # %%
-csv_path = "result_experiment/experiment_003.csv"
+csv_path = "result_experiment/experiment_006.csv"
 data = pd.read_csv(csv_path)
 
 
@@ -189,7 +213,8 @@ for i, acc_time in enumerate(data["ACCUMULATE_EVENT_MILITIME"].unique()):
         )
         plt.xlim(1, 8)
         # plt.title("EVENT_TH: {}".format(th))
-        plt.title("acc_time: {}".format(acc_time))
+        # plt.title("acc_time: {}".format(acc_time))
+        plt.title(f"two cameras({acc_time}ms))")
         plt.xlabel("Input Time Step", fontsize=18)
         plt.ylabel("Accuracy [%]", fontsize=18)
         plt.tick_params(labelsize=15)
@@ -199,6 +224,7 @@ for i, acc_time in enumerate(data["ACCUMULATE_EVENT_MILITIME"].unique()):
 plt.tight_layout()
 plt.savefig("result_two.pdf")
 plt.savefig("result_two.png")
+plt.savefig("result_two.svg")
 plt.show()
 
 # %%

@@ -15,16 +15,24 @@ soft_reset_lst = [True]
 parm_learn_lst = [False]
 # finish_step_lst = [2, 5]
 # finish_step_lst = [2, 5, 8]
-finish_step_lst = [1, 2, 3, 4, 5, 6, 7, 8]
+finish_step_lst = [2, 4, 8]
 # accumulate_event_militime_lst = [10, 40, 80]
-accumulate_event_militime_lst = [10]
+accumulate_event_militime_lst = [50, 100]
 # event_count = [False, True]
 event_count_lst = [False]
 evnet_th_lst = [0.15]
 time_change_lst = [False, True]
 # accumulate_event_militime_lst = [40, 60, 80]
 combinations = list(
-    itertools.product(soft_reset_lst, parm_learn_lst, finish_step_lst, accumulate_event_militime_lst, event_count_lst, evnet_th_lst, time_change_lst)
+    itertools.product(
+        soft_reset_lst,
+        parm_learn_lst,
+        finish_step_lst,
+        accumulate_event_militime_lst,
+        event_count_lst,
+        evnet_th_lst,
+        time_change_lst,
+    )
 )
 cc = 0
 for (

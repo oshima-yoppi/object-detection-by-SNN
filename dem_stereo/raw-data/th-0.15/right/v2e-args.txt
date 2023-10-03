@@ -59,26 +59,26 @@ vid_slomo:	video_slomo.avi
 **** extra other arguments:
 
 *** command line:
- ../v2e-master/v2e.py -i blender/video/right\02999.avi -o raw-data/th-0.15/right --overwrite --output_file_path raw-data/th-0.15/right\02999.h5 --disable --dvs346 --neg_thres 0.15 --pos_thres 0.15 --dvs_aedat2 None --dvs_text None --skip_video_output --no_preview --dvs_h5 True2023-07-27 07:42:37,231 - __main__ - [1;34mINFO[1;0m - opening video input file D:\research\object-detection-by-SNN\dem_stereo\blender\video\right\02999.avi
-2023-07-27 07:42:37,235 - __main__ - [1;31mWARNING[1;0m - slomo interpolation disabled by command line option; output DVS timestamps will have source frame interval resolution
-2023-07-27 07:42:37,236 - __main__ - [1;34mINFO[1;0m - Source video D:\research\object-detection-by-SNN\dem_stereo\blender\video\right\02999.avi has total 101 frames with total duration 1s. 
+ ../v2e-master/v2e.py -i blender/video/right\02999.avi -o raw-data/th-0.15/right --overwrite --output_file_path raw-data/th-0.15/right\02999.h5 --disable --dvs346 --neg_thres 0.15 --pos_thres 0.15 --dvs_aedat2 None --dvs_text None --skip_video_output --no_preview --dvs_h5 True2023-09-20 09:48:05,010 - __main__ - [1;34mINFO[1;0m - opening video input file D:\research\object-detection-by-SNN\dem_stereo\blender\video\right\02999.avi
+2023-09-20 09:48:05,014 - __main__ - [1;31mWARNING[1;0m - slomo interpolation disabled by command line option; output DVS timestamps will have source frame interval resolution
+2023-09-20 09:48:05,015 - __main__ - [1;34mINFO[1;0m - Source video D:\research\object-detection-by-SNN\dem_stereo\blender\video\right\02999.avi has total 101 frames with total duration 1s. 
 Source video is 100fps with slowmotion_factor 1 (frame interval 10ms),
 Will convert 101 frames 0 to 100
 (From 0.0s to 1.0s, duration 1.0s)
-2023-07-27 07:42:37,238 - __main__ - [1;34mINFO[1;0m - v2e DVS video will have constant-duration frames 
+2023-09-20 09:48:05,015 - __main__ - [1;34mINFO[1;0m - v2e DVS video will have constant-duration frames 
 at 100fps (accumulation time 10ms), 
 DVS video will have 100 frames with duration 1s and playback duration 3.33s
 
-2023-07-27 07:42:37,243 - __main__ - [1;34mINFO[1;0m - processing frames 0 to 100 from video input
-2023-07-27 07:42:37,245 - __main__ - [1;34mINFO[1;0m - Input video D:\research\object-detection-by-SNN\dem_stereo\blender\video\right\02999.avi has W=346 x H=260 frames each with 3 channels
-2023-07-27 07:42:37,246 - __main__ - [1;34mINFO[1;0m - *** Stage 1/3: Resizing 101 input frames to output size (with possible RGB to luma conversion)
-2023-07-27 07:42:37,250 - __main__ - [1;34mINFO[1;0m - 
+2023-09-20 09:48:05,019 - __main__ - [1;34mINFO[1;0m - processing frames 0 to 100 from video input
+2023-09-20 09:48:05,021 - __main__ - [1;34mINFO[1;0m - Input video D:\research\object-detection-by-SNN\dem_stereo\blender\video\right\02999.avi has W=346 x H=260 frames each with 3 channels
+2023-09-20 09:48:05,021 - __main__ - [1;34mINFO[1;0m - *** Stage 1/3: Resizing 101 input frames to output size (with possible RGB to luma conversion)
+2023-09-20 09:48:05,025 - __main__ - [1;34mINFO[1;0m - 
 Converting input frames from RGB color to luma
-2023-07-27 07:42:37,390 - __main__ - [1;34mINFO[1;0m - *** Stage 2/3:turning npy frame files to png from C:\Users\oosim\AppData\Local\Temp\tmp6s36uya7
-2023-07-27 07:42:37,616 - __main__ - [1;34mINFO[1;0m - *** Stage 3/3: emulating DVS events from 101 frames
-2023-07-27 07:42:39,466 - __main__ - [1;34mINFO[1;0m - generated total 111.81k events (67.90k on, 43.92k off)
-2023-07-27 07:42:39,467 - __main__ - [1;34mINFO[1;0m - Avg event rate for N=89960 px and total time =1.000 s
-	Total: 111.81kHz (67.90kHz on, 43.92kHz off)
-	Per pixel:  1.24Hz (754.75mHz on, 488.17mHz off)
-2023-07-27 07:42:39,468 - __main__ - [1;34mINFO[1;0m - done processing 202 frames in 2.24s (90.38fr/s)
+2023-09-20 09:48:05,168 - __main__ - [1;34mINFO[1;0m - *** Stage 2/3:turning npy frame files to png from C:\Users\oosim\AppData\Local\Temp\tmpispe6t1t
+2023-09-20 09:48:05,421 - __main__ - [1;34mINFO[1;0m - *** Stage 3/3: emulating DVS events from 101 frames
+2023-09-20 09:48:06,902 - __main__ - [1;34mINFO[1;0m - generated total 119.89k events (75.02k on, 44.87k off)
+2023-09-20 09:48:06,902 - __main__ - [1;34mINFO[1;0m - Avg event rate for N=89960 px and total time =1.000 s
+	Total: 119.89kHz (75.02kHz on, 44.87kHz off)
+	Per pixel:  1.33Hz (833.95mHz on, 498.74mHz off)
+2023-09-20 09:48:06,903 - __main__ - [1;34mINFO[1;0m - done processing 202 frames in 1.89s (106.74fr/s)
  **************** see output folder D:\research\object-detection-by-SNN\dem_stereo\raw-data\th-0.15\right

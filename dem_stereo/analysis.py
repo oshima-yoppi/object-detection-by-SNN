@@ -63,24 +63,7 @@ def main(
     # ious = []
 
     results = defaultdict(list)
-    # results['iou'] = []
 
-    # def analysis_segmentation(pred, label):
-    #     # print(pred.shape)
-    #     # print(label.shape)
-    #     # exit()
-    #     pred = pred.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
-    #     label = label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to('cpu').detach().numpy().copy()
-    #     # print(pred.shape)
-    #     # print(label.shape)
-    #     # exit()
-    #     all_pixel = INPUT_HEIGHT * INPUT_WIDTH
-    #     TP = np.sum(np.where((pred>=CORRECT_RATE) & (label==1), 1, 0))/all_pixel
-    #     TN = np.sum(np.where((pred<CORRECT_RATE) & (label==0), 1, 0))/all_pixel
-    #     FP = np.sum(np.where((pred>=CORRECT_RATE) & (label==0), 1, 0))/all_pixel
-    #     FN = np.sum(np.where((pred<CORRECT_RATE) & (label==1), 1, 0))/all_pixel
-    #     # iou = compute_loss.culc_iou(pred, label, CORRECT_RATE)
-    #     return TP, TN, FP, FN
     def save_train_process(path, hist):
         fig = plt.figure(facecolor="w")
         ax1 = fig.add_subplot(1, 2, 1)
@@ -100,7 +83,9 @@ def main(
         fig.tight_layout()
         plt.savefig(path)
 
-    def save_img(number, events, pred_pro, label, results, result_recall_path, pdf_output):
+    def save_img(
+        number, events, pred_pro, label, results, result_recall_path, pdf_output
+    ):
         # label = label.reshape((pixel, pixel)).to('cpu')
         # print(pred_pro.shape)
         # number_str = str(number).zfill(5)
@@ -113,33 +98,53 @@ def main(
         ax5 = fig.add_subplot(235)
         ax6 = fig.add_subplot(236)
 
-        # dem_filename = f'dem_{str(number).npy}'
-        # dem_path = os.path.join(DEM_NP_PATH, dem_filename)
-        # dem = np.load(dem_path)
-        # ax1.imshow(dem)
-        # print(number)
-        # video_file_number = number // 4
         line_color = (150, 150, 0)
         number = str(number).zfill(5)
         video_filename = f"{number}.avi"
-        video_path = os.path.join(VIDEO_CENTER_PATH, video_filename)
-        first_frame = view.get_first_frame(video_path)
-        first_frame = view.draw_edge_of_areas(first_frame, line_color=line_color)
+        center_video_path = os.path.join(VIDEO_CENTER_PATH, video_filename)
+        right_video_path = os.path.join(VIDEO_RIGHT_PATH, video_filename)
+        left_video_path = os.path.join(VIDEO_LEFT_PATH, video_filename)
+        center_first_frame = view.get_first_frame(center_video_path)
 
-        ax2.set_title("Camera_view")
-        # print(first_frame.shape)
-        ax2.imshow(first_frame)
+        center_first_frame = view.draw_edge_of_areas(
+            center_first_frame, line_color=line_color
+        )
+        ax1.set_title("center_view")
+        ax1.imshow(center_first_frame)
+        right_first_frame = view.get_first_frame(right_video_path)
+        left_first_frame = view.get_first_frame(left_video_path)
+        right_first_frame = right_first_frame[:, RIGHT_IDX * 2 :, :]
+        left_first_frame = left_first_frame[:, : LEFT_IDX * 2, :]
+        # plt.subplot(121)
+        # plt.imshow(right_first_frame)
+        # plt.subplot(122)
+        # plt.imshow(left_first_frame)
+        # plt.show()
+        concated_frame = np.concatenate((right_first_frame, left_first_frame), axis=1)
+        concated_frame = view.draw_edge_of_areas(concated_frame, line_color=line_color)
+
+        ax2.set_title("concated_view")
+        ax2.imshow(concated_frame)
 
         first_events = view.get_first_events(events)
         first_events = view.draw_edge_of_areas(first_events, line_color=line_color)
         ax3.set_title("EVS view")
         ax3.imshow(first_events)
 
-        label = label.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
+        label = (
+            label.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
+        )
         ax4.set_title("label")
         ax4.imshow(label)
 
-        pred_pro_ = pred_pro[0].reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
+        pred_pro_ = (
+            pred_pro[0]
+            .reshape((ROUGH_PIXEL, ROUGH_PIXEL))
+            .to("cpu")
+            .detach()
+            .numpy()
+            .copy()
+        )
         # pred_pro_max = np.max(pred_pro_)
         # pred_pro_max_rounded = np.round(pred_pro_max, 2)
         # pred_pro_min = np.min(pred_pro_)
@@ -148,7 +153,9 @@ def main(
         ax5.imshow(pred_pro_, vmin=0, vmax=1)
 
         pred = torch.where(pred_pro[0] > CORRECT_RATE, 1, 0)
-        pred = pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
+        pred = (
+            pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
+        )
         ax6.set_title("pred")
         ax6.imshow(pred, vmin=0, vmax=1)
 
@@ -252,4 +259,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main(pdf_output=True)
+    main(pdf_output=False)

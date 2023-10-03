@@ -26,7 +26,7 @@ from IPython.display import HTML
 
 from collections import defaultdict
 
-import yaml
+# import yaml
 import time
 
 
@@ -155,7 +155,9 @@ def main():
                     hist["iou"].append(np.mean(iou_log))
                     hist["precision"].append(np.mean(precision_log))
                     hist["recall"].append(np.mean(recall_log))
-                    tqdm.write(f"{epoch}:::  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}")
+                    tqdm.write(
+                        f"{epoch}:::  loss:{np.mean(loss_log)}, precision:{np.mean(precision_log)}, recall:{np.mean(recall_log)}"
+                    )
                     # if max_recall < hist['recall'][-1] and hist['recall'][-1] > 0.5:
                     #     max_recall = hist['recall'][-1]
                     #     torch.save(net.state_dict(), model_save_path)

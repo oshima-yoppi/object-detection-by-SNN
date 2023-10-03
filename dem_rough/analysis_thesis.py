@@ -20,16 +20,40 @@ for j, th in enumerate(event_th):
     recall_time = []
     for fin_step in data["FINISH_STEP"].unique():
         precision.append(
-            data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == False), "Precision"].values[0]
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == False),
+                "Precision",
+            ].values[0]
         )
-        recall.append(data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == False), "Recall"].values[0])
+        recall.append(
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == False),
+                "Recall",
+            ].values[0]
+        )
         # print(type(fin_step))
         if fin_step == 8:
             continue
         precision_time.append(
-            data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == True), "Precision"].values[0]
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == True),
+                "Precision",
+            ].values[0]
         )
-        recall_time.append(data.loc[(data["EVENT_TH"] == th) & (data["FINISH_STEP"] == fin_step) & (data["TIME_CHANGE"] == True), "Recall"].values[0])
+        recall_time.append(
+            data.loc[
+                (data["EVENT_TH"] == th)
+                & (data["FINISH_STEP"] == fin_step)
+                & (data["TIME_CHANGE"] == True),
+                "Recall",
+            ].values[0]
+        )
     plt_width = len(data["EVENT_TH"].unique())
     plt_width = len(event_th)
     x_lst = data["FINISH_STEP"].unique()
@@ -71,7 +95,7 @@ for j, th in enumerate(event_th):
     )
     plt.ylim(50, 100)
     plt.xlim(1, 8)
-    plt.title("EVENT_TH: {}".format(th))
+    plt.title("one camera")
     plt.xlabel("Input Time Step", fontsize=18)
     plt.ylabel("Accuracy [%]", fontsize=18)
     plt.tick_params(labelsize=15)
@@ -82,5 +106,6 @@ for j, th in enumerate(event_th):
 plt.tight_layout()
 plt.savefig("result_one.pdf")
 plt.savefig("result_one.png")
+plt.savefig("result_one.svg")
 plt.show()
 # %%

@@ -36,6 +36,8 @@ INPUT_CHANNEL = 2 if BOOL_DISTINGUISH_EVENT else 1
 INPUT_HEIGHT, INPUT_WIDTH = 130, 173
 SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH = INPUT_HEIGHT // 3, INPUT_WIDTH // 3
 ROUGH_PIXEL = 3
+RIGHT_IDX = 91
+LEFT_IDX = INPUT_WIDTH - RIGHT_IDX
 # INPUT_HEIGHT, INPUT_WIDTH = 65, 86
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 BETA = 0.95
@@ -72,7 +74,7 @@ NET = network.RoughConv3(
 )
 
 
-LABEL_PATH = "label_only"
+LABEL_PATH = "blender/label/"
 # LABEL_PATH = "blender/"
 LABEL_BOULDER_PATH = "label_only_boulder"
 
