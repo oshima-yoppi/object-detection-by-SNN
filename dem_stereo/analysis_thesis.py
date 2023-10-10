@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # %%
-csv_path = "result_experiment/experiment_006.csv"
+csv_path = "result_experiment/experiment_007.csv"
 data = pd.read_csv(csv_path)
 
 
@@ -111,7 +111,6 @@ plt.savefig("result_two.pdf")
 plt.savefig("result_two.png")
 plt.show()
 # %%
-csv_path = "result_experiment/experiment_006.csv"
 data = pd.read_csv(csv_path)
 
 

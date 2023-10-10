@@ -49,11 +49,17 @@ if soft_reset:
     RESET = "subtract"
 else:
     RESET = "zero"
-
+MAX_STEP = 10
 if TIME_CHANGE:
-    START_STEP = 8
+    START_STEP = FINISH_STEP + 2
 else:
     START_STEP = FINISH_STEP
+if START_STEP > MAX_STEP:
+    print("error!!!\n\nSTART_STEP > MAX_STEP")
+# if TIME_CHANGE:
+#     START_STEP = FINISH_STEP + 2
+# else:
+#     START_STEP = 8
 
 SPIKE_GRAD = surrogate.atan(alpha=1.5)
 LR = 1e-4
@@ -91,7 +97,6 @@ RAW_EVENT_PATH = f"raw-data/th-{str(EVENT_TH)}"  # v2eから出力されたイ�
 RAW_EVENT_LEFT_PATH = f"raw-data/th-{str(EVENT_TH)}/left"
 RAW_EVENT_RIGHT_PATH = f"raw-data/th-{str(EVENT_TH)}/right"
 RAW_EVENT_DIR = f"raw-data/th-{str(EVENT_TH)}/"
-MAX_STEP = 8
 PROCESSED_EVENT_DATASET_PATH = f"dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_MaxStep-{MAX_STEP}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}_LeargeData-{BOOL_LEARGE_DATASET}"
 
 
