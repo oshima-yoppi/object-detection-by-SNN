@@ -29,7 +29,9 @@ def youtube(events, path, bool_split, all_steps=None):
         for i in range(all_steps):
             p_ = torchvision.transforms.functional.to_pil_image(img_arr[i])
             images.append(p_)
-        images[0].save(path, duration=100, save_all=True, append_images=images[1:], loop=50)
+        images[0].save(
+            path, duration=100, save_all=True, append_images=images[1:], loop=50
+        )
     else:
         events = torch.logical_or(events[:, 0, :, :], events[:, 1, :, :]).float()
         for i in range(all_steps):
@@ -37,7 +39,9 @@ def youtube(events, path, bool_split, all_steps=None):
 
             p_ = torchvision.transforms.functional.to_pil_image(events[i, :, :])
             images.append(p_)
-        images[0].save(path, duration=100, save_all=True, append_images=images[1:], loop=50)
+        images[0].save(
+            path, duration=100, save_all=True, append_images=images[1:], loop=50
+        )
     # print(p_.size, max(p_))
     print(events)
     print(torch.max(events))
@@ -62,6 +66,7 @@ if __name__ == "__main__":
     all_steps = FINISH_STEP
     event_th = EVENT_TH
     youtube_path = f"gomibako/FIG_{event_th}.gif"
+    os.makedirs("gomibako", exist_ok=True)
 
     a = LoadDataset(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,

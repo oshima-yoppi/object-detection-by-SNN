@@ -74,7 +74,7 @@ def main():
     weights = weights / weights.sum()
     # loss_func = nn.BCELoss(weight=weights)
     # loss_func = compute_loss.DiceLoss()
-    loss_func = compute_loss.WeightedF1Loss(beta=1.5)
+    loss_func = compute_loss.WeightedF1Loss(beta=3)
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 

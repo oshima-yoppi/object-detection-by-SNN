@@ -2,9 +2,14 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import os
 
 # %%
-csv_path = "result_experiment/experiment_007.csv"
+csv_dir = "result_experiment"
+csv_path_list = os.listdir(csv_dir)
+csv_path = os.path.join(csv_dir, csv_path_list[-1])
+print(csv_path)
+# csv_path = "result_experiment/experiment_001.csv"
 data = pd.read_csv(csv_path)
 
 
@@ -115,7 +120,7 @@ data = pd.read_csv(csv_path)
 
 
 # accuracy = []
-event_th = [0.15]
+# event_th = [0.0 / 2]
 time_change_lst = [False, True]
 # time_change_lst = [False]
 plt.figure(figsize=(5, 5))
@@ -146,8 +151,8 @@ for i, acc_time in enumerate(data["ACCUMULATE_EVENT_MILITIME"].unique()):
                 ].values[0]
             )
             # print(type(fin_step))
-            if fin_step == 8:
-                continue
+            # if fin_step == 8:
+            #     continue
             precision_time.append(
                 data.loc[
                     (data["EVENT_TH"] == th)
@@ -171,7 +176,7 @@ for i, acc_time in enumerate(data["ACCUMULATE_EVENT_MILITIME"].unique()):
         plt_width = len(data["ACCUMULATE_EVENT_MILITIME"].unique())
         x_lst = data["FINISH_STEP"].unique()
         x_lst_change = np.array(data["FINISH_STEP"].unique())
-        x_lst_change = x_lst_change[:-1]
+        # x_lst_change = x_lst_change[:-1]
         print(recall_time)
         plt.subplot(1, plt_width, i + 1)
         plt.plot(

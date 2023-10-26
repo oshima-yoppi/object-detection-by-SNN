@@ -54,6 +54,7 @@ if __name__ == "__main__":
         input_height=INPUT_HEIGHT,
         input_width=INPUT_WIDTH,
         train=False,
+        finish_step=FINISH_STEP,
     )
     custom_number = input("Do u want to see spesific nunber? [y/n]")
     number = -1
@@ -68,6 +69,7 @@ if __name__ == "__main__":
         ax1 = fig.add_subplot(131)
         ax2 = fig.add_subplot(132)
         print(events.shape)
+        print(label.shape)
         first_events = view.get_first_events(events)
         ax1.imshow(first_events)
 

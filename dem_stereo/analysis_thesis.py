@@ -146,8 +146,8 @@ for i, acc_time in enumerate(data["ACCUMULATE_EVENT_MILITIME"].unique()):
                 ].values[0]
             )
             # print(type(fin_step))
-            if fin_step == 8:
-                continue
+            # if fin_step == 8:
+            #     continue
             precision_time.append(
                 data.loc[
                     (data["EVENT_TH"] == th)
@@ -171,7 +171,7 @@ for i, acc_time in enumerate(data["ACCUMULATE_EVENT_MILITIME"].unique()):
         plt_width = len(data["ACCUMULATE_EVENT_MILITIME"].unique())
         x_lst = data["FINISH_STEP"].unique()
         x_lst_change = np.array(data["FINISH_STEP"].unique())
-        x_lst_change = x_lst_change[:-1]
+        # x_lst_change = x_lst_change[:-1]
         print(recall_time)
         plt.subplot(1, plt_width, i + 1)
         plt.plot(
