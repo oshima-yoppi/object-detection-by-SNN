@@ -74,7 +74,7 @@ def main():
     weights = weights / weights.sum()
     # loss_func = nn.BCELoss(weight=weights)
     # loss_func = compute_loss.DiceLoss()
-    loss_func = compute_loss.WeightedF1Loss(beta=3)
+    loss_func = compute_loss.WeightedF1Loss(beta=2.5)
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
@@ -102,6 +102,7 @@ def main():
             for epoch in tqdm(range(num_epochs)):
                 for i, (data, label) in enumerate(iter(train_loader)):
                     loss_log = []
+                    # print(torch.max(data))
                     data = data.to(DEVICE)
                     label = label.to(DEVICE)
                     batch = len(data[0])

@@ -190,6 +190,7 @@ def main(
         fine_label = np.squeeze(fine_label)
         # if number ==20:
         #     print(fine_label.shape)
+        print(fine_label.shape)
         areas_lst = []
         splited_width = fine_label.shape[1] // ROUGH_PIXEL
         splited_height = fine_label.shape[0] // ROUGH_PIXEL
@@ -206,13 +207,13 @@ def main(
 
         return areas_lst
 
-    if os.path.exists(RESULT_PATH):
-        shutil.rmtree(RESULT_PATH)
-    os.makedirs(RESULT_PATH)
-    result_recall_path = os.path.join(RESULT_PATH, "recall_failed")
-    result_area_path = os.path.join(RESULT_PATH, "area")
-    os.makedirs(result_recall_path)
-    os.makedirs(result_area_path)
+    # if os.path.exists(RESULT_PATH):
+    #     shutil.rmtree(RESULT_PATH)
+    # os.makedirs(RESULT_PATH)
+    # result_recall_path = os.path.join(RESULT_PATH, "recall_failed")
+    # result_area_path = os.path.join(RESULT_PATH, "area")
+    # os.makedirs(result_recall_path)
+    # os.makedirs(result_area_path)
     if hist is not None:
         train_process_dir = os.path.join(RESULT_PATH, "process")
         os.makedirs(train_process_dir)
@@ -233,8 +234,8 @@ def main(
             target = analyzer.target
             areas_of_boulder_lst = get_area_boulder_lst(i)
             for area, p, t in zip(areas_of_boulder_lst, binary_result, target):
-                # if area == 380:
-                #     print(i)
+                if area == 242:
+                    print(i)
                 if t == 1:
                     area_recall[area][1] += 1
                     if p == 1:
@@ -245,15 +246,15 @@ def main(
             # print(iou, prec, recall)
             spikes_lst.append(net.spike_count)
             # s = time.time()
-            save_img(
-                i,
-                events,
-                pred_pro,
-                label,
-                results,
-                result_recall_path,
-                pdf_output=pdf_output,
-            )
+            # save_img(
+            #     i,
+            #     events,
+            #     pred_pro,
+            #     label,
+            #     results,
+            #     result_recall_path,
+            #     pdf_output=pdf_output,
+            # )
 
     results["Precision"] = np.mean(results["Precision"]) * 100
     results["Recall"] = np.mean(results["Recall"]) * 100
@@ -306,6 +307,7 @@ def main(
 
     # plt.show()
     plt.savefig(os.path.join(result_area_path, "area_recall.png"))
+    plt.savefig(os.path.join(result_area_path, "area_recall.pdf"))
     plt.close()
     return results
 
