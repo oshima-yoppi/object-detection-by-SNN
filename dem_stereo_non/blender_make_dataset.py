@@ -153,8 +153,11 @@ def setting(theta, camera_name_lst, camera_name_semaseg_lst, video_dir_lst):
             camera.location[2] = z_finish
 
         camera = bpy.data.objects[camera_name]
-        kf = camera.animation_data.action.fcurves[0].keyframe_points[0]  # アニメーション補間を線形に
-        kf.interpolation = "LINEAR"
+        # kf = camera.animation_data.action.fcurves[0].keyframe_points[0]  # アニメーション補間を線形に
+        # kf.interpolation = "LINEAR"
+        for fc in camera.animation_data.action.fcurves:
+            for kp in fc.keyframe_points:
+                kp.interpolation = "LINEAR"
     # セマセグ用のカメラの位置設定
     for camera_name, camera_name_semaseg in zip(
         camera_name_lst, camera_name_semaseg_lst
@@ -309,7 +312,7 @@ if __name__ == "__main__":
     for dir in label_dir_lst + video_dir_lst:
         if os.path.exists(dir):
             shutil.rmtree(dir)
-        os.makedirs(dir)
+        os.mkdir(dir)
     camera_name_left = "Camera_left"
     camera_name_center = "Camera_center"
     camera_name_right = "Camera_right"
