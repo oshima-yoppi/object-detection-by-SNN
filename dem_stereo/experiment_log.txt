@@ -5420,3 +5420,19 @@ results
 	Energy per inference: 2.0955381785370264e-07
 	Spike Rate: 3.44469952583313
 -------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+results
+	IoU: 87.72
+	Precision: 93.75
+	Recall: 93.3
+	Energy per inference: 7.043048810828623e-08
+	Spike Rate: 1.1577544212341309
+-------------

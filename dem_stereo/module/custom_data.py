@@ -239,13 +239,14 @@ def convert_raw_event(events_raw_dir, new_dir, accumulate_time, finish_step):
             label_left = label_left[:, :, :left_idx]
             label_right = label_right[:, :, right_idx:]
             label = np.concatenate([label_right, label_left], axis=2)
-            label = converter_rough_label(label)
+            rough_label = converter_rough_label(label)
 
             file_name = f"{str(i).zfill(5)}.h5"
             new_file_path = os.path.join(new_dir, file_name)
             with h5py.File(new_file_path, "w") as f:
-                f.create_dataset("label", data=label)
+                f.create_dataset("label", data=rough_label)
                 f.create_dataset("events", data=acc_events)
+                f.create_dataset("label_fine", data=label)
 
         # for i, file in enumerate(tqdm(h5py_allfile)):
         #     with h5py.File(file, "r") as f:

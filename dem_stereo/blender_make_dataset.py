@@ -71,7 +71,10 @@ def setting(theta, camera_name_lst, camera_name_semaseg_lst, video_dir_lst):
     distance_between_camera = DISTANCE_BETWEEN_CAMERA  # 左右のカメラの間の距離[m]
     viewing_radian = math.radians(CAMERA_THETA)  # カメラの視野角。
     overlap_length = OVERLAP_LENGTH  # 二つのカメラが見る範囲をどれくらい被らせるか[m](0.3m で高度1mの誤差、0.4m で高度1.5mの誤差、0.5m で高度2mの誤差、が許容できる)
-    radian_tilt = math.atan((distance_between_camera - overlap_length) / 2 / CAM_Z) + viewing_radian / 2  # 左右のカメラをどのくらい傾けるか。
+    radian_tilt = (
+        math.atan((distance_between_camera - overlap_length) / 2 / CAM_Z)
+        + viewing_radian / 2
+    )  # 左右のカメラをどのくらい傾けるか。
     for camera_name in camera_name_lst + camera_name_semaseg_lst:
         camera = bpy.data.objects[camera_name]
         camera.data.lens = FOCAL * 1000  # not [m] but [mm]
@@ -150,10 +153,15 @@ def setting(theta, camera_name_lst, camera_name_semaseg_lst, video_dir_lst):
             camera.location[2] = z_finish
 
         camera = bpy.data.objects[camera_name]
-        kf = camera.animation_data.action.fcurves[0].keyframe_points[0]  # アニメーション補間を線形に
-        kf.interpolation = "LINEAR"
+        # kf = camera.animation_data.action.fcurves[0].keyframe_points[0]  # アニメーション補間を線形に
+        # kf.interpolation = "LINEAR"
+        for fc in camera.animation_data.action.fcurves:
+            for kp in fc.keyframe_points:
+                kp.interpolation = "LINEAR"
     # セマセグ用のカメラの位置設定
-    for camera_name, camera_name_semaseg in zip(camera_name_lst, camera_name_semaseg_lst):
+    for camera_name, camera_name_semaseg in zip(
+        camera_name_lst, camera_name_semaseg_lst
+    ):
         camera_semaseg = bpy.data.objects[camera_name_semaseg]
         camera_semaseg.rotation_mode = "ZXY"
         camera_semaseg.rotation_euler = camera_info[camera_name][2]
@@ -195,7 +203,9 @@ def img2plot(dem):
     fIndexes = []
     for x in range(0, pix - 1):
         for y in range(0, pix - 1):
-            fIndexes.append([x + y * pix, x + 1 + y * pix, x + 1 + (y + 1) * pix, x + (y + 1) * pix])
+            fIndexes.append(
+                [x + y * pix, x + 1 + y * pix, x + 1 + (y + 1) * pix, x + (y + 1) * pix]
+            )
 
     mesh = bpy.data.meshes.new(object_name)
     mesh.from_pydata(verts, [], fIndexes)  # 点と面の情報からメッシュを生成
@@ -285,7 +295,9 @@ def remove(name):
 
 
 if __name__ == "__main__":
-    dem_path_abs = bpy.path.abspath(DEM_NP_PATH_BLENDER)  # https://twitter.com/Bookyakuno/status/1457726187745153038
+    dem_path_abs = bpy.path.abspath(
+        DEM_NP_PATH_BLENDER
+    )  # https://twitter.com/Bookyakuno/status/1457726187745153038
     # video_path_abs = bpy.path.abspath(VIDEO_PATH_BLENDER)
     label_dir_lst = [
         bpy.path.abspath(LABEL_LEFT_PATH_BLENDER),
@@ -318,7 +330,12 @@ if __name__ == "__main__":
         camera_name_semaseg_right,
     ]
     THETA_X_SUN = 80  # 太陽の高度
-    setting(theta=THETA_X_SUN, camera_name_lst=camera_name_lst, camera_name_semaseg_lst=camera_name_semaseg_lst, video_dir_lst=video_dir_lst)
+    setting(
+        theta=THETA_X_SUN,
+        camera_name_lst=camera_name_lst,
+        camera_name_semaseg_lst=camera_name_semaseg_lst,
+        video_dir_lst=video_dir_lst,
+    )
     DATA_NUM = 3000
     object_name = "dem"
     for i in range(DATA_NUM):

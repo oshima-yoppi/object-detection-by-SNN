@@ -15,13 +15,14 @@ def get_first_events(events):
     height, width = events.shape[-2], events.shape[-1]
     if events.dim() == 5:  # [TBCHW]
         events = events.to("cpu")
+        max_count = events.max()
         if BOOL_DISTINGUISH_EVENT:
             first_events = np.zeros((height, width, 3))  # bgr
             if EVENT_COUNT:
-                first_events = np.zeros((height, width))
-                # first_events[:,:,0] = events[0,0,0]# r
-                # first_events[:,:,1] = events[0,0,1]
-                first_events[:, :] = events[0, 0, 1]
+                # first_events = np.zeros((height, width))
+                one_event = torch.where(events >= 1, 1, 0)
+                first_events[:, :, 0] = one_event[0, 0, 0] * 255
+                first_events[:, :, 1] = one_event[0, 0, 1] * 255
             else:
                 first_events[:, :, 0] = events[0, 0, 0] * 255  # r
                 first_events[:, :, 1] = events[0, 0, 1] * 255

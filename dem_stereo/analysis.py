@@ -29,7 +29,7 @@ from module.const import *
 import matplotlib.pyplot as plt
 from IPython.display import HTML
 from collections import defaultdict
-
+import h5py
 import time
 
 
@@ -63,6 +63,9 @@ def main(
     # ious = []
 
     results = defaultdict(list)
+    area_recall = dict()
+    for area in range(100 * 100):
+        area_recall[area] = [0, 0]  # failed num, all num
 
     def save_train_process(path, hist):
         fig = plt.figure(facecolor="w")
@@ -93,8 +96,8 @@ def main(
         fig = plt.figure()
         ax1 = fig.add_subplot(231)
         ax2 = fig.add_subplot(232)
-        ax3 = fig.add_subplot(233)
-        ax4 = fig.add_subplot(234)
+        ax3 = fig.add_subplot(234)
+        ax4 = fig.add_subplot(233)
         ax5 = fig.add_subplot(235)
         ax6 = fig.add_subplot(236)
 
@@ -178,11 +181,39 @@ def main(
 
         return
 
+    def get_area_boulder_lst(number):
+        fine_label_path = os.path.join(
+            PROCESSED_EVENT_DATASET_PATH, f"{str(number).zfill(5)}.h5"
+        )
+        with h5py.File(fine_label_path, "r") as f:
+            fine_label = f["label_fine"][:]
+        fine_label = np.squeeze(fine_label)
+        # if number ==20:
+        #     print(fine_label.shape)
+        print(fine_label.shape)
+        areas_lst = []
+        splited_width = fine_label.shape[1] // ROUGH_PIXEL
+        splited_height = fine_label.shape[0] // ROUGH_PIXEL
+        # print(fine_label.shape)
+        for tate in range(ROUGH_PIXEL):
+            for yoko in range(ROUGH_PIXEL):
+                splited_area = fine_label[
+                    splited_height * tate : splited_height * (tate + 1),
+                    splited_width * yoko : splited_width * (yoko + 1),
+                ]
+                # print(splited_area.shape)
+                area_of_boulder = np.sum(splited_area)
+                areas_lst.append(area_of_boulder)
+
+        return areas_lst
+
     if os.path.exists(RESULT_PATH):
         shutil.rmtree(RESULT_PATH)
     os.makedirs(RESULT_PATH)
     result_recall_path = os.path.join(RESULT_PATH, "recall_failed")
+    result_area_path = os.path.join(RESULT_PATH, "area")
     os.makedirs(result_recall_path)
+    os.makedirs(result_area_path)
     if hist is not None:
         train_process_dir = os.path.join(RESULT_PATH, "process")
         os.makedirs(train_process_dir)
@@ -198,29 +229,32 @@ def main(
             label = label.to(DEVICE)
             pred_pro = net(events, FINISH_STEP)
             iou, prec, recall = analyzer(pred_pro, label)
-            # print(iou, prec, recall)
+
+            binary_result = analyzer.pred_binary
+            target = analyzer.target
+            areas_of_boulder_lst = get_area_boulder_lst(i)
+            for area, p, t in zip(areas_of_boulder_lst, binary_result, target):
+                if area == 242:
+                    print(i)
+                if t == 1:
+                    area_recall[area][1] += 1
+                    if p == 1:
+                        area_recall[area][0] += 1
             results["IoU"].append(iou)
             results["Precision"].append(prec)
             results["Recall"].append(recall)
             # print(iou, prec, recall)
             spikes_lst.append(net.spike_count)
             # s = time.time()
-            save_img(
-                i,
-                events,
-                pred_pro,
-                label,
-                results,
-                result_recall_path,
-                pdf_output=pdf_output,
-            )
-            # print(time.time()-s)
-
-            # if i == 10:
-            #     break
-
-            # break
-    # precision recall を求める
+            # save_img(
+            #     i,
+            #     events,
+            #     pred_pro,
+            #     label,
+            #     results,
+            #     result_recall_path,
+            #     pdf_output=pdf_output,
+            # )
 
     results["Precision"] = np.mean(results["Precision"]) * 100
     results["Recall"] = np.mean(results["Recall"]) * 100
@@ -255,6 +289,26 @@ def main(
     spike_rate = n_spikes / n_neurons
     results["Spike Rate"] = spike_rate.item()
     # results['Spike Rate'] = round(results['Spike Rate'], 2)
+    # print(area_recall)
+    plt.figure()
+    for key in area_recall.keys():
+        if area_recall[key][1] != 0:
+            if area_recall[key][0] / area_recall[key][1] < 0.9999:
+                print(
+                    key,
+                    area_recall[key][0] / area_recall[key][1],
+                    area_recall[key][0],
+                    area_recall[key][1],
+                )
+            plt.plot(key / 43 / 54, area_recall[key][0] / area_recall[key][1], "o")
+        else:
+            # plt.plot(key / 43 / 54, 1, "o")
+            pass
+
+    # plt.show()
+    plt.savefig(os.path.join(result_area_path, "area_recall.png"))
+    plt.savefig(os.path.join(result_area_path, "area_recall.pdf"))
+    plt.close()
     return results
 
 

@@ -207,13 +207,13 @@ def main(
 
         return areas_lst
 
-    # if os.path.exists(RESULT_PATH):
-    #     shutil.rmtree(RESULT_PATH)
-    # os.makedirs(RESULT_PATH)
-    # result_recall_path = os.path.join(RESULT_PATH, "recall_failed")
-    # result_area_path = os.path.join(RESULT_PATH, "area")
-    # os.makedirs(result_recall_path)
-    # os.makedirs(result_area_path)
+    if os.path.exists(RESULT_PATH):
+        shutil.rmtree(RESULT_PATH)
+    os.makedirs(RESULT_PATH)
+    result_recall_path = os.path.join(RESULT_PATH, "recall_failed")
+    result_area_path = os.path.join(RESULT_PATH, "area")
+    os.makedirs(result_recall_path)
+    os.makedirs(result_area_path)
     if hist is not None:
         train_process_dir = os.path.join(RESULT_PATH, "process")
         os.makedirs(train_process_dir)
