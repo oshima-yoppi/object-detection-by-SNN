@@ -29,7 +29,9 @@ def youtube(events, path, bool_split, all_steps=None):
         for i in range(all_steps):
             p_ = torchvision.transforms.functional.to_pil_image(img_arr[i])
             images.append(p_)
-        images[0].save(path, duration=100, save_all=True, append_images=images[1:], loop=50)
+        images[0].save(
+            path, duration=100, save_all=True, append_images=images[1:], loop=50
+        )
     else:
         events = torch.logical_or(events[:, 0, :, :], events[:, 1, :, :]).float()
         for i in range(all_steps):
@@ -37,28 +39,15 @@ def youtube(events, path, bool_split, all_steps=None):
 
             p_ = torchvision.transforms.functional.to_pil_image(events[i, :, :])
             images.append(p_)
-        images[0].save(path, duration=100, save_all=True, append_images=images[1:], loop=50)
+        images[0].save(
+            path, duration=100, save_all=True, append_images=images[1:], loop=50
+        )
     # print(p_.size, max(p_))
     print(events)
     print(torch.max(events))
 
 
 if __name__ == "__main__":
-    # events = [0.15] # 変な値入れるとぶっ壊れる可能性あり。ちゅいいa
-    # all_steps = 8
-    # number = int(input('何番を読み込む？'))
-    # for th in events:
-
-    #     youtube_path = f"gomibako/{th}.gif"
-    #     pro = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{th}_FinTime-{all_steps}'
-    #     raw_path = f'raw-data/th-{str(th)}'
-    #     a= LoadDataset(processed_event_dataset_path=pro, raw_event_dir=raw_path, accumulate_time=ACCUMULATE_EVENT_MICROTIME , finish_step =all_steps,input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
-
-    #     events, label = a[number]
-    #     print(events.shape)
-    #     youtube(events, youtube_path, True, all_steps)
-    #     print('save sucess')
-
     all_steps = FINISH_STEP
     event_th = EVENT_TH
     youtube_path = f"gomibako/FIG_{event_th}.gif"
