@@ -25,6 +25,10 @@ ACCUMULATE_EVENT_MILITIME = constants["ACCUMULATE_EVENT_MILITIME"]
 EVENT_COUNT = constants["EVENT_COUNT"]
 EVENT_TH = constants["EVENT_TH"]
 TIME_CHANGE = constants["TIME_CHANGE"]
+BETA_LEARN = constants["BETA_LEARN"]
+THRESHOLD_LEARN = constants["THRESHOLD_LEARN"]
+REPEAT_INPUT = constants["REPEAT_INPUT"]
+BETA = constants["BETA"]
 print(
     f"soft_reset: {soft_reset}",
     f"parm_learn: {PARM_LEARN}",
@@ -42,7 +46,6 @@ RIGHT_IDX = 91
 LEFT_IDX = INPUT_WIDTH - RIGHT_IDX
 # INPUT_HEIGHT, INPUT_WIDTH = 65, 86
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-BETA = 0.95
 BATCH_SIZE = 24
 BATCH_SIZE_TEST = 1
 # FINISH_STEP = 8 # 8
@@ -67,30 +70,33 @@ SPIKE_GRAD = surrogate.atan(alpha=1.5)
 LR = 1e-4
 CORRECT_RATE = 0.5
 LOSS_RATE = 1e-7
-NET = network.RoughConv3(
-    beta=BETA,
-    spike_grad=SPIKE_GRAD,
-    device=DEVICE,
-    input_height=SPLITED_INPUT_HEIGHT,
-    input_width=SPLITED_INPUT_WIDTH,
-    rough_pixel=3,
-    parm_learn=PARM_LEARN,
-    input_channel=INPUT_CHANNEL,
-    power=True,
-    reset=RESET,
-)
-# NET = network.RoughConv3_one(
-#     beta=BETA,
-#     spike_grad=SPIKE_GRAD,
-#     device=DEVICE,
-#     input_height=SPLITED_INPUT_HEIGHT,
-#     input_width=SPLITED_INPUT_WIDTH,
-#     rough_pixel=3,
-#     parm_learn=PARM_LEARN,
-#     input_channel=INPUT_CHANNEL,
-#     power=True,
-#     reset=RESET,
-# )
+if REPEAT_INPUT:
+    NET = network.RoughConv3_one(
+        beta=BETA,
+        spike_grad=SPIKE_GRAD,
+        device=DEVICE,
+        input_height=SPLITED_INPUT_HEIGHT,
+        input_width=SPLITED_INPUT_WIDTH,
+        rough_pixel=3,
+        parm_learn=PARM_LEARN,
+        input_channel=INPUT_CHANNEL,
+        power=True,
+        reset=RESET,
+    )
+else:
+    NET = network.RoughConv3(
+        beta=BETA,
+        spike_grad=SPIKE_GRAD,
+        device=DEVICE,
+        input_height=SPLITED_INPUT_HEIGHT,
+        input_width=SPLITED_INPUT_WIDTH,
+        rough_pixel=3,
+        parm_learn=PARM_LEARN,
+        input_channel=INPUT_CHANNEL,
+        power=True,
+        reset=RESET,
+    )
+
 
 LABEL_PATH = "blender/label/"
 # LABEL_PATH = "blender/"

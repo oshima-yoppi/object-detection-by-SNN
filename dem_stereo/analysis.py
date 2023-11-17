@@ -246,15 +246,15 @@ def main(
             # print(iou, prec, recall)
             spikes_lst.append(net.spike_count)
             # s = time.time()
-            # save_img(
-            #     i,
-            #     events,
-            #     pred_pro,
-            #     label,
-            #     results,
-            #     result_recall_path,
-            #     pdf_output=pdf_output,
-            # )
+            save_img(
+                i,
+                events,
+                pred_pro,
+                label,
+                results,
+                result_recall_path,
+                pdf_output=pdf_output,
+            )
 
     results["Precision"] = np.mean(results["Precision"]) * 100
     results["Recall"] = np.mean(results["Recall"]) * 100
