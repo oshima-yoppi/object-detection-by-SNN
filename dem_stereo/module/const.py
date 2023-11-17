@@ -19,7 +19,7 @@ with open("module/const_base.json") as file:
 
 
 soft_reset = constants["soft_reset"]
-PARM_LEARN = constants["PARM_LEARN"]
+# PARM_LEARN = constants["PARM_LEARN"]
 FINISH_STEP = constants["FINISH_STEP"]
 ACCUMULATE_EVENT_MILITIME = constants["ACCUMULATE_EVENT_MILITIME"]
 EVENT_COUNT = constants["EVENT_COUNT"]
@@ -31,7 +31,7 @@ REPEAT_INPUT = constants["REPEAT_INPUT"]
 BETA = constants["BETA"]
 print(
     f"soft_reset: {soft_reset}",
-    f"parm_learn: {PARM_LEARN}",
+    # f"parm_learn: {PARM_LEARN}",
     f"FINISH_STEP: {FINISH_STEP}",
 )
 # イベントかめらの極性を分けるかどうか
@@ -122,7 +122,7 @@ PROCESSED_EVENT_DATASET_PATH = f"dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HE
 
 NETWORK_CLASS_NAME = NET.__class__.__name__
 
-MODEL_NAME = f"{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_para-{PARM_LEARN}_TimeChange-{TIME_CHANGE}_step-({START_STEP},{FINISH_STEP})_Reset-{RESET}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}_LeargeData-{BOOL_LEARGE_DATASET}"
+MODEL_NAME = f"{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_beta-{BETA}_BetaLearn-{BETA_LEARN}_thLearn-{THRESHOLD_LEARN}_RepeatInput-{REPEAT_INPUT}_TimeChange-{TIME_CHANGE}_step-({START_STEP},{FINISH_STEP})_Reset-{RESET}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}"
 
 MODEL_PATH = f"models/{MODEL_NAME}.pth"
 

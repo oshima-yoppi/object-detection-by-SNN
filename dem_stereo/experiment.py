@@ -15,6 +15,10 @@ def update_constant(args):
         "EVENT_COUNT": args.EVENT_COUNT,
         "EVENT_TH": args.EVENT_TH,
         "TIME_CHANGE": args.TIME_CHANGE,
+        "BETA_LEARN": args.BETA_LEARN,
+        "THRESHOLD_LEARN": args.THRESHOLD_LEARN,
+        "BETA": args.BETA,
+        "REPEAT_INPUT": args.REPEAT_INPUT,
     }
     with open("module/const_base.json", "w") as file:
         json.dump(constants, file)
@@ -81,7 +85,11 @@ parser.add_argument("--ACCUMULATE_EVENT_MILITIME", type=int)
 parser.add_argument("--CSV_PATH", type=str)
 parser.add_argument("--EVENT_COUNT", action="store_true")
 parser.add_argument("--EVENT_TH", type=float)
-parser.add_argument("--TIME_CHANGE", action='store_true')
+parser.add_argument("--TIME_CHANGE", action="store_true")
+parser.add_argument("--BETA_LEARN", action="store_true")
+parser.add_argument("--THRESHOLD_LEARN", action="store_true")
+parser.add_argument("--BETA", type=float)
+parser.add_argument("--REPEAT_INPUT", action="store_true")
 args = parser.parse_args()
 print(args.soft_reset)
 CSV_PATH = args.CSV_PATH

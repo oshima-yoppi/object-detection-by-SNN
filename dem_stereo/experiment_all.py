@@ -17,7 +17,7 @@ parm_learn_lst = [False]
 # finish_step_lst = [2, 5]
 # finish_step_lst = [2, 5, 8]
 # finish_step_lst = [2, 4, 8]
-finish_step_lst = [1]
+finish_step_lst = [8]
 # accumulate_event_militime_lst = [10, 40, 80]
 # accumulate_event_militime_lst = [50, 100]
 accumulate_event_militime_lst = [100]
@@ -26,7 +26,10 @@ event_count_lst = [False]
 evnet_th_lst = [0.15]
 # time_change_lst = [False, True]
 time_change_lst = [True]
-# accumulate_event_militime_lst = [40, 60, 80]
+beta_learn_lst = [False]
+threshold_learn_lst = [False]
+beta_lst = [0.9, 1.0]
+repeat_input_lst = [True]
 combinations = list(
     itertools.product(
         soft_reset_lst,
@@ -36,6 +39,10 @@ combinations = list(
         event_count_lst,
         evnet_th_lst,
         time_change_lst,
+        beta_learn_lst,
+        threshold_learn_lst,
+        beta_lst,
+        repeat_input_lst,
     )
 )
 cc = 0
@@ -47,6 +54,10 @@ for (
     event_count,
     evnet_th,
     time_change,
+    beta_learn,
+    threshold_learn,
+    beta,
+    repeat_input,
 ) in combinations:
     # if cc <=14:
     #     cc += 1
@@ -64,4 +75,12 @@ for (
         cmd += " --EVENT_COUNT"
     if time_change:
         cmd += " --TIME_CHANGE"
+    if beta_learn:
+        cmd += " --BETA_LEARN"
+    if threshold_learn:
+        cmd += " --THRESHOLD_LEARN"
+    cmd += f" --BETA {beta}"
+    if repeat_input:
+        cmd += " --REPEAT_INPUT"
+
     os.system(cmd)
