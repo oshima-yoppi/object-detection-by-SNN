@@ -9,6 +9,8 @@ import torch
 from . import network
 from .const_blender import *
 import json
+import numpy as np
+import random
 
 
 with open("module/const_base.json") as file:
@@ -65,19 +67,7 @@ SPIKE_GRAD = surrogate.atan(alpha=1.5)
 LR = 1e-4
 CORRECT_RATE = 0.5
 LOSS_RATE = 1e-7
-# NET = network.RoughConv3(
-#     beta=BETA,
-#     spike_grad=SPIKE_GRAD,
-#     device=DEVICE,
-#     input_height=SPLITED_INPUT_HEIGHT,
-#     input_width=SPLITED_INPUT_WIDTH,
-#     rough_pixel=3,
-#     parm_learn=PARM_LEARN,
-#     input_channel=INPUT_CHANNEL,
-#     power=True,
-#     reset=RESET,
-# )
-NET = network.RoughConv3_one(
+NET = network.RoughConv3(
     beta=BETA,
     spike_grad=SPIKE_GRAD,
     device=DEVICE,
@@ -89,6 +79,18 @@ NET = network.RoughConv3_one(
     power=True,
     reset=RESET,
 )
+# NET = network.RoughConv3_one(
+#     beta=BETA,
+#     spike_grad=SPIKE_GRAD,
+#     device=DEVICE,
+#     input_height=SPLITED_INPUT_HEIGHT,
+#     input_width=SPLITED_INPUT_WIDTH,
+#     rough_pixel=3,
+#     parm_learn=PARM_LEARN,
+#     input_channel=INPUT_CHANNEL,
+#     power=True,
+#     reset=RESET,
+# )
 
 LABEL_PATH = "blender/label/"
 # LABEL_PATH = "blender/"
@@ -123,3 +125,19 @@ RESULT_ONLY_BOULDER_PATH = f"result_img_boulder/{MODEL_NAME}"
 
 
 # print(NETWORK_CLASS_NAME)
+RANDOM_SEED = 123
+
+
+def torch_fix_seed(seed=42):
+    # Python random
+    random.seed(seed)
+    # Numpy
+    np.random.seed(seed)
+    # Pytorch
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.use_deterministic_algorithms = True
+
+
+torch_fix_seed(RANDOM_SEED)

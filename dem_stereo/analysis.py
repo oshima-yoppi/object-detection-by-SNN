@@ -190,7 +190,7 @@ def main(
         fine_label = np.squeeze(fine_label)
         # if number ==20:
         #     print(fine_label.shape)
-        print(fine_label.shape)
+        # print(fine_label.shape)
         areas_lst = []
         splited_width = fine_label.shape[1] // ROUGH_PIXEL
         splited_height = fine_label.shape[0] // ROUGH_PIXEL

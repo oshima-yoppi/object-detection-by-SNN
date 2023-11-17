@@ -12,11 +12,12 @@ csv_name = prefix + str(file_count).zfill(3) + ".csv"
 csv_path = os.path.join(csv_dir, csv_name)
 
 soft_reset_lst = [True]
+# parm_learn_lst = [False]
 parm_learn_lst = [False]
 # finish_step_lst = [2, 5]
 # finish_step_lst = [2, 5, 8]
 # finish_step_lst = [2, 4, 8]
-finish_step_lst = [2, 4, 8]
+finish_step_lst = [1]
 # accumulate_event_militime_lst = [10, 40, 80]
 # accumulate_event_militime_lst = [50, 100]
 accumulate_event_militime_lst = [100]

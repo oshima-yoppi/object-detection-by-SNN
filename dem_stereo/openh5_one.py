@@ -81,9 +81,10 @@ if __name__ == "__main__":
     while 1:
         number = int(input("何番を読み込む？"))
         events, label = a[number]
-        # print(events.shape)
+        print(events.shape)
         # youtube(events, youtube_path, True, all_steps)
         # print("save sucess")
+
         for i in range(4):
             plt.subplot(1, 4, i + 1)
             plt.imshow(events[i, 0, :, :])

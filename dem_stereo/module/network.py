@@ -90,7 +90,7 @@ class BaseFunction_one(nn.Module):
         for step in range(time):  # data.size(0) = number of time steps
             for i, net_ in enumerate(self.network_lst):
                 if i == 0:
-                    data_ = net_(data[1])
+                    data_ = net_(data[0])
                 elif i < len(self.network_lst) - 1:
                     data_ = net_(data_)
                 elif i == len(self.network_lst) - 1:
