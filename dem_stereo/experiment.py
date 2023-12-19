@@ -19,6 +19,8 @@ def update_constant(args):
         "THRESHOLD_LEARN": args.THRESHOLD_LEARN,
         "BETA": args.BETA,
         "REPEAT_INPUT": args.REPEAT_INPUT,
+        "TIME_AWARE_LOSS": args.TIME_AWARE_LOSS,
+        "THRESHOLD": args.THRESHOLD,
     }
     with open("module/const_base.json", "w") as file:
         json.dump(constants, file)
@@ -90,6 +92,8 @@ parser.add_argument("--BETA_LEARN", action="store_true")
 parser.add_argument("--THRESHOLD_LEARN", action="store_true")
 parser.add_argument("--BETA", type=float)
 parser.add_argument("--REPEAT_INPUT", action="store_true")
+parser.add_argument("--TIME_AWARE_LOSS", action="store_true")
+parser.add_argument("--THRESHOLD", type=float)
 args = parser.parse_args()
 print(args.soft_reset)
 CSV_PATH = args.CSV_PATH

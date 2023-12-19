@@ -12,12 +12,7 @@ csv_name = prefix + str(file_count).zfill(3) + ".csv"
 csv_path = os.path.join(csv_dir, csv_name)
 
 soft_reset_lst = [True]
-# parm_learn_lst = [False]
-parm_learn_lst = [False]
-# finish_step_lst = [2, 5]
-# finish_step_lst = [2, 5, 8]
-# finish_step_lst = [2, 4, 8]
-finish_step_lst = [8]
+finish_step_lst = [1]
 # accumulate_event_militime_lst = [10, 40, 80]
 # accumulate_event_militime_lst = [50, 100]
 accumulate_event_militime_lst = [100]
@@ -25,15 +20,17 @@ accumulate_event_militime_lst = [100]
 event_count_lst = [False]
 evnet_th_lst = [0.15]
 # time_change_lst = [False, True]
-time_change_lst = [True]
+time_change_lst = [True]  ##############################
 beta_learn_lst = [False]
-threshold_learn_lst = [False]
-beta_lst = [0.9, 1.0]
+threshold_learn_lst = [True]
+beta_lst = [1]
 repeat_input_lst = [True]
+threshold_lst = [0.7, 1.0]
+# time_aware_loss_lst = [False, True]
+time_aware_loss_lst = [True]
 combinations = list(
     itertools.product(
         soft_reset_lst,
-        parm_learn_lst,
         finish_step_lst,
         accumulate_event_militime_lst,
         event_count_lst,
@@ -43,12 +40,13 @@ combinations = list(
         threshold_learn_lst,
         beta_lst,
         repeat_input_lst,
+        time_aware_loss_lst,
+        threshold_lst,
     )
 )
 cc = 0
 for (
     soft_reset,
-    parm_learn,
     finish_step,
     accumulate_event_militime,
     event_count,
@@ -58,6 +56,8 @@ for (
     threshold_learn,
     beta,
     repeat_input,
+    time_aware_loss,
+    threshold,
 ) in combinations:
     # if cc <=14:
     #     cc += 1
@@ -65,8 +65,6 @@ for (
     cmd = "python experiment.py"
     if soft_reset:
         cmd += " --soft_reset"
-    if parm_learn:
-        cmd += " --PARM_LEARN"
     cmd += f" --FINISH_STEP {finish_step}"
     cmd += f" --ACCUMULATE_EVENT_MILITIME {accumulate_event_militime}"
     cmd += f" --CSV_PATH {csv_path}"
@@ -82,5 +80,8 @@ for (
     cmd += f" --BETA {beta}"
     if repeat_input:
         cmd += " --REPEAT_INPUT"
+    if time_aware_loss:
+        cmd += " --TIME_AWARE_LOSS"
+    cmd += f" --THRESHOLD {threshold}"
 
     os.system(cmd)

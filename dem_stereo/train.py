@@ -21,6 +21,7 @@ from tqdm import tqdm
 from module.custom_data import LoadDataset
 from module import custom_data, compute_loss, network
 from module.const import *
+from module.rand import *
 import matplotlib.pyplot as plt
 from IPython.display import HTML
 
@@ -31,6 +32,7 @@ import time
 
 
 def main():
+    rand.give_seed()
     train_dataset = LoadDataset(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
         raw_event_dir=RAW_EVENT_DIR,
@@ -50,20 +52,46 @@ def main():
         finish_step=START_STEP,
     )
 
+    def seed_worker(worker_id):
+        worker_seed = torch.initial_seed() % 2**32
+        np.random.seed(worker_seed)
+        random.seed(worker_seed)
+
+    # g = torch.Generator()
+    # g.manual_seed(RANDOM_SEED)
     train_loader = DataLoader(
         train_dataset,
         batch_size=BATCH_SIZE,
         collate_fn=custom_data.custom_collate,
-        shuffle=True,
+        shuffle=False,
+        # worker_init_fn=seed_worker,
+        # generator=g,
     )
     test_loader = DataLoader(
         test_dataset,
         batch_size=BATCH_SIZE,
         collate_fn=custom_data.custom_collate,
         shuffle=False,
+        # worker_init_fn=seed_worker,
+        # generator=g,
     )
 
     net = NET
+    # kuso_path = "kuso.pth"
+
+    # def are_weights_equal(model1, model2):
+    #     for param1, param2 in zip(model1.parameters(), model2.parameters()):
+    #         if not torch.equal(param1.data, param2.data):
+    #             return False
+    #     return True
+
+    # if os.path.exists(kuso_path):
+    #     net1 = NET
+    #     net1.load_state_dict(torch.load(kuso_path))
+    #     print(are_weights_equal(net, net1))
+    #     del net1
+
+    # torch.save(net.state_dict(), kuso_path)
 
     events, _ = train_dataset[0]
     num_steps = events.shape[0]
@@ -78,7 +106,8 @@ def main():
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-    num_epochs = 100
+    num_epochs = 150
+    # num_epochs = 20
     # num_epochs = 2
     num_iters = 50
     # pixel = 64
@@ -104,25 +133,12 @@ def main():
                     loss_log = []
                     data = data.to(DEVICE)
                     label = label.to(DEVICE)
-                    batch = len(data[0])
+                    # batch = len(data[0])
                     # print(data.shape)
                     # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                     # print(data.shape)
                     net.train()
-                    pred_pro = net(data, time_step)  # batch, channel, pixel ,pixel
-                    # print(pred_pro.shape)
-                    # print(label.shape)
-                    # plt.figure()
-                    # plt.imshow(pred_pro[0, 1].detach().cpu().numpy())
-                    # plt.show()
-                    # print(pred_pro.shape)
-                    # print(pred_pro.shape)
-                    # loss_val = criterion(pred_pro, label)
-                    # loss_val = loss_func(pred_pro, label)
-                    # loss_val = compute_loss.loss_dice(pred_pro, label, correct_rate)
-                    loss_val = loss_func(pred_pro, label)
-                    # loss_val = 1 - acc
-
+                    pred_pro, loss_val = net(data, label, time_step, loss_func)
                     # Gradient calculation + weight update
                     optimizer.zero_grad()
                     loss_val.backward()
@@ -143,7 +159,7 @@ def main():
                         label = label.to(DEVICE)
                         batch = len(data[0])
                         # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
-                        pred_pro = net(data, time_step)
+                        pred_pro, _ = net(data, label, time_step, loss_func)
 
                         # pred_class = pred_pro.argmax(dim=1)
                         # label_class = label.argmax(dim=1)

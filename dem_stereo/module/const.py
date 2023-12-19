@@ -11,15 +11,15 @@ from .const_blender import *
 import json
 import numpy as np
 import random
+from . import rand
 
-
+rand.give_seed()
 with open("module/const_base.json") as file:
     constants = json.load(file)
 # 設定ファイル。ここでいろんな変数を定義
 
 
 soft_reset = constants["soft_reset"]
-# PARM_LEARN = constants["PARM_LEARN"]
 FINISH_STEP = constants["FINISH_STEP"]
 ACCUMULATE_EVENT_MILITIME = constants["ACCUMULATE_EVENT_MILITIME"]
 EVENT_COUNT = constants["EVENT_COUNT"]
@@ -29,6 +29,8 @@ BETA_LEARN = constants["BETA_LEARN"]
 THRESHOLD_LEARN = constants["THRESHOLD_LEARN"]
 REPEAT_INPUT = constants["REPEAT_INPUT"]
 BETA = constants["BETA"]
+THRESHOLD = constants["THRESHOLD"]
+TIME_AWARE_LOSS = constants["TIME_AWARE_LOSS"]
 print(
     f"soft_reset: {soft_reset}",
     # f"parm_learn: {PARM_LEARN}",
@@ -70,34 +72,23 @@ SPIKE_GRAD = surrogate.atan(alpha=1.5)
 LR = 1e-4
 CORRECT_RATE = 0.5
 LOSS_RATE = 1e-7
-if REPEAT_INPUT:
-    NET = network.RoughConv3_one(
-        beta=BETA,
-        spike_grad=SPIKE_GRAD,
-        device=DEVICE,
-        input_height=SPLITED_INPUT_HEIGHT,
-        input_width=SPLITED_INPUT_WIDTH,
-        rough_pixel=3,
-        beta_learn=BETA_LEARN,
-        threshold_learn=THRESHOLD_LEARN,
-        input_channel=INPUT_CHANNEL,
-        power=True,
-        reset=RESET,
-    )
-else:
-    NET = network.RoughConv3(
-        beta=BETA,
-        spike_grad=SPIKE_GRAD,
-        device=DEVICE,
-        input_height=SPLITED_INPUT_HEIGHT,
-        input_width=SPLITED_INPUT_WIDTH,
-        rough_pixel=3,
-        beta_learn=BETA_LEARN,
-        threshold_learn=THRESHOLD_LEARN,
-        input_channel=INPUT_CHANNEL,
-        power=True,
-        reset=RESET,
-    )
+
+NET = network.RoughConv3(
+    beta=BETA,
+    threshold=THRESHOLD,
+    spike_grad=SPIKE_GRAD,
+    device=DEVICE,
+    input_height=SPLITED_INPUT_HEIGHT,
+    input_width=SPLITED_INPUT_WIDTH,
+    rough_pixel=3,
+    beta_learn=BETA_LEARN,
+    threshold_learn=THRESHOLD_LEARN,
+    input_channel=INPUT_CHANNEL,
+    power=True,
+    reset=RESET,
+    repeat_input=REPEAT_INPUT,
+    time_aware_loss=TIME_AWARE_LOSS,
+)
 
 
 LABEL_PATH = "blender/label/"
@@ -122,7 +113,7 @@ PROCESSED_EVENT_DATASET_PATH = f"dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HE
 
 NETWORK_CLASS_NAME = NET.__class__.__name__
 
-MODEL_NAME = f"{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{EVENT_TH}_beta-{BETA}_BetaLearn-{BETA_LEARN}_thLearn-{THRESHOLD_LEARN}_RepeatInput-{REPEAT_INPUT}_TimeChange-{TIME_CHANGE}_step-({START_STEP},{FINISH_STEP})_Reset-{RESET}_EventCount-{EVENT_COUNT}_Distinguish-{BOOL_DISTINGUISH_EVENT}"
+MODEL_NAME = f"{NETWORK_CLASS_NAME}_{ACCUMULATE_EVENT_MICROTIME}_th-{EVENT_TH}_beta-{BETA}_thresh-{THRESHOLD}_BetaLearn-{BETA_LEARN}_thLearn-{THRESHOLD_LEARN}_RepeatInput-{REPEAT_INPUT}_TimeAwareLoss-{TIME_AWARE_LOSS}_TimeChange-{TIME_CHANGE}_step-({START_STEP},{FINISH_STEP})"
 
 MODEL_PATH = f"models/{MODEL_NAME}.pth"
 
@@ -133,19 +124,3 @@ RESULT_ONLY_BOULDER_PATH = f"result_img_boulder/{MODEL_NAME}"
 
 
 # print(NETWORK_CLASS_NAME)
-RANDOM_SEED = 123
-
-
-def torch_fix_seed(seed=42):
-    # Python random
-    random.seed(seed)
-    # Numpy
-    np.random.seed(seed)
-    # Pytorch
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.use_deterministic_algorithms = True
-
-
-torch_fix_seed(RANDOM_SEED)

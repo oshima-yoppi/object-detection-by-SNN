@@ -69,8 +69,8 @@ if __name__ == "__main__":
         print(events.shape)
         _, _, h, w = events.shape
         events = events.numpy()
-        p_evnets = events[1, 1, :, :]
-        n_evnets = events[1, 0, :, :]
+        p_evnets = events[0, 1, :, :]
+        n_evnets = events[0, 0, :, :]
         imgs = np.zeros((h, w, 3))
         imgs[:, :, 0] = p_evnets * 255
         imgs[:, :, 1] = n_evnets * 255
