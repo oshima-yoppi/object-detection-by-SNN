@@ -223,7 +223,7 @@ max_crater = 0
 max_boulder = 3
 # harst=0.2 sigma 3 is best..?
 harst = 0.18
-sigma0 = 3  # 3 now
+sigma0 = 10  # 3 now
 rough = 0.1
 theta = 20
 
@@ -236,7 +236,7 @@ save_dem_dir = DEM_NP_PATH
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
-num_data = 10
+num_data = 5
 for i in tqdm(range(num_data)):
     dem_generator = LunarDEMGenerator(
         shape=shape,
@@ -260,6 +260,6 @@ for i in tqdm(range(num_data)):
     # dem_generator.save_label(save_label_path)
 
     # plt.figure()
-    # plt.imshow(dem)
+    # plt.imshow(dem_generator.dem)
     # # plt.colorbar()
     # plt.show()
