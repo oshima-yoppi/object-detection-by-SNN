@@ -25,17 +25,6 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         super().__init__(shape=shape, rough=rough, theta=theta)
         self.sigma0 = sigma
         self.harst = harst
-        # self.label_converter = convert_label.Dem2Img(
-        #     focal=FOCAL,
-        #     img_height=IMG_HEIGHT,
-        #     img_width=IMG_WIDTH,
-        #     sensor_heitght=SENSOR_HEIGHT,
-        #     sensor_width=SENSOR_WIDTH,
-        #     cam_x=CAM_X,
-        #     cam_y=CAM_Y,
-        #     cam_z=CAM_Z,
-        #     meter_per_grid=METER_PER_GRID,
-        # )
 
     def calculate_sigma(self, n):
         sigma_n = (
@@ -228,11 +217,11 @@ rough = 0.1
 theta = 20
 
 
-# save_label_dir = LABEL_PATH
+save_label_dir = LABEL_PATH
 save_dem_dir = DEM_NP_PATH
-# if os.path.exists(save_label_dir):
-#     shutil.rmtree(save_label_dir)
-# os.mkdir(save_label_dir)
+if os.path.exists(save_label_dir):
+    shutil.rmtree(save_label_dir)
+os.mkdir(save_label_dir)
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
@@ -256,6 +245,8 @@ for i in tqdm(range(num_data)):
         save_dem_dir, dem_filename
     )  # npzで保存する際のパスは拡張子をつけなくていいらしい,,,
     dem_generator.save_dem_and_label(save_dem_path)
+
+    # label_filename = f"{number}"
     # save_label_path = os.path.join(save_label_dir, label_filename)
     # dem_generator.save_label(save_label_path)
 

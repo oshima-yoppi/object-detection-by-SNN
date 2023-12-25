@@ -42,6 +42,7 @@ INPUT_CHANNEL = 2 if BOOL_DISTINGUISH_EVENT else 1
 
 # network関連の定数
 INPUT_HEIGHT, INPUT_WIDTH = 130, 173
+NETWORK_INPUT_HEIGHT, NETWORK_INPUT_WIDTH = 130, 164
 SPLITED_INPUT_HEIGHT, SPLITED_INPUT_WIDTH = INPUT_HEIGHT // 3, INPUT_WIDTH // 3
 ROUGH_PIXEL = 3
 RIGHT_IDX = 91
@@ -78,8 +79,8 @@ NET = network.RoughConv3(
     threshold=THRESHOLD,
     spike_grad=SPIKE_GRAD,
     device=DEVICE,
-    input_height=SPLITED_INPUT_HEIGHT,
-    input_width=SPLITED_INPUT_WIDTH,
+    input_height=NETWORK_INPUT_HEIGHT,
+    input_width=NETWORK_INPUT_WIDTH,
     rough_pixel=3,
     beta_learn=BETA_LEARN,
     threshold_learn=THRESHOLD_LEARN,

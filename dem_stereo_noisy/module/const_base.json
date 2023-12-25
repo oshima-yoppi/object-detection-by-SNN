@@ -1,1 +1,1 @@
-{"soft_reset": true, "PARM_LEARN": false, "FINISH_STEP": 1, "ACCUMULATE_EVENT_MILITIME": 100, "EVENT_COUNT": false, "EVENT_TH": 0.15, "TIME_CHANGE": true, "BETA_LEARN": false, "THRESHOLD_LEARN": false, "BETA": 1.0, "REPEAT_INPUT": true, "TIME_AWARE_LOSS": true, "THRESHOLD": 0.5}
+{"soft_reset": true, "PARM_LEARN": false, "FINISH_STEP": 8, "ACCUMULATE_EVENT_MILITIME": 100, "EVENT_COUNT": false, "EVENT_TH": 0.15, "TIME_CHANGE": true, "BETA_LEARN": false, "THRESHOLD_LEARN": false, "BETA": 1.0, "REPEAT_INPUT": true, "TIME_AWARE_LOSS": true, "THRESHOLD": 1.0}

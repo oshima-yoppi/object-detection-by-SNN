@@ -43,8 +43,8 @@ def main(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
         raw_event_dir=RAW_EVENT_PATH,
         accumulate_time=ACCUMULATE_EVENT_MICROTIME,
-        input_height=INPUT_HEIGHT,
-        input_width=INPUT_WIDTH,
+        input_height=NETWORK_INPUT_HEIGHT,
+        input_width=NETWORK_INPUT_WIDTH,
         train=False,
         finish_step=FINISH_STEP,
     )
@@ -56,6 +56,7 @@ def main(
         collate_fn=custom_data.custom_collate,
         shuffle=False,
     )
+    print(len(test_loader.dataset))
 
     net = NET
     net.load_state_dict(torch.load(MODEL_PATH))
@@ -170,13 +171,13 @@ def main(
         img_path = os.path.join(RESULT_PATH, f"{str(number).zfill(5)}.png")
         fig.savefig(img_path)
 
-        if results["Recall"][-1] <= 0.9999:
-            img_path = os.path.join(result_recall_path, f"{str(number).zfill(5)}.png")
+        if results["Recall"][-1] <=(result_recall_path, f"{str(number).zfill(5)}.png")
             fig.savefig(img_path)
 
         if pdf_output:
             img_path = os.path.join(RESULT_PATH, f"{str(number).zfill(5)}.pdf")
-            fig.savefig(img_path)
+            fig.savefig(img_path) 0.9999:
+            img_path = os.path.join
         # plt.show()
         plt.close()
 
@@ -222,7 +223,9 @@ def main(
         save_train_process(train_process_path, hist)
 
     spikes_lst = []
+    spike_count_lst = torch.zeros(len(net.network_lst)).to(DEVICE)
     analyzer = compute_loss.Analyzer()
+    net.power = True
     with torch.no_grad():
         net.eval()
         for i, (events, label) in enumerate(tqdm(iter(test_loader))):
@@ -231,6 +234,8 @@ def main(
             # pred_pro = net(events, FINISH_STEP)
             pred_pro, _ = net(events, label, FINISH_STEP)
             iou, prec, recall = analyzer(pred_pro, label)
+            # spike count
+            spike_count_lst = spike_count_lst + net.spike_count_lst
 
             binary_result = analyzer.pred_binary
             target = analyzer.target
@@ -275,9 +280,6 @@ def main(
     )
     # print(results)
     all_num_data = len(test_loader.dataset)
-    # for key in ['TP', 'TN', 'FP', 'FN']:
-    #     results[key] = results[key]/all_num_data * 100
-    #     results[key] = round(results[key], 2)
     threshold_lst = net.get_threshold()
     # print(threshold_lst)
     for i, th in enumerate(threshold_lst):
@@ -324,13 +326,18 @@ def main(
     results["Failed MaxArea"] = max_recall_failed_area
     print(max_recall_failed_area, results["Failed MaxArea"])
 
-    # plt.show()
-    plt.savefig(os.path.join(result_area_path, "area_recall.png"))
-    plt.savefig(os.path.join(result_area_path, "area_recall.pdf"))
-    plt.close()
+    neurons_count_lst = net.neurons_count_lst.to(DEVICE)
+    spike_rate_lst = (
+        spike_count_lst / FINISH_STEP / len(test_loader.dataset) / neurons_count_lst
+    )
+    # print(neurons_count_lst)
+    spike_rate_lst = spike_rate_lst.tolist()
+    for i, spike_rate in enumerate(spike_rate_lst):
+        results[f"spike_rate_{i}"] = spike_rate
 
     return results
 
 
 if __name__ == "__main__":
-    main(pdf_output=False)
+    results = main(pdf_output=False)
+    print(results)
