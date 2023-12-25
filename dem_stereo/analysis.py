@@ -171,13 +171,13 @@ def main(
         img_path = os.path.join(RESULT_PATH, f"{str(number).zfill(5)}.png")
         fig.savefig(img_path)
 
-        if results["Recall"][-1] <=(result_recall_path, f"{str(number).zfill(5)}.png")
+        if results["Recall"][-1] <= 0.9999:
+            img_path = os.path.join(result_recall_path, f"{str(number).zfill(5)}.png")
             fig.savefig(img_path)
 
         if pdf_output:
             img_path = os.path.join(RESULT_PATH, f"{str(number).zfill(5)}.pdf")
-            fig.savefig(img_path) 0.9999:
-            img_path = os.path.join
+            fig.savefig(img_path)
         # plt.show()
         plt.close()
 
