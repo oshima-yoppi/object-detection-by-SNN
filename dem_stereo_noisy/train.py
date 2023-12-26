@@ -122,7 +122,7 @@ def main():
     print(time_step_lst)
     # training loop
     # return
-
+    net.power = False
     model_save_path = MODEL_PATH
     max_acc = -1
     try:
@@ -138,7 +138,12 @@ def main():
                     # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
                     # print(data.shape)
                     net.train()
-                    pred_pro, loss_val = net(data, label, time_step, loss_func)
+                    pred_pro, loss_val = net(
+                        data,
+                        label,
+                        time_step,
+                        loss_func,
+                    )
                     # Gradient calculation + weight update
                     optimizer.zero_grad()
                     loss_val.backward()
@@ -193,29 +198,6 @@ def main():
     torch.save(net.state_dict(), model_save_path)
     print("success model saving")
 
-    # print(MODEL_NAME)
-    # print(f"{acc=}")
-    # # Plot Loss
-    # print(hist)
-    # fig = plt.figure(facecolor="w")
-    # ax1 = fig.add_subplot(1, 3, 1)
-    # ax2 = fig.add_subplot(1, 3, 2)
-    # ax3 = fig.add_subplot(1, 3, 3)
-    # ax1.plot(hist["loss"], label="train")
-    # ax1.set_title("loss")
-    # ax1.set_xlabel("Iteration")
-    # ax1.set_ylabel("Loss (Dice)")
-    # ax2.plot(hist["train"], label="train")
-    # ax2.set_title("Train  accuracy")
-    # ax2.set_xlabel("Iteration")
-    # ax2.set_ylabel("Accuracy(IoU)")
-    # ax3.plot(hist["test"], label="test")
-    # ax3.set_title("Test acc")
-    # ax3.set_xlabel("epoch")
-    # ax3.set_ylabel("Accuracy(IoU)")
-    # fig.suptitle(f"ModelName:{MODEL_NAME}")
-    # fig.tight_layout()
-    # plt.show()
     return hist
 
 

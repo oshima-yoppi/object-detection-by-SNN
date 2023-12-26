@@ -6360,20 +6360,49 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 0.7
+	THRESHOLD: 0.5
 results
-	IoU: 71.46
-	Precision: 80.6
-	Recall: 87.05
-	F-Measure: 83.70092454518343
-	threshold_0: 0.7
-	threshold_1: 0.7
-	threshold_2: 0.7
-	threshold_3: 0.7
-	threshold_4: 0.7
-	Energy per inference: 6.843960420610529e-08
-	Spike Rate: 1.1250277757644653
-	Failed MaxArea: 0.15891472868217055
+	IoU: 82.14
+	Precision: 90.27
+	Recall: 90.58
+	F-Measure: 90.42473431020181
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 0.5
+	Energy per inference: 2.9585450533886615e-08
+	Spike Rate: 0.4863332211971283
+	Failed MaxArea: 0.16838931955211026
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.5
+results
+	IoU: 82.5
+	Precision: 91.24
+	Recall: 90.08
+	F-Measure: 90.65628943304655
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 0.5
+	Energy per inference: 9.585227900288373e-08
+	Spike Rate: 1.5756443738937378
+	Failed MaxArea: 0.16838931955211026
 -------------
 -------------
 conditions
@@ -6389,20 +6418,93 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.0
+	THRESHOLD: 0.5
 results
-	IoU: 59.18
-	Precision: 71.2
-	Recall: 80.6
-	F-Measure: 75.60895915678525
-	threshold_0: 1.0
-	threshold_1: 1.0
-	threshold_2: 1.0
-	threshold_3: 1.0
-	threshold_4: 1.0
-	Energy per inference: 2.3922517300434265e-08
-	Spike Rate: 0.3932444751262665
-	Failed MaxArea: 0.39577950043066323
+	IoU: 53.65
+	Precision: 67.88
+	Recall: 76.19
+	F-Measure: 71.79533837717776
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 8.385170779945383e-09
+	Spike Rate: 0.13783758878707886
+	Failed MaxArea: 0.4125753660637381
+	spike_rate_0: 0.015728723257780075
+	spike_rate_1: 0.0549163892865181
+	spike_rate_2: 0.4168247878551483
+	spike_rate_3: 1.3027989864349365
+	spike_rate_4: 0.4337037205696106
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.5
+results
+	IoU: 38.04
+	Precision: 38.05
+	Recall: 99.96
+	F-Measure: 55.11887544380842
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 1.2246069047705532e-07
+	Spike Rate: 2.01304030418396
+	Failed MaxArea: 0.11154177433247202
+	spike_rate_0: 0.25342294573783875
+	spike_rate_1: 1.2308921813964844
+	spike_rate_2: 2.752336263656616
+	spike_rate_3: 3.8320960998535156
+	spike_rate_4: 0.6901851892471313
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 3
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.5
+results
+	IoU: 38.02
+	Precision: 38.02
+	Recall: 100.0
+	F-Measure: 55.09346471525866
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 3.006988720244408e-07
+	Spike Rate: 4.942965030670166
+	Failed MaxArea: 0.0
+	spike_rate_0: 0.5971914529800415
+	spike_rate_1: 2.191220283508301
+	spike_rate_2: 3.848598003387451
+	spike_rate_3: 4.928183555603027
+	spike_rate_4: 0.778209924697876
 -------------
 -------------
 conditions
@@ -6418,20 +6520,25 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.3
+	THRESHOLD: 0.5
 results
-	IoU: 41.06
-	Precision: 41.19
-	Recall: 99.05
-	F-Measure: 58.184105818596684
-	threshold_0: 1.3
-	threshold_1: 1.3
-	threshold_2: 1.3
-	threshold_3: 1.3
-	threshold_4: 1.3
-	Energy per inference: 5.805906155842422e-08
-	Spike Rate: 0.954389750957489
-	Failed MaxArea: 0.16795865633074936
+	IoU: 53.01
+	Precision: 67.03
+	Recall: 76.14
+	F-Measure: 71.29516239435635
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 8.56120241365943e-09
+	Spike Rate: 0.014393758960068226
+	Failed MaxArea: 0.4125753660637381
+	spike_rate_0: 0.0016675192164257169
+	spike_rate_1: 0.0057275863364338875
+	spike_rate_2: 0.04424407705664635
+	spike_rate_3: 0.10003503412008286
+	spike_rate_4: 0.43925926089286804
 -------------
 -------------
 conditions
@@ -6447,78 +6554,25 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 0.7
+	THRESHOLD: 0.5
 results
-	IoU: 74.91
-	Precision: 86.85
-	Recall: 85.13
-	F-Measure: 85.98139899988371
-	threshold_0: 0.7
-	threshold_1: 0.7
-	threshold_2: 0.7
-	threshold_3: 0.7
-	threshold_4: 0.7
-	Energy per inference: 2.0141087020419945e-07
-	Spike Rate: 3.3108434677124023
-	Failed MaxArea: 0.15891472868217055
--------------
--------------
-conditions
-	soft_reset: True
-	PARM_LEARN: False
-	FINISH_STEP: 2
-	ACCUMULATE_EVENT_MILITIME: 100
-	EVENT_COUNT: False
-	EVENT_TH: 0.15
-	TIME_CHANGE: True
-	BETA_LEARN: False
-	THRESHOLD_LEARN: False
-	BETA: 1.0
-	REPEAT_INPUT: True
-	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.0
-results
-	IoU: 63.49
-	Precision: 71.6
-	Recall: 87.19
-	F-Measure: 78.62968700799797
-	threshold_0: 1.0
-	threshold_1: 1.0
-	threshold_2: 1.0
-	threshold_3: 1.0
-	threshold_4: 1.0
-	Energy per inference: 1.674260232675806e-07
-	Spike Rate: 2.7521917819976807
-	Failed MaxArea: 0.31007751937984496
--------------
--------------
-conditions
-	soft_reset: True
-	PARM_LEARN: False
-	FINISH_STEP: 2
-	ACCUMULATE_EVENT_MILITIME: 100
-	EVENT_COUNT: False
-	EVENT_TH: 0.15
-	TIME_CHANGE: True
-	BETA_LEARN: False
-	THRESHOLD_LEARN: False
-	BETA: 1.0
-	REPEAT_INPUT: True
-	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.3
-results
-	IoU: 66.64
-	Precision: 76.65
-	Recall: 85.18
-	F-Measure: 80.69019341284064
-	threshold_0: 1.3
-	threshold_1: 1.3
-	threshold_2: 1.3
-	threshold_3: 1.3
-	threshold_4: 1.3
-	Energy per inference: 1.7903246884998225e-07
-	Spike Rate: 2.942981719970703
-	Failed MaxArea: 0.22868217054263568
+	IoU: 38.04
+	Precision: 38.05
+	Recall: 99.96
+	F-Measure: 55.11887544380842
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 1.2375230085126532e-07
+	Spike Rate: 0.20806197822093964
+	Failed MaxArea: 0.11154177433247202
+	spike_rate_0: 0.026969322934746742
+	spike_rate_1: 0.12727749347686768
+	spike_rate_2: 0.2889134883880615
+	spike_rate_3: 0.28877338767051697
+	spike_rate_4: 0.7004629969596863
 -------------
 -------------
 conditions
@@ -6534,84 +6588,31 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 0.7
+	THRESHOLD: 0.5
 results
-	IoU: 74.98
-	Precision: 87.31
-	Recall: 84.87
-	F-Measure: 86.07271111627367
-	threshold_0: 0.7
-	threshold_1: 0.7
-	threshold_2: 0.7
-	threshold_3: 0.7
-	threshold_4: 0.7
-	Energy per inference: 3.5815733667732275e-07
-	Spike Rate: 5.887482166290283
-	Failed MaxArea: 0.15891472868217055
--------------
--------------
-conditions
-	soft_reset: True
-	PARM_LEARN: False
-	FINISH_STEP: 3
-	ACCUMULATE_EVENT_MILITIME: 100
-	EVENT_COUNT: False
-	EVENT_TH: 0.15
-	TIME_CHANGE: True
-	BETA_LEARN: False
-	THRESHOLD_LEARN: False
-	BETA: 1.0
-	REPEAT_INPUT: True
-	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.0
-results
-	IoU: 60.31
-	Precision: 72.11
-	Recall: 81.93
-	F-Measure: 76.70698909374188
-	threshold_0: 1.0
-	threshold_1: 1.0
-	threshold_2: 1.0
-	threshold_3: 1.0
-	threshold_4: 1.0
-	Energy per inference: 3.436420854541211e-07
-	Spike Rate: 5.648876667022705
-	Failed MaxArea: 0.31007751937984496
--------------
--------------
-conditions
-	soft_reset: True
-	PARM_LEARN: False
-	FINISH_STEP: 3
-	ACCUMULATE_EVENT_MILITIME: 100
-	EVENT_COUNT: False
-	EVENT_TH: 0.15
-	TIME_CHANGE: True
-	BETA_LEARN: False
-	THRESHOLD_LEARN: False
-	BETA: 1.0
-	REPEAT_INPUT: True
-	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.3
-results
-	IoU: 40.85
-	Precision: 40.85
+	IoU: 38.02
+	Precision: 38.02
 	Recall: 100.0
-	F-Measure: 58.00496982605609
-	threshold_0: 1.3
-	threshold_1: 1.3
-	threshold_2: 1.3
-	threshold_3: 1.3
-	threshold_4: 1.3
-	Energy per inference: 5.062851755610609e-07
-	Spike Rate: 8.322444915771484
+	F-Measure: 55.09346471525866
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 3.043694505322492e-07
+	Spike Rate: 0.5117295980453491
 	Failed MaxArea: 0.0
+	spike_rate_0: 0.063686802983284
+	spike_rate_1: 0.22654929757118225
+	spike_rate_2: 0.404203325510025
+	spike_rate_3: 0.3727560341358185
+	spike_rate_4: 0.7892592549324036
 -------------
 -------------
 conditions
 	soft_reset: True
 	PARM_LEARN: False
-	FINISH_STEP: 4
+	FINISH_STEP: 1
 	ACCUMULATE_EVENT_MILITIME: 100
 	EVENT_COUNT: False
 	EVENT_TH: 0.15
@@ -6621,26 +6622,31 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 0.7
+	THRESHOLD: 0.5
 results
-	IoU: 74.4
-	Precision: 83.44
-	Recall: 88.16
-	F-Measure: 85.73508624708624
-	threshold_0: 0.7
-	threshold_1: 0.7
-	threshold_2: 0.7
-	threshold_3: 0.7
-	threshold_4: 0.7
-	Energy per inference: 4.7202689756886684e-07
-	Spike Rate: 7.759299278259277
-	Failed MaxArea: 0.17140396210163653
+	IoU: 52.77
+	Precision: 68.57
+	Recall: 74.84
+	F-Measure: 71.56793529042605
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 8.15442469104255e-09
+	Spike Rate: 0.01370985247194767
+	Failed MaxArea: 0.41989664082687345
+	spike_rate_0: 0.0016726857284083962
+	spike_rate_1: 0.0053450618870556355
+	spike_rate_2: 0.0419946126639843
+	spike_rate_3: 0.09532755613327026
+	spike_rate_4: 0.4235185384750366
 -------------
 -------------
 conditions
 	soft_reset: True
 	PARM_LEARN: False
-	FINISH_STEP: 4
+	FINISH_STEP: 2
 	ACCUMULATE_EVENT_MILITIME: 100
 	EVENT_COUNT: False
 	EVENT_TH: 0.15
@@ -6650,26 +6656,31 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.0
+	THRESHOLD: 0.5
 results
-	IoU: 71.97
-	Precision: 80.75
-	Recall: 87.71
-	F-Measure: 84.08622224860501
-	threshold_0: 1.0
-	threshold_1: 1.0
-	threshold_2: 1.0
-	threshold_3: 1.0
-	threshold_4: 1.0
-	Energy per inference: 5.246445198281435e-07
-	Spike Rate: 8.624241828918457
-	Failed MaxArea: 0.17140396210163653
+	IoU: 38.04
+	Precision: 38.05
+	Recall: 99.96
+	F-Measure: 55.11887544380842
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 1.2153869022313302e-07
+	Spike Rate: 0.20434029400348663
+	Failed MaxArea: 0.11154177433247202
+	spike_rate_0: 0.02659132517874241
+	spike_rate_1: 0.12343281507492065
+	spike_rate_2: 0.28436145186424255
+	spike_rate_3: 0.2881452441215515
+	spike_rate_4: 0.6829630136489868
 -------------
 -------------
 conditions
 	soft_reset: True
 	PARM_LEARN: False
-	FINISH_STEP: 4
+	FINISH_STEP: 3
 	ACCUMULATE_EVENT_MILITIME: 100
 	EVENT_COUNT: False
 	EVENT_TH: 0.15
@@ -6679,26 +6690,201 @@ conditions
 	BETA: 1.0
 	REPEAT_INPUT: True
 	TIME_AWARE_LOSS: True
-	THRESHOLD: 1.3
+	THRESHOLD: 0.5
 results
-	IoU: 40.85
-	Precision: 40.85
+	IoU: 38.02
+	Precision: 38.02
 	Recall: 100.0
-	F-Measure: 58.00496982605609
-	threshold_0: 1.3
-	threshold_1: 1.3
-	threshold_2: 1.3
-	threshold_3: 1.3
-	threshold_4: 1.3
-	Energy per inference: 8.505850246365299e-07
-	Spike Rate: 13.982134819030762
+	F-Measure: 55.09346471525866
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 3.026421495633258e-07
+	Spike Rate: 0.5088255405426025
 	Failed MaxArea: 0.0
+	spike_rate_0: 0.06309828907251358
+	spike_rate_1: 0.2246960699558258
+	spike_rate_2: 0.4031182825565338
+	spike_rate_3: 0.37252292037010193
+	spike_rate_4: 0.790493905544281
 -------------
 -------------
 conditions
 	soft_reset: True
 	PARM_LEARN: False
-	FINISH_STEP: 8
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.5
+results
+	IoU: 52.98
+	Precision: 69.13
+	Recall: 74.31
+	F-Measure: 71.6264682097044
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 7.93510057661706e-09
+	Spike Rate: 0.013341108337044716
+	Failed MaxArea: 0.41989664082687345
+	spike_rate_0: 0.001621086848899722
+	spike_rate_1: 0.005182916298508644
+	spike_rate_2: 0.04069776087999344
+	spike_rate_3: 0.09325044602155685
+	spike_rate_4: 0.41833335161209106
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.5
+results
+	IoU: 38.03
+	Precision: 38.04
+	Recall: 99.96
+	F-Measure: 55.10838260869564
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 1.219107161887223e-07
+	Spike Rate: 0.2049657702445984
+	Failed MaxArea: 0.11154177433247202
+	spike_rate_0: 0.026642560958862305
+	spike_rate_1: 0.12478682398796082
+	spike_rate_2: 0.2851523756980896
+	spike_rate_3: 0.28525978326797485
+	spike_rate_4: 0.6905555725097656
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 3
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.5
+results
+	IoU: 38.02
+	Precision: 38.02
+	Recall: 100.0
+	F-Measure: 55.09346471525866
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 3.0133637096696475e-07
+	Spike Rate: 0.5066301226615906
+	Failed MaxArea: 0.0
+	spike_rate_0: 0.06293026357889175
+	spike_rate_1: 0.22346355020999908
+	spike_rate_2: 0.40125519037246704
+	spike_rate_3: 0.37139976024627686
+	spike_rate_4: 0.784753143787384
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.5
+results
+	IoU: 38.02
+	Precision: 38.02
+	Recall: 100.0
+	F-Measure: 55.09346471525866
+	threshold_0: 0.5
+	threshold_1: 0.5
+	threshold_2: 0.5
+	threshold_3: 0.5
+	threshold_4: 5.0
+	Energy per inference: 5.185777354199672e-07
+	Spike Rate: 0.8718732595443726
+	Failed MaxArea: 0.0
+	spike_rate_0: 0.09574121236801147
+	spike_rate_1: 0.2994822561740875
+	spike_rate_2: 0.4669473171234131
+	spike_rate_3: 0.41204357147216797
+	spike_rate_4: 0.8413426280021667
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.6
+results
+	IoU: 80.79
+	Precision: 89.7
+	Recall: 89.96
+	F-Measure: 89.82981186685961
+	threshold_0: 0.6
+	threshold_1: 0.6
+	threshold_2: 0.6
+	threshold_3: 0.6
+	threshold_4: 6.0
+	Energy per inference: 3.4232009227253e-08
+	Spike Rate: 0.06018809601664543
+	Failed MaxArea: 0.16838931955211026
+	spike_rate_0: 0.04642285406589508
+	spike_rate_1: 0.055532921105623245
+	spike_rate_2: 0.12788702547550201
+	spike_rate_3: 0.05845361202955246
+	spike_rate_4: 0.3383333384990692
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
 	ACCUMULATE_EVENT_MILITIME: 100
 	EVENT_COUNT: False
 	EVENT_TH: 0.15
@@ -6710,16 +6896,225 @@ conditions
 	TIME_AWARE_LOSS: True
 	THRESHOLD: 0.7
 results
-	IoU: 74.01
-	Precision: 84.57
-	Recall: 86.46
-	F-Measure: 85.50455709524645
+	IoU: 81.72
+	Precision: 90.38
+	Recall: 90.07
+	F-Measure: 90.22473372125242
 	threshold_0: 0.7
 	threshold_1: 0.7
 	threshold_2: 0.7
 	threshold_3: 0.7
-	threshold_4: 0.7
-	Energy per inference: 6.990212000346219e-07
-	Spike Rate: 11.490689277648926
-	Failed MaxArea: 0.11326442721791559
+	threshold_4: 7.0
+	Energy per inference: 4.6879463866389415e-08
+	Spike Rate: 0.08242535591125488
+	Failed MaxArea: 0.16838931955211026
+	spike_rate_0: 0.08763505518436432
+	spike_rate_1: 0.0663864016532898
+	spike_rate_2: 0.106233611702919
+	spike_rate_3: 0.05712638422846794
+	spike_rate_4: 0.33407407999038696
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.6
+results
+	IoU: 81.37
+	Precision: 92.29
+	Recall: 88.07
+	F-Measure: 90.13063096030162
+	threshold_0: 0.6
+	threshold_1: 0.6
+	threshold_2: 0.6
+	threshold_3: 0.6
+	threshold_4: 6.0
+	Energy per inference: 1.19608685622552e-07
+	Spike Rate: 0.21030078828334808
+	Failed MaxArea: 0.16838931955211026
+	spike_rate_0: 0.09917649626731873
+	spike_rate_1: 0.12279817461967468
+	spike_rate_2: 0.11719159781932831
+	spike_rate_3: 0.058415018022060394
+	spike_rate_4: 0.32398149371147156
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.7
+results
+	IoU: 82.16
+	Precision: 91.09
+	Recall: 90.08
+	F-Measure: 90.5821846884142
+	threshold_0: 0.7
+	threshold_1: 0.7
+	threshold_2: 0.7
+	threshold_3: 0.7
+	threshold_4: 7.0
+	Energy per inference: 1.500676063415085e-07
+	Spike Rate: 0.26385489106178284
+	Failed MaxArea: 0.16838931955211026
+	spike_rate_0: 0.16275709867477417
+	spike_rate_1: 0.0916382297873497
+	spike_rate_2: 0.12482277303934097
+	spike_rate_3: 0.05452487990260124
+	spike_rate_4: 0.3330555856227875
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 3
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.6
+results
+	IoU: 83.67
+	Precision: 92.38
+	Recall: 89.95
+	F-Measure: 91.14880710799102
+	threshold_0: 0.6
+	threshold_1: 0.6
+	threshold_2: 0.6
+	threshold_3: 0.6
+	threshold_4: 6.0
+	Energy per inference: 2.428515983865509e-07
+	Spike Rate: 0.42699143290519714
+	Failed MaxArea: 0.16838931955211026
+	spike_rate_0: 0.19040516018867493
+	spike_rate_1: 0.07232236862182617
+	spike_rate_2: 0.12499767541885376
+	spike_rate_3: 0.06361419707536697
+	spike_rate_4: 0.3441358208656311
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 3
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.7
+results
+	IoU: 82.42
+	Precision: 93.03
+	Recall: 88.41
+	F-Measure: 90.66118055555555
+	threshold_0: 0.7
+	threshold_1: 0.7
+	threshold_2: 0.7
+	threshold_3: 0.7
+	threshold_4: 7.0
+	Energy per inference: 3.026204637990304e-07
+	Spike Rate: 0.5320794582366943
+	Failed MaxArea: 0.16838931955211026
+	spike_rate_0: 0.24407126009464264
+	spike_rate_1: 0.10476553440093994
+	spike_rate_2: 0.11149226129055023
+	spike_rate_3: 0.05111769586801529
+	spike_rate_4: 0.3280864655971527
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.6
+results
+	IoU: 81.98
+	Precision: 93.56
+	Recall: 87.31
+	F-Measure: 90.32701498313706
+	threshold_0: 0.6
+	threshold_1: 0.6
+	threshold_2: 0.6
+	threshold_3: 0.6
+	threshold_4: 6.0
+	Energy per inference: 4.008666678601003e-07
+	Spike Rate: 0.704819917678833
+	Failed MaxArea: 0.173557278208441
+	spike_rate_0: 0.25463923811912537
+	spike_rate_1: 0.06917635351419449
+	spike_rate_2: 0.12304364144802094
+	spike_rate_3: 0.06810152530670166
+	spike_rate_4: 0.3247685134410858
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: True
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: True
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 0.7
+results
+	IoU: 81.72
+	Precision: 90.29
+	Recall: 90.27
+	F-Measure: 90.27999889233496
+	threshold_0: 0.7
+	threshold_1: 0.7
+	threshold_2: 0.7
+	threshold_3: 0.7
+	threshold_4: 7.0
+	Energy per inference: 4.379611766580638e-07
+	Spike Rate: 0.7700409293174744
+	Failed MaxArea: 0.16838931955211026
+	spike_rate_0: 0.2847079932689667
+	spike_rate_1: 0.07537785917520523
+	spike_rate_2: 0.12141372263431549
+	spike_rate_3: 0.04707605391740799
+	spike_rate_4: 0.3517129719257355
 -------------

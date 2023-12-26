@@ -71,7 +71,7 @@ for i, thresh in enumerate(threshhold_lst):
     plt.plot(finish_step_lst, iou, label="IoU", marker="x")
     plt.plot(finish_step_lst, f_measure, label="F-Measure", marker="x")
     plt.legend()
-    plt.ylim(50, 100)
+    plt.ylim(75, 100)
     plt.title(f"threshhold: {thresh}")
     plt.xlabel("Timestep")
     plt.ylabel("Accuracy[%]")
