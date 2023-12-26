@@ -32,6 +32,8 @@ rand.give_seed()
 class BaseFunction(nn.Module):
     def __call__(self, data, label, time, loss_func=None):
         self.spike_count = 0
+        if self.power:
+            self.spike_count_lst = torch.zeros(len(self.network_lst)).to(self.device)
         spk_rec = []
         # utils.reset(self.network)  # resets hidden states for all LIF neurons in net
         loss = 0
@@ -51,8 +53,9 @@ class BaseFunction(nn.Module):
                 # print(data_.shape)
 
                 if self.power:
+                    # print(data_.shape)
                     self.spike_count += torch.sum(data_)
-            # spk_rec.append(data_)
+                    self.spike_count_lst[i] += torch.sum(data_)
 
             if self.time_aware_loss:
                 # spk_rec = torch.stack(spk_rec)
@@ -78,6 +81,7 @@ class BaseFunction(nn.Module):
         """
         for net in self.network_lst:
             utils.reset(net)
+        self.neurons_count_lst = torch.zeros(len(self.network_lst))
         self.number_neurons = 0
         input_dummy = torch.zeros(
             1, self.input_channel, self.input_height, self.input_width
@@ -89,10 +93,14 @@ class BaseFunction(nn.Module):
                 input_dummy = net(input_dummy)
             if input_dummy.dim() == 4:
                 _, c, h, w = input_dummy.shape
+                # print(9888888888888)
+                # print(input_dummy.shape)
                 self.number_neurons += c * h * w
+                self.neurons_count_lst[i] += c * h * w
             elif input_dummy.dim() == 2:
                 _, c = input_dummy.shape
                 self.number_neurons += c
+                self.neurons_count_lst[i] += c
         return self.number_neurons
 
     def get_threshold(self):
@@ -216,7 +224,7 @@ class RoughConv3(BaseFunction):
             nn.Conv2d(c4, n_class, 1, padding=0),
             snn.Leaky(
                 beta=beta,
-                threshold=threshold,
+                threshold=threshold * 10,
                 spike_grad=spike_grad,
                 init_hidden=True,
                 learn_beta=beta_learn,
