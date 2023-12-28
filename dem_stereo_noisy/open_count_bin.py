@@ -38,6 +38,7 @@ def youtube(events, path, bool_split, all_steps=None):
         all_steps = events.shape[0]
     x = events.shape[2]
     y = events.shape[3]
+    # events = 1 - events
 
     if bool_split:
         img_arr = torch.zeros(all_steps, 3, x, y)

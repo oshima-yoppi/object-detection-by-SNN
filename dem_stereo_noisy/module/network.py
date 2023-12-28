@@ -224,7 +224,7 @@ class RoughConv3(BaseFunction):
             nn.Conv2d(c4, n_class, 1, padding=0),
             snn.Leaky(
                 beta=beta,
-                threshold=threshold * 10,
+                threshold=threshold,
                 spike_grad=spike_grad,
                 init_hidden=True,
                 learn_beta=beta_learn,

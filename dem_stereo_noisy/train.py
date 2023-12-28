@@ -106,7 +106,7 @@ def main():
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-    num_epochs = 100
+    num_epochs = 600
     # num_epochs = 20
     # num_epochs = 2
     num_iters = 50
@@ -133,6 +133,9 @@ def main():
                     loss_log = []
                     data = data.to(DEVICE)
                     label = label.to(DEVICE)
+                    # start = time.time()
+                    # data = 1 - data
+                    # print(time.time() - start)
                     # batch = len(data[0])
                     # print(data.shape)
                     # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
@@ -161,6 +164,7 @@ def main():
                     recall_log = []
                     for i, (data, label) in enumerate(iter(test_loader)):
                         data = data.to(DEVICE)
+                        # data = 1 - data
                         label = label.to(DEVICE)
                         batch = len(data[0])
                         # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
