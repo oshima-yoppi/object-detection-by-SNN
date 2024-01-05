@@ -25,6 +25,7 @@ from tqdm import tqdm
 from module.custom_data import LoadDataset
 from module import custom_data, network, compute_loss, view
 from module.const import *
+from module.rand import *
 
 import matplotlib.pyplot as plt
 from IPython.display import HTML
@@ -42,8 +43,8 @@ def main(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
         raw_event_dir=RAW_EVENT_PATH,
         accumulate_time=ACCUMULATE_EVENT_MICROTIME,
-        input_height=INPUT_HEIGHT,
-        input_width=INPUT_WIDTH,
+        input_height=NETWORK_INPUT_HEIGHT,
+        input_width=NETWORK_INPUT_WIDTH,
         train=False,
         finish_step=FINISH_STEP,
     )
@@ -55,6 +56,7 @@ def main(
         collate_fn=custom_data.custom_collate,
         shuffle=False,
     )
+    print(len(test_loader.dataset))
 
     net = NET
     net.load_state_dict(torch.load(MODEL_PATH))
@@ -190,7 +192,7 @@ def main(
         fine_label = np.squeeze(fine_label)
         # if number ==20:
         #     print(fine_label.shape)
-        print(fine_label.shape)
+        # print(fine_label.shape)
         areas_lst = []
         splited_width = fine_label.shape[1] // ROUGH_PIXEL
         splited_height = fine_label.shape[0] // ROUGH_PIXEL
@@ -205,7 +207,7 @@ def main(
                 area_of_boulder = np.sum(splited_area)
                 areas_lst.append(area_of_boulder)
 
-        return areas_lst
+        return areas_lst, splited_width, splited_height
 
     if os.path.exists(RESULT_PATH):
         shutil.rmtree(RESULT_PATH)
@@ -221,18 +223,25 @@ def main(
         save_train_process(train_process_path, hist)
 
     spikes_lst = []
+    spike_count_lst = torch.zeros(len(net.network_lst)).to(DEVICE)
     analyzer = compute_loss.Analyzer()
+    net.power = True
     with torch.no_grad():
         net.eval()
         for i, (events, label) in enumerate(tqdm(iter(test_loader))):
             events = events.to(DEVICE)
             label = label.to(DEVICE)
-            pred_pro = net(events, FINISH_STEP)
+            # pred_pro = net(events, FINISH_STEP)
+            pred_pro, _ = net(events, label, FINISH_STEP)
             iou, prec, recall = analyzer(pred_pro, label)
+            # spike count
+            spike_count_lst = spike_count_lst + net.spike_count_lst
 
             binary_result = analyzer.pred_binary
             target = analyzer.target
-            areas_of_boulder_lst = get_area_boulder_lst(i)
+            areas_of_boulder_lst, splited_width, splited_height = get_area_boulder_lst(
+                i
+            )
             for area, p, t in zip(areas_of_boulder_lst, binary_result, target):
                 if area == 242:
                     print(i)
@@ -246,15 +255,15 @@ def main(
             # print(iou, prec, recall)
             spikes_lst.append(net.spike_count)
             # s = time.time()
-            # save_img(
-            #     i,
-            #     events,
-            #     pred_pro,
-            #     label,
-            #     results,
-            #     result_recall_path,
-            #     pdf_output=pdf_output,
-            # )
+            save_img(
+                i,
+                events,
+                pred_pro,
+                label,
+                results,
+                result_recall_path,
+                pdf_output=pdf_output,
+            )
 
     results["Precision"] = np.mean(results["Precision"]) * 100
     results["Recall"] = np.mean(results["Recall"]) * 100
@@ -263,13 +272,18 @@ def main(
     results["Precision"] = round(results["Precision"], 2)
     results["Recall"] = round(results["Recall"], 2)
     results["IoU"] = round(results["IoU"], 2)
-
+    results["F-Measure"] = (
+        2
+        * results["Precision"]
+        * results["Recall"]
+        / (results["Precision"] + results["Recall"])
+    )
     # print(results)
     all_num_data = len(test_loader.dataset)
-    # for key in ['TP', 'TN', 'FP', 'FN']:
-    #     results[key] = results[key]/all_num_data * 100
-    #     results[key] = round(results[key], 2)
-
+    threshold_lst = net.get_threshold()
+    # print(threshold_lst)
+    for i, th in enumerate(threshold_lst):
+        results[f"threshold_{i}"] = round(th, 2)
     print(MODEL_NAME, results)
 
     # スパイク数の平均を求める
@@ -291,9 +305,11 @@ def main(
     # results['Spike Rate'] = round(results['Spike Rate'], 2)
     # print(area_recall)
     plt.figure()
+    max_recall_failed_area = 0
     for key in area_recall.keys():
         if area_recall[key][1] != 0:
             if area_recall[key][0] / area_recall[key][1] < 0.9999:
+                max_recall_failed_area = max(max_recall_failed_area, key)
                 print(
                     key,
                     area_recall[key][0] / area_recall[key][1],
@@ -304,13 +320,24 @@ def main(
         else:
             # plt.plot(key / 43 / 54, 1, "o")
             pass
+    max_recall_failed_area = (
+        max_recall_failed_area / splited_width / splited_height
+    )  # change pixel to rate.
+    results["Failed MaxArea"] = max_recall_failed_area
+    print(max_recall_failed_area, results["Failed MaxArea"])
 
-    # plt.show()
-    plt.savefig(os.path.join(result_area_path, "area_recall.png"))
-    plt.savefig(os.path.join(result_area_path, "area_recall.pdf"))
-    plt.close()
+    neurons_count_lst = net.neurons_count_lst.to(DEVICE)
+    spike_rate_lst = (
+        spike_count_lst / FINISH_STEP / len(test_loader.dataset) / neurons_count_lst
+    )
+    # print(neurons_count_lst)
+    spike_rate_lst = spike_rate_lst.tolist()
+    for i, spike_rate in enumerate(spike_rate_lst):
+        results[f"spike_rate_{i}"] = spike_rate
+
     return results
 
 
 if __name__ == "__main__":
-    main(pdf_output=False)
+    results = main(pdf_output=False)
+    print(results)

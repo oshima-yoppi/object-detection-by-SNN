@@ -87,7 +87,5 @@ if __name__ == "__main__":
 
         for i in range(4):
             plt.subplot(1, 4, i + 1)
-            plt.imshow(events[i, 0, :, :] + events[i, 1, :, :])
-            if i == 0:
-                plt.title(f"First Event frame")
+            plt.imshow(events[i, 0, :, :])
         plt.show()

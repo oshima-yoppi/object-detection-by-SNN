@@ -13,25 +13,29 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=39,
+    default=42,
 )
 args = parser.parse_args()
 csv_num = args.csv_num
 csv_path = f"result_experiment/experiment_{csv_num:03}.csv"
 # csv_path = "result_experiment/experiment_031.csv"
 data = pd.read_csv(csv_path)
+
+# 8stepは除く
+data = data[data["FINISH_STEP"] != 8]
 data = data.sort_values(by=["THRESHOLD", "BETA", "FINISH_STEP"])
 # finish_step_lst = [2, 4, 6, 8]
-threshhold_lst = data.loc[:, "THRESHOLD"].unique()
+lambda_lst = data.loc[:, "BETA"].unique()
 timestep_lst = data.loc[:, "FINISH_STEP"].unique()
+
 
 SAVE_DIR = "result_thesis"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 data = data.rename(columns={"FINISH_STEP": "time step"})
-data = data.rename(columns={"THRESHOLD": "Threshold"})
+data = data.rename(columns={"BETA": "Leaky λ"})
 iou_pivot_table = pd.pivot_table(
-    index="Threshold",
+    index="Leaky λ",
     columns="time step",
     values="IoU",
     data=data,
@@ -47,13 +51,13 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_iou.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_iou.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_iou.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_iou.pdf"))
 plt.show()
 plt.close()
 
 precision_pivot_table = pd.pivot_table(
-    index="Threshold",
+    index="Leaky λ",
     columns="time step",
     values="Precision",
     data=data,
@@ -69,13 +73,13 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_precision.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_precision.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_precision.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_precision.pdf"))
 plt.show()
 plt.close()
 
 recall_pivot_table = pd.pivot_table(
-    index="Threshold",
+    index="Leaky λ",
     columns="time step",
     values="Recall",
     data=data,
@@ -91,13 +95,13 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_recall.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_recall.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_recall.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_recall.pdf"))
 plt.show()
 plt.close()
 
 fscore_pivot_table = pd.pivot_table(
-    index="Threshold",
+    index="Leaky λ",
     columns="time step",
     values="F-Measure",
     data=data,
@@ -113,18 +117,18 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_fmeasure.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_fmeasure.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.pdf"))
 plt.show()
 plt.close()
 # %%
 # 発火率の関係 when time step = 6
-for i in range(4):
-    data = data.rename(columns={f"spike_rate_{i}": f"layer{i+1}"})
-fire_rate_pivot_table = pd.melt(
-    data,
-    id_vars=["layer1", "layer2", "layer3", "layer4"],
-    var_name="layers",
-    value_name="spike rate",
-)
-fire_rate_pivot_table.head()
+# for i in range(4):
+#     data = data.rename(columns={f"spike_rate_{i}": f"layer{i+1}"})
+# fire_rate_pivot_table = pd.melt(
+#     data,
+#     id_vars=["layer1", "layer2", "layer3", "layer4"],
+#     var_name="layers",
+#     value_name="spike rate",
+# )
+# fire_rate_pivot_table.head()

@@ -12,7 +12,7 @@ csv_name = prefix + str(file_count).zfill(3) + ".csv"
 csv_path = os.path.join(csv_dir, csv_name)
 
 soft_reset_lst = [True]
-finish_step_lst = [1]
+finish_step_lst = [1, 2, 3, 4, 6, 8]
 # accumulate_event_militime_lst = [10, 40, 80]
 # accumulate_event_militime_lst = [50, 100]
 accumulate_event_militime_lst = [100]
@@ -23,7 +23,7 @@ evnet_th_lst = [0.15]
 time_change_lst = [False]  ##############################
 beta_learn_lst = [False]
 threshold_learn_lst = [False]
-beta_lst = [1]
+beta_lst = [0.25, 0.5, 0.75, 1.0]
 repeat_input_lst = [False]
 threshold_lst = [1.0]
 # time_aware_loss_lst = [False, True]

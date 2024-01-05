@@ -38,6 +38,7 @@ def youtube(events, path, bool_split, all_steps=None):
         all_steps = events.shape[0]
     x = events.shape[2]
     y = events.shape[3]
+    # events = 1 - events
 
     if bool_split:
         img_arr = torch.zeros(all_steps, 3, x, y)
@@ -52,7 +53,7 @@ def youtube(events, path, bool_split, all_steps=None):
             print(torch.max(sum))
             frame1 = ax1.imshow(sum)
             frame2 = ax2.imshow(torch.where(sum >= 2, 1, 0))
-            frame3 = ax3.imshow(torch.where(sum > 8, 1, 0))
+            frame3 = ax3.imshow(torch.where(sum > 3, 1, 0))
             animation_frame.append([frame1, frame2, frame3])
         images[0].save(
             path, duration=100, save_all=True, append_images=images[1:], loop=50

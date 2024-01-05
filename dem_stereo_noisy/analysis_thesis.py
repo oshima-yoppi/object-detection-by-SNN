@@ -2,228 +2,129 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import argparse
+import os
+import seaborn as sns
 
 # %%
-csv_path = "result_experiment/experiment_007.csv"
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--csv_num",
+    "-n",
+    type=int,
+    default=39,
+)
+args = parser.parse_args()
+csv_num = args.csv_num
+csv_path = f"result_experiment/experiment_{csv_num:03}.csv"
+# csv_path = "result_experiment/experiment_031.csv"
 data = pd.read_csv(csv_path)
+data = data.sort_values(by=["THRESHOLD", "BETA", "FINISH_STEP"])
+# finish_step_lst = [2, 4, 6, 8]
+threshhold_lst = data.loc[:, "THRESHOLD"].unique()
+timestep_lst = data.loc[:, "FINISH_STEP"].unique()
 
+SAVE_DIR = "result_thesis"
+os.makedirs(SAVE_DIR, exist_ok=True)
 
-# accuracy = []
-event_th = [0.15]
-time_change_lst = [False, True]
-# time_change_lst = [False]
-plt.figure(figsize=(5, 5))
-for j, th in enumerate(event_th):
-    precision = []
-    recall = []
-    precision_time = []
-    recall_time = []
-    for fin_step in data["FINISH_STEP"].unique():
-        precision.append(
-            data.loc[
-                (data["EVENT_TH"] == th)
-                & (data["FINISH_STEP"] == fin_step)
-                & (data["TIME_CHANGE"] == False),
-                "Precision",
-            ].values[0]
-        )
-        recall.append(
-            data.loc[
-                (data["EVENT_TH"] == th)
-                & (data["FINISH_STEP"] == fin_step)
-                & (data["TIME_CHANGE"] == False),
-                "Recall",
-            ].values[0]
-        )
-        # print(type(fin_step))
-        if fin_step == 8:
-            continue
-        precision_time.append(
-            data.loc[
-                (data["EVENT_TH"] == th)
-                & (data["FINISH_STEP"] == fin_step)
-                & (data["TIME_CHANGE"] == True),
-                "Precision",
-            ].values[0]
-        )
-        recall_time.append(
-            data.loc[
-                (data["EVENT_TH"] == th)
-                & (data["FINISH_STEP"] == fin_step)
-                & (data["TIME_CHANGE"] == True),
-                "Recall",
-            ].values[0]
-        )
-    plt_width = len(data["EVENT_TH"].unique())
-    plt_width = len(event_th)
-    x_lst = data["FINISH_STEP"].unique()
-    x_lst_change = np.array(data["FINISH_STEP"].unique())
-    x_lst_change = x_lst_change[:-1]
-    print(recall_time)
-    plt.subplot(1, plt_width, j + 1)
-    plt.plot(
-        data["FINISH_STEP"].unique(),
-        precision,
-        label="Precision",
-        linestyle="dashed",
-        marker="x",
-        color="red",
-    )
-    plt.plot(
-        data["FINISH_STEP"].unique(),
-        recall,
-        label="Recall",
-        linestyle="dashed",
-        marker="x",
-        color="blue",
-    )
-    plt.plot(
-        x_lst_change,
-        precision_time,
-        label="Precision (Proposed)",
-        linestyle="solid",
-        marker="x",
-        color="red",
-    )
-    plt.plot(
-        x_lst_change,
-        recall_time,
-        label="Recall (Proposed)",
-        linestyle="solid",
-        marker="x",
-        color="blue",
-    )
-    plt.ylim(
-        50,
-        100,
-    )
-    plt.xlim(1, 8)
-    plt.title("EVENT_TH: {}".format(th))
-    plt.xlabel("Input Time Step", fontsize=18)
-    plt.ylabel("Accuracy [%]", fontsize=18)
-    plt.tick_params(labelsize=15)
-    plt.legend()
-    # plt.rcParams["font.size"] = 180
-
-
-plt.tight_layout()
-plt.savefig("result_two.pdf")
-plt.savefig("result_two.png")
+data = data.rename(columns={"FINISH_STEP": "time step"})
+data = data.rename(columns={"THRESHOLD": "Threshold"})
+iou_pivot_table = pd.pivot_table(
+    index="Threshold",
+    columns="time step",
+    values="IoU",
+    data=data,
+    aggfunc=np.mean,
+)
+iou_pivot_table = iou_pivot_table.iloc[::-1]
+sns.heatmap(
+    iou_pivot_table,
+    cmap="YlGn",
+    annot=True,
+    fmt=".1f",
+    cbar_kws={"label": "IoU"},
+    vmin=0,
+    vmax=100,
+)
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_iou.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_iou.pdf"))
 plt.show()
-# %%
-data = pd.read_csv(csv_path)
+plt.close()
 
-
-# accuracy = []
-event_th = [0.15]
-time_change_lst = [False, True]
-# time_change_lst = [False]
-plt.figure(figsize=(5, 5))
-for i, acc_time in enumerate(data["ACCUMULATE_EVENT_MILITIME"].unique()):
-    print(acc_time)
-    for j, th in enumerate(event_th):
-        precision = []
-        recall = []
-        precision_time = []
-        recall_time = []
-        for fin_step in data["FINISH_STEP"].unique():
-            precision.append(
-                data.loc[
-                    (data["EVENT_TH"] == th)
-                    & (data["FINISH_STEP"] == fin_step)
-                    & (data["TIME_CHANGE"] == False)
-                    & (data["ACCUMULATE_EVENT_MILITIME"] == acc_time),
-                    "Precision",
-                ].values[0]
-            )
-            recall.append(
-                data.loc[
-                    (data["EVENT_TH"] == th)
-                    & (data["FINISH_STEP"] == fin_step)
-                    & (data["TIME_CHANGE"] == False)
-                    & (data["ACCUMULATE_EVENT_MILITIME"] == acc_time),
-                    "Recall",
-                ].values[0]
-            )
-            # print(type(fin_step))
-            # if fin_step == 8:
-            #     continue
-            precision_time.append(
-                data.loc[
-                    (data["EVENT_TH"] == th)
-                    & (data["FINISH_STEP"] == fin_step)
-                    & (data["TIME_CHANGE"] == True)
-                    & (data["ACCUMULATE_EVENT_MILITIME"] == acc_time),
-                    "Precision",
-                ].values[0]
-            )
-            recall_time.append(
-                data.loc[
-                    (data["EVENT_TH"] == th)
-                    & (data["FINISH_STEP"] == fin_step)
-                    & (data["TIME_CHANGE"] == True)
-                    & (data["ACCUMULATE_EVENT_MILITIME"] == acc_time),
-                    "Recall",
-                ].values[0]
-            )
-        # plt_width = len(data["EVENT_TH"].unique())
-        plt_width = len(event_th)
-        plt_width = len(data["ACCUMULATE_EVENT_MILITIME"].unique())
-        x_lst = data["FINISH_STEP"].unique()
-        x_lst_change = np.array(data["FINISH_STEP"].unique())
-        # x_lst_change = x_lst_change[:-1]
-        print(recall_time)
-        plt.subplot(1, plt_width, i + 1)
-        plt.plot(
-            data["FINISH_STEP"].unique(),
-            precision,
-            label="Precision",
-            linestyle="dashed",
-            marker="x",
-            color="red",
-        )
-        plt.plot(
-            data["FINISH_STEP"].unique(),
-            recall,
-            label="Recall",
-            linestyle="dashed",
-            marker="x",
-            color="blue",
-        )
-        plt.plot(
-            x_lst_change,
-            precision_time,
-            label="Precision (Proposed)",
-            linestyle="solid",
-            marker="x",
-            color="red",
-        )
-        plt.plot(
-            x_lst_change,
-            recall_time,
-            label="Recall (Proposed)",
-            linestyle="solid",
-            marker="x",
-            color="blue",
-        )
-        plt.ylim(
-            50,
-            100,
-        )
-        plt.xlim(1, 8)
-        # plt.title("EVENT_TH: {}".format(th))
-        # plt.title("acc_time: {}".format(acc_time))
-        plt.title(f"two cameras({acc_time}ms))")
-        plt.xlabel("Input Time Step", fontsize=18)
-        plt.ylabel("Accuracy [%]", fontsize=18)
-        plt.tick_params(labelsize=15)
-        plt.legend()
-        # plt.rcParams["font.size"] = 180
-
-plt.tight_layout()
-plt.savefig("result_two.pdf")
-plt.savefig("result_two.png")
-plt.savefig("result_two.svg")
+precision_pivot_table = pd.pivot_table(
+    index="Threshold",
+    columns="time step",
+    values="Precision",
+    data=data,
+    aggfunc=np.mean,
+)
+precision_pivot_table = precision_pivot_table.iloc[::-1]
+sns.heatmap(
+    precision_pivot_table,
+    cmap="YlGn",
+    annot=True,
+    fmt=".1f",
+    cbar_kws={"label": "Precision"},
+    vmin=0,
+    vmax=100,
+)
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_precision.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_precision.pdf"))
 plt.show()
+plt.close()
 
+recall_pivot_table = pd.pivot_table(
+    index="Threshold",
+    columns="time step",
+    values="Recall",
+    data=data,
+    aggfunc=np.mean,
+)
+recall_pivot_table = recall_pivot_table.iloc[::-1]
+sns.heatmap(
+    recall_pivot_table,
+    cmap="YlGn",
+    annot=True,
+    fmt=".1f",
+    cbar_kws={"label": "Recall"},
+    vmin=0,
+    vmax=100,
+)
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_recall.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_recall.pdf"))
+plt.show()
+plt.close()
+
+fscore_pivot_table = pd.pivot_table(
+    index="Threshold",
+    columns="time step",
+    values="F-Measure",
+    data=data,
+    aggfunc=np.mean,
+)
+fscore_pivot_table = fscore_pivot_table.iloc[::-1]
+sns.heatmap(
+    fscore_pivot_table,
+    cmap="YlGn",
+    annot=True,
+    fmt=".1f",
+    cbar_kws={"label": "F-measure"},
+    vmin=0,
+    vmax=100,
+)
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_fmeasure.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_fmeasure.pdf"))
+plt.show()
+plt.close()
 # %%
+# 発火率の関係 when time step = 6
+for i in range(4):
+    data = data.rename(columns={f"spike_rate_{i}": f"layer{i+1}"})
+fire_rate_pivot_table = pd.melt(
+    data,
+    id_vars=["layer1", "layer2", "layer3", "layer4"],
+    var_name="layers",
+    value_name="spike rate",
+)
+fire_rate_pivot_table.head()

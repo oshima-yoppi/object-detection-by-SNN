@@ -47,7 +47,10 @@ if __name__ == "__main__":
         with h5py.File(raw_event_right_savepath, "a") as f:
             f.create_dataset("label", data=label_right)
 
-            for video_dir, raw_event_dir in zip([VIDEO_LEFT_PATH, VIDEO_RIGHT_PATH], [RAW_EVENT_LEFT_PATH, RAW_EVENT_RIGHT_PATH]):
+            for video_dir, raw_event_dir in zip(
+                [VIDEO_LEFT_PATH, VIDEO_RIGHT_PATH],
+                [RAW_EVENT_LEFT_PATH, RAW_EVENT_RIGHT_PATH],
+            ):
                 save_filename = f"{str(file_num).zfill(5)}.h5"
                 savefile_path = os.path.join(raw_event_dir, save_filename)
                 # with h5py.File(savefile_path, "a") as f:
@@ -56,5 +59,13 @@ if __name__ == "__main__":
                 file_num = str(file_num).zfill(5)
                 video_path = os.path.join(video_dir, f"{file_num}.avi")
 
-        cmd.v2e_cmd(save_path=raw_event_left_savepath, video_path=video_left_path, raw_event_dir=RAW_EVENT_LEFT_PATH)
-        cmd.v2e_cmd(save_path=raw_event_right_savepath, video_path=video_right_path, raw_event_dir=RAW_EVENT_RIGHT_PATH)
+        cmd.v2e_cmd(
+            save_path=raw_event_left_savepath,
+            video_path=video_left_path,
+            raw_event_dir=RAW_EVENT_LEFT_PATH,
+        )
+        cmd.v2e_cmd(
+            save_path=raw_event_right_savepath,
+            video_path=video_right_path,
+            raw_event_dir=RAW_EVENT_RIGHT_PATH,
+        )

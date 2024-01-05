@@ -46,16 +46,17 @@ def youtube(events, path, bool_split):
 
 if __name__ == "__main__":
     check_save_dir = "check/h5.gif"
-
-    a = LoadDataset(
-        processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
-        raw_event_dir=RAW_EVENT_PATH,
-        accumulate_time=ACCUMULATE_EVENT_MICROTIME,
-        input_height=INPUT_HEIGHT,
-        input_width=INPUT_WIDTH,
-        train=False,
-        finish_step=FINISH_STEP,
-    )
+    video_center_dir = VIDEO_CENTER_PATH
+    label_center_dir = LABEL_CENTER_PATH
+    # a = LoadDataset(
+    #     processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
+    #     raw_event_dir=RAW_EVENT_PATH,
+    #     accumulate_time=ACCUMULATE_EVENT_MICROTIME,
+    #     input_height=INPUT_HEIGHT,
+    #     input_width=INPUT_WIDTH,
+    #     train=False,
+    #     finish_step=FINISH_STEP,
+    # )
     custom_number = input("Do u want to see spesific nunber? [y/n]")
     number = -1
     while 1:
@@ -63,19 +64,14 @@ if __name__ == "__main__":
             number = int(input("何番を読み込む？"))
         else:
             number += 1
-        events, label = a[number]
+        number = str(number).zfill(5)
+        video_path = os.path.join(video_center_dir, number + ".avi")
+        label_path = os.path.join(label_center_dir, number + ".npy")
+        first_frame = view.get_first_frame(video_path)
+        first_events = np.load(label_path)
+        plt.subplot(1, 2, 1)
+        plt.imshow(first_frame)
+        plt.subplot(1, 2, 2)
 
-        fig = plt.figure()
-        ax1 = fig.add_subplot(131)
-        ax2 = fig.add_subplot(132)
-        print(events.shape)
-        print(label.shape)
-        first_events = view.get_first_events(events)
-        ax1.imshow(first_events)
-
-        label_ = label.reshape((INPUT_HEIGHT, INPUT_WIDTH)).to("cpu")
-        ax2.imshow(label_)
-
-        print(events.shape)
+        plt.imshow(first_events)
         plt.show()
-    # youtube(events, youtube_path, True)

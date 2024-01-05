@@ -13,7 +13,6 @@ from PIL import Image
 from module.const import *
 from module.custom_data import LoadDataset
 import time
-import matplotlib.pyplot as plt
 
 
 def youtube(events, path, bool_split, all_steps=None):
@@ -34,7 +33,7 @@ def youtube(events, path, bool_split, all_steps=None):
             path, duration=100, save_all=True, append_images=images[1:], loop=50
         )
     else:
-        events = torch.logical_or(events[:, 0, :, :], events[:, 1, :, :]).float()
+        events = torch.logical_and(events[:, 0, :, :], events[:, 1, :, :]).float()
         for i in range(all_steps):
             # p_ = Image.fromarray(events[i, :,:])
 
@@ -49,21 +48,6 @@ def youtube(events, path, bool_split, all_steps=None):
 
 
 if __name__ == "__main__":
-    # events = [0.15] # 変な値入れるとぶっ壊れる可能性あり。ちゅいいa
-    # all_steps = 8
-    # number = int(input('何番を読み込む？'))
-    # for th in events:
-
-    #     youtube_path = f"gomibako/{th}.gif"
-    #     pro = f'dataset/{ACCUMULATE_EVENT_MICROTIME}_({INPUT_HEIGHT},{INPUT_WIDTH})_th-{th}_FinTime-{all_steps}'
-    #     raw_path = f'raw-data/th-{str(th)}'
-    #     a= LoadDataset(processed_event_dataset_path=pro, raw_event_dir=raw_path, accumulate_time=ACCUMULATE_EVENT_MICROTIME , finish_step =all_steps,input_height=INPUT_HEIGHT, input_width=INPUT_WIDTH, train=False)
-
-    #     events, label = a[number]
-    #     print(events.shape)
-    #     youtube(events, youtube_path, True, all_steps)
-    #     print('save sucess')
-
     all_steps = FINISH_STEP
     event_th = EVENT_TH
     youtube_path = f"gomibako/FIG_{event_th}.gif"
@@ -81,13 +65,7 @@ if __name__ == "__main__":
     while 1:
         number = int(input("何番を読み込む？"))
         events, label = a[number]
+        events = 1 - events
         print(events.shape)
-        # youtube(events, youtube_path, True, all_steps)
-        # print("save sucess")
-
-        for i in range(4):
-            plt.subplot(1, 4, i + 1)
-            plt.imshow(events[i, 0, :, :] + events[i, 1, :, :])
-            if i == 0:
-                plt.title(f"First Event frame")
-        plt.show()
+        youtube(events, youtube_path, False, all_steps)
+        print("save sucess")

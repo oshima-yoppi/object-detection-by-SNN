@@ -51,7 +51,6 @@ if __name__ == "__main__":
     all_steps = FINISH_STEP
     event_th = EVENT_TH
     youtube_path = f"gomibako/FIG_{event_th}.gif"
-    os.makedirs("gomibako", exist_ok=True)
 
     a = LoadDataset(
         processed_event_dataset_path=PROCESSED_EVENT_DATASET_PATH,
