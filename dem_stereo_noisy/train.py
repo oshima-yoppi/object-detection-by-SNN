@@ -77,6 +77,8 @@ def main():
     )
 
     net = NET
+    if os.path.exists(MODEL_PATH):
+        net.load_state_dict(torch.load(MODEL_PATH))
     # kuso_path = "kuso.pth"
 
     # def are_weights_equal(model1, model2):
