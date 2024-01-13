@@ -39,7 +39,7 @@ iou_pivot_table = pd.pivot_table(
     columns="time step",
     values="IoU",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 iou_pivot_table = iou_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -61,7 +61,7 @@ precision_pivot_table = pd.pivot_table(
     columns="time step",
     values="Precision",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 precision_pivot_table = precision_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -83,7 +83,7 @@ recall_pivot_table = pd.pivot_table(
     columns="time step",
     values="Recall",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 recall_pivot_table = recall_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -105,7 +105,7 @@ fscore_pivot_table = pd.pivot_table(
     columns="time step",
     values="F-Measure",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 fscore_pivot_table = fscore_pivot_table.iloc[::-1]
 sns.heatmap(

@@ -9770,3 +9770,37 @@ results
 	spike_rate_3: 0.02680310606956482
 	spike_rate_4: 0.3027314841747284
 -------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 1
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: False
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 1.0
+	REPEAT_INPUT: False
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 1.75
+results
+	IoU: 79.19
+	Precision: 87.03
+	Recall: 90.66
+	F-Measure: 88.80792166132028
+	threshold_0: 1.75
+	threshold_1: 1.75
+	threshold_2: 1.75
+	threshold_3: 1.75
+	threshold_4: 17.5
+	Energy per inference: 1.2755842604406098e-08
+	Spike Rate: 0.022427834570407867
+	Failed MaxArea: 0.24332472006890613
+	spike_rate_0: 0.0026212965603917837
+	spike_rate_1: 0.02912162058055401
+	spike_rate_2: 0.05820196866989136
+	spike_rate_3: 0.0883522555232048
+	spike_rate_4: 0.17777778208255768
+-------------
