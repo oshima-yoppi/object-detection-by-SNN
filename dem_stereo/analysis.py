@@ -320,6 +320,11 @@ def main(
         else:
             # plt.plot(key / 43 / 54, 1, "o")
             pass
+    plt.xlabel("area rate")
+    plt.ylabel("recall rate")
+    plt.savefig(os.path.join(result_area_path, "recall_rate.png"))
+    plt.savefig(os.path.join(result_area_path, "recall_rate.pdf"))
+    # plt.show()
     max_recall_failed_area = (
         max_recall_failed_area / splited_width / splited_height
     )  # change pixel to rate.
