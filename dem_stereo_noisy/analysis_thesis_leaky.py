@@ -13,7 +13,7 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=42,
+    default=17,
 )
 args = parser.parse_args()
 csv_num = args.csv_num
@@ -22,7 +22,7 @@ csv_path = f"result_experiment/experiment_{csv_num:03}.csv"
 data = pd.read_csv(csv_path)
 
 # 8stepは除く
-# data = data[data["FINISH_STEP"] != 8]
+data = data[data["FINISH_STEP"] != 8]
 data = data.sort_values(by=["THRESHOLD", "BETA", "FINISH_STEP"])
 # finish_step_lst = [2, 4, 6, 8]
 lambda_lst = data.loc[:, "BETA"].unique()
@@ -51,8 +51,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_iou.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_iou.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_iou.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_iou.pdf"))
 plt.show()
 plt.close()
 
@@ -73,8 +73,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_precision.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_precision.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_precision.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_precision.pdf"))
 plt.show()
 plt.close()
 
@@ -95,8 +95,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_recall.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_recall.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_recall.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_recall.pdf"))
 plt.show()
 plt.close()
 
@@ -117,8 +117,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_fmeasure.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_fmeasure.pdf"))
 plt.show()
 plt.close()
 
@@ -143,7 +143,7 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_failed_area.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_failed_area.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_failed_area.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"noisy_leaky_time_failed_area.pdf"))
 plt.show()
 plt.close()

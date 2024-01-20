@@ -62,8 +62,8 @@ if TIME_CHANGE:
     START_STEP = FINISH_STEP + 2
 else:
     START_STEP = FINISH_STEP
-if START_STEP > MAX_STEP:
-    print("error!!!\n\nSTART_STEP > MAX_STEP")
+# if START_STEP > MAX_STEP:
+#     print("error!!!\n\nSTART_STEP > MAX_STEP")
 # if TIME_CHANGE:
 #     START_STEP = FINISH_STEP + 2
 # else:

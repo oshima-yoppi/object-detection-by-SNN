@@ -13,7 +13,7 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=42,
+    default=5,
 )
 args = parser.parse_args()
 csv_num = args.csv_num
@@ -39,7 +39,7 @@ iou_pivot_table = pd.pivot_table(
     columns="time step",
     values="IoU",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 iou_pivot_table = iou_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -51,8 +51,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_iou.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_iou.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_iou.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_iou.pdf"))
 plt.show()
 plt.close()
 
@@ -61,7 +61,7 @@ precision_pivot_table = pd.pivot_table(
     columns="time step",
     values="Precision",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 precision_pivot_table = precision_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -73,8 +73,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_precision.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_precision.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_precision.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_precision.pdf"))
 plt.show()
 plt.close()
 
@@ -83,7 +83,7 @@ recall_pivot_table = pd.pivot_table(
     columns="time step",
     values="Recall",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 recall_pivot_table = recall_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -95,8 +95,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_recall.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_recall.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_recall.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_recall.pdf"))
 plt.show()
 plt.close()
 
@@ -105,7 +105,7 @@ fscore_pivot_table = pd.pivot_table(
     columns="time step",
     values="F-Measure",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 fscore_pivot_table = fscore_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -117,18 +117,33 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_fmeasure.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_fmeasure.pdf"))
 plt.show()
 plt.close()
-# %%
-# 発火率の関係 when time step = 6
-# for i in range(4):
-#     data = data.rename(columns={f"spike_rate_{i}": f"layer{i+1}"})
-# fire_rate_pivot_table = pd.melt(
-#     data,
-#     id_vars=["layer1", "layer2", "layer3", "layer4"],
-#     var_name="layers",
-#     value_name="spike rate",
-# )
-# fire_rate_pivot_table.head()
+
+
+failed_area_pivot_table = pd.pivot_table(
+    index="Leaky λ",
+    columns="time step",
+    values="Failed MaxArea",
+    data=data,
+    aggfunc="mean",
+)
+failed_area_pivot_table = failed_area_pivot_table.iloc[::-1]
+# 小数点だから%表示させる
+failed_area_pivot_table = failed_area_pivot_table * 100
+# print(failed_area_pivot_table)
+sns.heatmap(
+    failed_area_pivot_table,
+    cmap="YlGn",
+    annot=True,
+    fmt=".1f",
+    cbar_kws={"label": "Failed MaxArea"},
+    vmin=0,
+    vmax=100,
+)
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_failed_area.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"none_leaky_time_failed_area.pdf"))
+plt.show()
+plt.close()
