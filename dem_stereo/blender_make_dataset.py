@@ -96,7 +96,7 @@ def setting(theta, camera_name_lst, camera_name_semaseg_lst, video_dir_lst):
     y_start = CAM_Y
     y_finish = y_start
     z_start = CAM_Z
-    z_finish = 5.5
+    z_finish = CAM_Z_FIN
     z_length = z_start - z_finish
     velocity = 0.5  # 速度m/s
     video_fps = 100  # int(velocity*frame_num/z_length)
@@ -273,14 +273,27 @@ def put_hazard(dem, raw_label):
 
 def render_semaseg(dem, raw_label, number, camera_name_semaseg_lst, label_dir_lst):
     put_hazard(dem, raw_label)
+    z_start = CAM_Z
+    z_finish = CAM_Z_FIN
+    z_length = z_start - z_finish
+    label_num = 10
+    z_adj = z_length / label_num
+
+    cam_z_lst = np.linspace(
+        CAM_Z + z_adj, CAM_Z_FIN - z_adj, label_num
+    )  # ラベリング高さの決定。イベントフレームの真ん中らへんでラべリングするために、z_adjを足している。
     for camera_name_semaseg, label_dir in zip(camera_name_semaseg_lst, label_dir_lst):
+        label_time_lst = []  # 時間を考慮したラベリング
         camera = bpy.data.objects[camera_name_semaseg]
-        bpy.context.scene.camera = camera
-        result = bpycv.render_data()
-        label = result["inst"]
-        # print(np.max(label), np.min(label))
+        for camz in cam_z_lst:
+            camera.location[2] = camz
+            bpy.context.scene.camera = camera
+            result = bpycv.render_data()
+            label = result["inst"]
+            label_time_lst.append(label)
+
         save_label_path = os.path.join(label_dir, f"{number}.npy")
-        np.save(save_label_path, label)
+        np.save(save_label_path, label_time_lst)
         # cv2.imwrite(os.path.join(label_dir, f"{str(num).zfill(5)}.png"), label)
 
     # delete_object()
