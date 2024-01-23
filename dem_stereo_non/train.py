@@ -91,7 +91,7 @@ def main():
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-    num_epochs = 1
+    num_epochs = 600
     # num_epochs = 20
     # num_epochs = 2
     num_iters = 50
@@ -109,6 +109,9 @@ def main():
     # return
     net.power = False
     model_save_path = MODEL_PATH
+    model_dir = os.path.dirname(model_save_path)
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
     max_acc = -1
     try:
         for time_step in time_step_lst:
