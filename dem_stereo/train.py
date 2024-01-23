@@ -91,7 +91,7 @@ def main():
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-    num_epochs = 1
+    num_epochs = 600
     # num_epochs = 20
     # num_epochs = 2
     num_iters = 50
