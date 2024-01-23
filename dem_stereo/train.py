@@ -118,7 +118,7 @@ def main():
                     loss_log = []
                     data = data.to(DEVICE)
                     label = label.to(DEVICE)
-                    print(data.shape, label.shape)
+                    # print(data.shape, label.shape)
                     # batch = len(data[0])
                     # print(data.shape)
                     # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
