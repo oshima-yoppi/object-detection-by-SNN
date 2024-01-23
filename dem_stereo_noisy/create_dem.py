@@ -14,79 +14,41 @@ random.seed(123)
 np.random.seed(123)
 
 
-class LunarDEMGenerator(hazard.LunarHazardMapper):
-    def __init__(self, shape, max_crater, max_boulder, sigma, harst, rough, theta):
+class LunarDEMGenerator:
+    def __init__(
+        self,
+        shape,
+        max_crater,
+        max_boulder,
+        sigma,
+        harst,
+    ):
         self.shape = shape
         self.dem = np.zeros((self.shape, self.shape), dtype="float32")
+        self.label = np.zeros((self.shape, self.shape))
         self.side = self.shape - 1
         self.max_crater = max_crater
         self.max_boulder = max_boulder
-
-        super().__init__(shape=shape, rough=rough, theta=theta)
         self.sigma0 = sigma
         self.harst = harst
+
+        # self.label_converter = convert_label.Dem2Img(
+        #     focal=FOCAL,
+        #     img_height=IMG_HEIGHT,
+        #     img_width=IMG_WIDTH,
+        #     sensor_heitght=SENSOR_HEIGHT,
+        #     sensor_width=SENSOR_WIDTH,
+        #     cam_x=CAM_X,
+        #     cam_y=CAM_Y,
+        #     cam_z=CAM_Z,
+        #     meter_per_grid=METER_PER_GRID,
+        # )
 
     def calculate_sigma(self, n):
         sigma_n = (
             self.sigma0 * (1 - 2 ** (2 * self.harst - 2)) / (2**n) ** (2 * self.harst)
         )
         return sigma_n
-
-    def put_fractal(self):
-        self.dem[0 :: self.shape - 1, 0 :: self.shape - 1] = np.random.uniform(
-            -1, 1, (2, 2)
-        )
-        nsquares = 1
-        step = 1
-        while self.side > 1:
-            sideo2 = self.side // 2
-
-            # Diamond step
-            for ix in range(nsquares):
-                for iy in range(nsquares):
-                    x0, x1, y0, y1 = (
-                        ix * self.side,
-                        (ix + 1) * self.side,
-                        iy * self.side,
-                        (iy + 1) * self.side,
-                    )
-                    xc, yc = x0 + sideo2, y0 + sideo2
-                    # Set this pixel to the mean of its "diamond" neighbours plus
-                    # a random offset.
-                    self.dem[yc, xc] = (
-                        self.dem[y0, x0]
-                        + self.dem[y0, x1]
-                        + self.dem[y1, x0]
-                        + self.dem[y1, x1]
-                    ) / 4
-                    # self.dem[yc,xc] += f * np.random.uniform(-1,1)
-                    self.dem[yc, xc] += np.random.normal(0, self.calculate_sigma(step))
-            step += 1
-            # Square step: NB don't do this step until the pixels from the preceding
-            # diamond step have been set.
-            for iy in range(2 * nsquares + 1):
-                yc = sideo2 * iy
-                for ix in range(nsquares + 1):
-                    xc = self.side * ix + sideo2 * (1 - iy % 2)
-                    if not (0 <= xc < self.shape and 0 <= yc < self.shape):
-                        continue
-                    tot, ntot = 0.0, 0
-                    # Set this pixel to the mean of its "square" neighbours plus
-                    # a random offset. At the edges, it has only three neighbours
-                    for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-                        xs, ys = xc + dx * sideo2, yc + dy * sideo2
-                        if not (0 <= xs < self.shape and 0 <= ys < self.shape):
-                            continue
-                        else:
-                            tot += self.dem[ys, xs]
-                            ntot += 1
-                    self.dem[yc, xc] += tot / ntot
-                    self.dem[yc, xc] += np.random.normal(0, self.calculate_sigma(step))
-            self.side = sideo2
-            nsquares *= 2
-            # f /= 2
-            step += 1
-        return
 
     def put_crater(self):
         eps = 1e-6
@@ -148,6 +110,62 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
                     self.dem[i, j] += h
         return self.dem
 
+    def put_fractal(self):
+        self.dem[0 :: self.shape - 1, 0 :: self.shape - 1] = np.random.uniform(
+            -1, 1, (2, 2)
+        )
+        nsquares = 1
+        step = 1
+        while self.side > 1:
+            sideo2 = self.side // 2
+
+            # Diamond step
+            for ix in range(nsquares):
+                for iy in range(nsquares):
+                    x0, x1, y0, y1 = (
+                        ix * self.side,
+                        (ix + 1) * self.side,
+                        iy * self.side,
+                        (iy + 1) * self.side,
+                    )
+                    xc, yc = x0 + sideo2, y0 + sideo2
+                    # Set this pixel to the mean of its "diamond" neighbours plus
+                    # a random offset.
+                    self.dem[yc, xc] = (
+                        self.dem[y0, x0]
+                        + self.dem[y0, x1]
+                        + self.dem[y1, x0]
+                        + self.dem[y1, x1]
+                    ) / 4
+                    # self.dem[yc,xc] += f * np.random.uniform(-1,1)
+                    self.dem[yc, xc] += np.random.normal(0, self.calculate_sigma(step))
+            step += 1
+            # Square step: NB don't do this step until the pixels from the preceding
+            # diamond step have been set.
+            for iy in range(2 * nsquares + 1):
+                yc = sideo2 * iy
+                for ix in range(nsquares + 1):
+                    xc = self.side * ix + sideo2 * (1 - iy % 2)
+                    if not (0 <= xc < self.shape and 0 <= yc < self.shape):
+                        continue
+                    tot, ntot = 0.0, 0
+                    # Set this pixel to the mean of its "square" neighbours plus
+                    # a random offset. At the edges, it has only three neighbours
+                    for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                        xs, ys = xc + dx * sideo2, yc + dy * sideo2
+                        if not (0 <= xs < self.shape and 0 <= ys < self.shape):
+                            continue
+                        else:
+                            tot += self.dem[ys, xs]
+                            ntot += 1
+                    self.dem[yc, xc] += tot / ntot
+                    self.dem[yc, xc] += np.random.normal(0, self.calculate_sigma(step))
+            self.side = sideo2
+            nsquares *= 2
+            # f /= 2
+            step += 1
+        return
+
     def put_boulder(self):
         for i in range(self.max_boulder):
             center_x, center_y = (
@@ -185,6 +203,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
                         self.dem[i, j] += self.generate_elllipsoid(
                             i, j, center_x, center_y, x_axis, y_axis, z_axis
                         )
+                        self.label[i, j] = 1
         return
 
     def generate_elllipsoid(self, x, y, xc, yc, xr, yr, zr):
@@ -196,10 +215,10 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
         self.put_boulder()
         return self.dem
 
-    def generate_hazard(self):
-        self.label = super().map_hazard()
-        # self.converted_label = self.label_converter(self.label)
-        return self.label
+    # def generate_hazard(self):
+    #     self.label = super().map_hazard()
+    #     # self.converted_label = self.label_converter(self.label)
+    #     return self.label
 
     def save_dem_and_label(self, path):
         # np.save(path, self.dem)
@@ -210,21 +229,18 @@ n = 8
 shape = 2**n + 1  # The array must be square with edge length 2**n + 1
 max_crater = 0
 max_boulder = 3
-
-# harst = 0.18
-# sigma0 =3  # 3 now
-# rough = 0.1
-# theta = 20
+# harst=0.2 sigma 3 is best..?
 harst = 0.18
-sigma0 = 5  # 3 now
-rough = 0.2
+sigma0 = 10  # 3 now
+rough = 0.1
 theta = 20
 
-save_label_dir = LABEL_PATH
+
+# save_label_dir = LABEL_PATH
 save_dem_dir = DEM_NP_PATH
-if os.path.exists(save_label_dir):
-    shutil.rmtree(save_label_dir)
-os.mkdir(save_label_dir)
+# if os.path.exists(save_label_dir):
+#     shutil.rmtree(save_label_dir)
+# os.mkdir(save_label_dir)
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
@@ -236,21 +252,19 @@ for i in tqdm(range(num_data)):
         max_boulder=max_boulder,
         sigma=sigma0,
         harst=harst,
-        rough=rough,
-        theta=theta,
     )
     dem_generator.generate_dem()
-    dem_generator.generate_hazard()
-
     number = str(i).zfill(5)
     dem_filename = f"{number}"
     save_dem_path = os.path.join(
         save_dem_dir, dem_filename
     )  # npzで保存する際のパスは拡張子をつけなくていいらしい,,,
     dem_generator.save_dem_and_label(save_dem_path)
+    # save_label_path = os.path.join(save_label_dir, label_filename)
+    # dem_generator.save_label(save_label_path)
 
     # plt.subplot(1, 2, 1)
-    # plt.imshow(dem_generator.dem)
+    # plt.imshow(dem_generator.dem, cmap="gray")
     # plt.subplot(1, 2, 2)
-    # plt.imshow(dem_generator.label)
+    # plt.imshow(dem_generator.label, cmap="gray")
     # plt.show()

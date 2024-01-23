@@ -14,17 +14,35 @@ random.seed(123)
 np.random.seed(123)
 
 
-class LunarDEMGenerator(hazard.LunarHazardMapper):
-    def __init__(self, shape, max_crater, max_boulder, sigma, harst, rough, theta):
+class LunarDEMGenerator:
+    def __init__(
+        self,
+        shape,
+        max_crater,
+        max_boulder,
+        sigma,
+        harst,
+    ):
         self.shape = shape
         self.dem = np.zeros((self.shape, self.shape), dtype="float32")
+        self.label = np.zeros((self.shape, self.shape))
         self.side = self.shape - 1
         self.max_crater = max_crater
         self.max_boulder = max_boulder
-
-        super().__init__(shape=shape, rough=rough, theta=theta)
         self.sigma0 = sigma
         self.harst = harst
+
+        # self.label_converter = convert_label.Dem2Img(
+        #     focal=FOCAL,
+        #     img_height=IMG_HEIGHT,
+        #     img_width=IMG_WIDTH,
+        #     sensor_heitght=SENSOR_HEIGHT,
+        #     sensor_width=SENSOR_WIDTH,
+        #     cam_x=CAM_X,
+        #     cam_y=CAM_Y,
+        #     cam_z=CAM_Z,
+        #     meter_per_grid=METER_PER_GRID,
+        # )
 
     def calculate_sigma(self, n):
         sigma_n = (
@@ -88,66 +106,6 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
             step += 1
         return
 
-    def put_crater(self):
-        eps = 1e-6
-        n_crater = random.randint(0, self.max_crater)
-        for i in range(n_crater):
-            center_x, center_y = (
-                random.uniform(-5, self.shape + 5),
-                random.uniform(-5, self.shape + 5),
-            )
-            minimum_detection_crater_size = 0.3  # 見つけたい障害物の最小の大きさ[m]
-            min_pix_of_crater = minimum_detection_crater_size / METER_PER_GRID  # [pix]
-
-            radius = random.uniform(min_pix_of_crater, self.shape // 8)
-
-            # print(center_x, center_y, radius)
-
-            #    % H_r = 150 + abs(5*randn())
-            H_ro = 0.036 * (2 * radius) ** 1.014
-            H_r = H_ro
-            H_c = 0.196 * (2 * radius) ** 1.010 - H_ro
-            W_r = 0.257 * (2 * radius) ** 1.011
-            alpha = (H_c + H_r) * radius / (H_c + H_ro + eps)
-            beta = radius + (1 - (H_c + H_r) / (H_c + H_ro + eps)) * W_r
-            A = (
-                -3 * radius**3
-                + 2 * radius**2 * beta
-                + 2 * radius * beta**2
-                + 2 * beta**3
-            )
-
-            for i in range(self.shape):
-                for j in range(self.shape):
-                    h = 0
-                    r = math.sqrt(abs(i - center_x) ** 2 + abs(j - center_y) ** 2)
-
-                    if r <= alpha:
-                        h = (H_c + H_ro) * (r**2 / radius**2) - H_c
-                    elif r <= radius:
-                        h = ((H_c + H_ro) ** 2 / (H_r - H_ro + eps) - H_c + eps) * (
-                            (r / radius) - 1 + eps
-                        ) ** 2 + H_r
-                    elif r <= beta:
-                        h = (H_r * (radius + W_r) ** 3 * A) / (
-                            W_r
-                            * beta**4
-                            * (radius - beta) ** 2
-                            * (3 * radius**2 + 3 * radius * W_r + W_r**2)
-                            + eps
-                        ) * (r - radius) ** 2 * (
-                            r - beta * (1 + (beta**3 - radius**3) / A)
-                        ) + H_r
-                    elif r <= radius + W_r:
-                        h = H_r * (radius + W_r) ** 3 / (
-                            (radius + W_r) ** 3 - radius**3 + eps
-                        ) * (r / radius) ** (-3) - (H_r * radius**3) / (
-                            (radius + W_r) ** 3 - radius**3
-                        )
-
-                    self.dem[i, j] += h
-        return self.dem
-
     def put_boulder(self):
         for i in range(self.max_boulder):
             center_x, center_y = (
@@ -185,6 +143,7 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
                         self.dem[i, j] += self.generate_elllipsoid(
                             i, j, center_x, center_y, x_axis, y_axis, z_axis
                         )
+                        self.label[i, j] = 1
         return
 
     def generate_elllipsoid(self, x, y, xc, yc, xr, yr, zr):
@@ -192,14 +151,14 @@ class LunarDEMGenerator(hazard.LunarHazardMapper):
 
     def generate_dem(self):
         self.put_fractal()
-        self.put_crater()
+        # self.put_crater()
         self.put_boulder()
         return self.dem
 
-    def generate_hazard(self):
-        self.label = super().map_hazard()
-        # self.converted_label = self.label_converter(self.label)
-        return self.label
+    # def generate_hazard(self):
+    #     self.label = super().map_hazard()
+    #     # self.converted_label = self.label_converter(self.label)
+    #     return self.label
 
     def save_dem_and_label(self, path):
         # np.save(path, self.dem)
@@ -214,18 +173,18 @@ max_boulder = 3
 harst = 0.18
 sigma0 = 10  # 3 now
 rough = 0.1
-theta = 20
+# theta = 20
 
 
-save_label_dir = LABEL_PATH
+# save_label_dir = LABEL_PATH
 save_dem_dir = DEM_NP_PATH
-if os.path.exists(save_label_dir):
-    shutil.rmtree(save_label_dir)
-os.mkdir(save_label_dir)
+# if os.path.exists(save_label_dir):
+#     shutil.rmtree(save_label_dir)
+# os.mkdir(save_label_dir)
 if os.path.exists(save_dem_dir):
     shutil.rmtree(save_dem_dir)
 os.mkdir(save_dem_dir)
-num_data = 5
+num_data = 3000
 for i in tqdm(range(num_data)):
     dem_generator = LunarDEMGenerator(
         shape=shape,
@@ -233,24 +192,19 @@ for i in tqdm(range(num_data)):
         max_boulder=max_boulder,
         sigma=sigma0,
         harst=harst,
-        rough=rough,
-        theta=theta,
     )
     dem_generator.generate_dem()
-    dem_generator.generate_hazard()
-
     number = str(i).zfill(5)
     dem_filename = f"{number}"
     save_dem_path = os.path.join(
         save_dem_dir, dem_filename
     )  # npzで保存する際のパスは拡張子をつけなくていいらしい,,,
     dem_generator.save_dem_and_label(save_dem_path)
-
-    # label_filename = f"{number}"
     # save_label_path = os.path.join(save_label_dir, label_filename)
     # dem_generator.save_label(save_label_path)
 
-    # plt.figure()
-    # plt.imshow(dem_generator.dem)
-    # # plt.colorbar()
-    # plt.show()
+    plt.subplot(1, 2, 1)
+    plt.imshow(dem_generator.dem, cmap="gray")
+    plt.subplot(1, 2, 2)
+    plt.imshow(dem_generator.label, cmap="gray")
+    plt.show()
