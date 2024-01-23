@@ -325,6 +325,7 @@ class LoadDataset(Dataset):
                     input = f["events"][()]
                 # print(input.shape, label.shape, label)
                 input = input[:finish_step]
+                label = label[:finish_step]
                 input = torch.from_numpy(input.astype(np.float32)).clone()
                 label = torch.tensor(label, dtype=torch.float32)
                 # if label == 1:

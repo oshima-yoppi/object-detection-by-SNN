@@ -4,18 +4,18 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-def spike_mse_loss(input, target, rate=0.8):
-    # input shape:[time, batch, channel, pixel, pixel]?
-    # print(target.shape)
-    batch = target.shape[0]
-    target = target.reshape(batch, -1)
-    criterion = nn.MSELoss()
-    num_steps = input.shape[0]
-    input_spike_count = torch.sum(input, dim=0)
-    target_spike_count = num_steps * rate * target
-    target_spike_count = torch.round(target_spike_count)
-    loss = criterion(input_spike_count, target_spike_count)
-    return loss
+# def spike_mse_loss(input, target, rate=0.8):
+#     # input shape:[time, batch, channel, pixel, pixel]?
+#     # print(target.shape)
+#     batch = target.shape[0]
+#     target = target.reshape(batch, -1)
+#     criterion = nn.MSELoss()
+#     num_steps = input.shape[0]
+#     input_spike_count = torch.sum(input, dim=0)
+#     target_spike_count = num_steps * rate * target
+#     target_spike_count = torch.round(target_spike_count)
+#     loss = criterion(input_spike_count, target_spike_count)
+#     return loss
 
 
 def spike_count(spk_rec: torch.Tensor, channel=False):
@@ -38,12 +38,16 @@ class BCELoss_Recall(nn.Module):
     def _recall_loss(self, pred_pro, label):
         true_positives = torch.sum(label * pred_pro)
         actual_positives = torch.sum(label)
-        recall = (true_positives + self.smooth) / (actual_positives + self.smooth)  # 0で除算を避けるため、小さな値を足しています
+        recall = (true_positives + self.smooth) / (
+            actual_positives + self.smooth
+        )  # 0で除算を避けるため、小さな値を足しています
         loss = 1.0 - recall
         return loss
 
     def forward(self, pred_pro, label):
-        loss = self.bce(pred_pro, label) + self.recall_rate * self._recall_loss(pred_pro, label)
+        loss = self.bce(pred_pro, label) + self.recall_rate * self._recall_loss(
+            pred_pro, label
+        )
         return loss
 
 
@@ -56,7 +60,9 @@ class DiceLoss(nn.Module):
         pred_pro = pred_pro.view(-1)
         label = label.view(-1)
         intersection = (pred_pro * label).sum()
-        dice = (2.0 * intersection + self.smooth) / (pred_pro.sum() + label.sum() + self.smooth)
+        dice = (2.0 * intersection + self.smooth) / (
+            pred_pro.sum() + label.sum() + self.smooth
+        )
         dice = 1 - dice
         return dice
 
@@ -86,7 +92,9 @@ class WeightedF1Loss(nn.Module):
         # print(precision, recall)
         # print()
         # print(precision.item(), recall.item())
-        f1 = ((1 + self.beta**2) * precision * recall + self.smooth) / (self.beta**2 * precision + recall + self.smooth)
+        f1 = ((1 + self.beta**2) * precision * recall + self.smooth) / (
+            self.beta**2 * precision + recall + self.smooth
+        )
 
         return 1 - f1
 
@@ -105,8 +113,12 @@ class DiceBCELoss(nn.Module):
         targets = targets.view(-1)
 
         intersection = (inputs * targets).sum()
-        dice_loss = 1 - (2.0 * intersection + smooth) / (inputs.sum() + targets.sum() + smooth)
-        BCE = F.binary_cross_entropy(inputs, targets, reduction="mean", weight=self.weight)
+        dice_loss = 1 - (2.0 * intersection + smooth) / (
+            inputs.sum() + targets.sum() + smooth
+        )
+        BCE = F.binary_cross_entropy(
+            inputs, targets, reduction="mean", weight=self.weight
+        )
         Dice_BCE = BCE + dice_loss
 
         return Dice_BCE

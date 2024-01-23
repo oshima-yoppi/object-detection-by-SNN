@@ -4,24 +4,27 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-def spike_mse_loss(input, target, rate=0.8):
-    # input shape:[time, batch, channel, pixel, pixel]?
-    # print(target.shape)
-    batch = target.shape[0]
-    target = target.reshape(batch, -1)
-    criterion = nn.MSELoss()
-    num_steps = input.shape[0]
-    input_spike_count = torch.sum(input, dim=0)
-    target_spike_count = num_steps * rate * target
-    target_spike_count = torch.round(target_spike_count)
-    loss = criterion(input_spike_count, target_spike_count)
-    return loss
+# def spike_mse_loss(input, target, rate=0.8):
+#     # input shape:[time, batch, channel, pixel, pixel]?
+#     # print(target.shape)
+#     batch = target.shape[0]
+#     target = target.reshape(batch, -1)
+#     criterion = nn.MSELoss()
+#     num_steps = input.shape[0]
+#     input_spike_count = torch.sum(input, dim=0)
+#     target_spike_count = num_steps * rate * target
+#     target_spike_count = torch.round(target_spike_count)
+#     loss = criterion(input_spike_count, target_spike_count)
+#     return loss
 
 
 def spike_count(spk_rec: torch.Tensor, channel=False):
     if channel == False:
         spk_rec = spk_rec.squeeze()
-    count = torch.sum(spk_rec, dim=0,)
+    count = torch.sum(
+        spk_rec,
+        dim=0,
+    )
     return count
 
 
@@ -54,7 +57,6 @@ class DiceLoss(nn.Module):
         self.smooth = smooth
 
     def forward(self, pred_pro, label):
-
         pred_pro = pred_pro.view(-1)
         label = label.view(-1)
         intersection = (pred_pro * label).sum()
@@ -68,7 +70,7 @@ class DiceLoss(nn.Module):
 class WeightedF1Loss(nn.Module):
     def __init__(self, beta, smooth=1e-5):
         """
-        precision と recall の調和平均を考慮した損失関数  
+        precision と recall の調和平均を考慮した損失関数
         beta：重みを付ける
         0< beta < 1 : precisionを重視
         1 < beta : recallを重視
@@ -91,10 +93,10 @@ class WeightedF1Loss(nn.Module):
         # print()
         # print(precision.item(), recall.item())
         f1 = (
-            (1 + self.beta ** 2)
+            (1 + self.beta**2)
             * precision
             * recall
-            / (self.beta ** 2 * precision + recall + self.smooth)
+            / (self.beta**2 * precision + recall + self.smooth)
         )
 
         return 1 - f1
@@ -106,7 +108,6 @@ class DiceBCELoss(nn.Module):
         self.weight = weight
 
     def forward(self, inputs, targets, smooth=1):
-
         # comment out if your model contains a sigmoid or equivalent activation layer
         inputs = F.sigmoid(inputs)
 
@@ -138,22 +139,26 @@ class Analyzer:
         # print(self.pred_binary.shape, self.target.shape)
         return
 
-    def get_iou(self,):
-
+    def get_iou(
+        self,
+    ):
         union = torch.logical_or(self.pred_binary, self.target).sum()
         intersection = torch.logical_and(self.pred_binary, self.target).sum()
         eps = 1e-6
         iou = torch.mean((intersection + eps) / (union + eps))
         return iou.item()
 
-    def get_precsion(self,):
-
+    def get_precsion(
+        self,
+    ):
         intersection = torch.logical_and(self.pred_binary, self.target).sum()
         eps = 1e-6
         prec = torch.mean((intersection + eps) / (self.pred_binary.sum() + eps))
         return prec.item()
 
-    def get_recall(self,):
+    def get_recall(
+        self,
+    ):
         intersection = torch.logical_and(self.pred_binary, self.target).sum()
         eps = 1e-6
         recall = torch.mean((intersection + eps) / (self.target.sum() + eps))

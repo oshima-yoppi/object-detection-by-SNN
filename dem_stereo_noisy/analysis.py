@@ -236,7 +236,7 @@ def main(
             label = label.to(DEVICE)
             # pred_pro = net(events, FINISH_STEP)
             pred_pro, _ = net(events, label, FINISH_STEP)
-            iou, prec, recall = analyzer(pred_pro, label)
+            iou, prec, recall = analyzer(pred_pro, label[FINISH_STEP - 1])
             # spike count
             spike_count_lst = spike_count_lst + net.spike_count_lst
 
@@ -262,7 +262,7 @@ def main(
             #     i,
             #     events,
             #     pred_pro,
-            #     label,
+            #     label[FINISH_STEP - 1],
             #     results,
             #     result_recall_path,
             #     pdf_output=pdf_output,
@@ -323,7 +323,6 @@ def main(
         else:
             # plt.plot(key / 43 / 54, 1, "o")
             pass
-
     plt.xlabel("area rate")
     plt.ylabel("recall rate")
     plt.savefig(os.path.join(result_area_path, "recall_rate.png"))

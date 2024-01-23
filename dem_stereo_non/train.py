@@ -77,21 +77,6 @@ def main():
     )
 
     net = NET
-    # kuso_path = "kuso.pth"
-
-    # def are_weights_equal(model1, model2):
-    #     for param1, param2 in zip(model1.parameters(), model2.parameters()):
-    #         if not torch.equal(param1.data, param2.data):
-    #             return False
-    #     return True
-
-    # if os.path.exists(kuso_path):
-    #     net1 = NET
-    #     net1.load_state_dict(torch.load(kuso_path))
-    #     print(are_weights_equal(net, net1))
-    #     del net1
-
-    # torch.save(net.state_dict(), kuso_path)
 
     events, _ = train_dataset[0]
     num_steps = events.shape[0]
@@ -106,7 +91,7 @@ def main():
     analyzer = compute_loss.Analyzer()
     # loss_func = nn.BCELoss()
 
-    num_epochs = 600
+    num_epochs = 1
     # num_epochs = 20
     # num_epochs = 2
     num_iters = 50
@@ -133,9 +118,7 @@ def main():
                     loss_log = []
                     data = data.to(DEVICE)
                     label = label.to(DEVICE)
-                    # start = time.time()
-                    # data = 1 - data
-                    # print(time.time() - start)
+                    print(data.shape, label.shape)
                     # batch = len(data[0])
                     # print(data.shape)
                     # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
@@ -164,7 +147,6 @@ def main():
                     recall_log = []
                     for i, (data, label) in enumerate(iter(test_loader)):
                         data = data.to(DEVICE)
-                        # data = 1 - data
                         label = label.to(DEVICE)
                         batch = len(data[0])
                         # data = data.reshape(num_steps, batch, INPUT_CHANNEL, INPUT_HEIGHT, INPUT_WIDTH)
@@ -173,7 +155,9 @@ def main():
                         # pred_class = pred_pro.argmax(dim=1)
                         # label_class = label.argmax(dim=1)
                         # acc = (pred_class == label_class).sum().item() / batch
-                        iou, precision, recall = analyzer(pred_pro, label)
+                        iou, precision, recall = analyzer(
+                            pred_pro, label[FINISH_STEP - 1]
+                        )
                         iou_log.append(iou)
                         precision_log.append(precision)
                         recall_log.append(recall)

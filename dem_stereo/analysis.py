@@ -236,7 +236,7 @@ def main(
             label = label.to(DEVICE)
             # pred_pro = net(events, FINISH_STEP)
             pred_pro, _ = net(events, label, FINISH_STEP)
-            iou, prec, recall = analyzer(pred_pro, label)
+            iou, prec, recall = analyzer(pred_pro, label[FINISH_STEP - 1])
             # spike count
             spike_count_lst = spike_count_lst + net.spike_count_lst
 
@@ -258,15 +258,15 @@ def main(
             # print(iou, prec, recall)
             spikes_lst.append(net.spike_count)
             # s = time.time()
-            save_img(
-                i,
-                events,
-                pred_pro,
-                label,
-                results,
-                result_recall_path,
-                pdf_output=pdf_output,
-            )
+            # save_img(
+            #     i,
+            #     events,
+            #     pred_pro,
+            #     label[FINISH_STEP - 1],
+            #     results,
+            #     result_recall_path,
+            #     pdf_output=pdf_output,
+            # )
 
     results["Precision"] = np.mean(results["Precision"]) * 100
     results["Recall"] = np.mean(results["Recall"]) * 100

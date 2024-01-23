@@ -61,11 +61,11 @@ class BaseFunction(nn.Module):
                 # spk_rec = torch.stack(spk_rec)
                 pred_pro = torch.sigmoid(mem - 0.5)
                 if loss_func is not None:
-                    loss += loss_func(pred_pro, label) / time
+                    loss += loss_func(pred_pro, label[step]) / time
         if self.time_aware_loss == False:
             pred_pro = torch.sigmoid(mem - 0.5)
             if loss_func is not None:
-                loss += loss_func(pred_pro, label)
+                loss += loss_func(pred_pro, label[step])
         # spk_rec = torch.stack(spk_rec)
         # print(spk_cnt.shape)
         # print(spk_cnt_resize.shape)
@@ -119,20 +119,6 @@ class BaseFunction(nn.Module):
                     self.threshold_lst.append(layer.threshold.item())
         # print(self.threshold_lst)
         return self.threshold_lst
-
-    def get_weight_mean(self):
-        """
-        ネットワークの閾値を調べる
-        """
-        weight_mean_lst = []
-        # for net in self.network_lst:
-        #     utils.reset(net)
-        for i, net in enumerate(self.network_lst):
-            for layer in net:
-                if isinstance(layer, nn.Conv2d):
-                    weight_mean_lst.append(layer.weight.mean().item())
-        # print(self.threshold_lst)
-        return np.mean(weight_mean_lst)
 
 
 class RoughConv3(BaseFunction):

@@ -61,11 +61,11 @@ class BaseFunction(nn.Module):
                 # spk_rec = torch.stack(spk_rec)
                 pred_pro = torch.sigmoid(mem - 0.5)
                 if loss_func is not None:
-                    loss += loss_func(pred_pro, label) / time
+                    loss += loss_func(pred_pro, label[step]) / time
         if self.time_aware_loss == False:
             pred_pro = torch.sigmoid(mem - 0.5)
             if loss_func is not None:
-                loss += loss_func(pred_pro, label)
+                loss += loss_func(pred_pro, label[step])
         # spk_rec = torch.stack(spk_rec)
         # print(spk_cnt.shape)
         # print(spk_cnt_resize.shape)
@@ -224,7 +224,7 @@ class RoughConv3(BaseFunction):
             nn.Conv2d(c4, n_class, 1, padding=0),
             snn.Leaky(
                 beta=beta,
-                threshold=threshold,
+                threshold=threshold * 10,
                 spike_grad=spike_grad,
                 init_hidden=True,
                 learn_beta=beta_learn,

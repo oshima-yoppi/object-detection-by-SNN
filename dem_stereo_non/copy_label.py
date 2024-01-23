@@ -6,7 +6,7 @@ from tqdm import tqdm
 moto_dir = "../dem_stereo/dataset/100000_(130,173)_th-0.15_MaxStep-10_EventCount-False_Distinguish-True_LeargeData-True"
 moto_paths = os.listdir(moto_dir)
 
-copy_dir = "../dem_stereo_noisy/dataset/100000_(130,173)_th-0.15_MaxStep-10_EventCount-False_Distinguish-True_LeargeData-True"
+copy_dir = "../dem_stereo_non/dataset/100000_(130,173)_th-0.15_MaxStep-10_EventCount-False_Distinguish-True_LeargeData-True"
 copy_paths = os.listdir(copy_dir)
 for moto_path, copy_path in zip(tqdm(moto_paths), copy_paths):
     moto_path = os.path.join(moto_dir, moto_path)

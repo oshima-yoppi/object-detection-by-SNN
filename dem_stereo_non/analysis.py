@@ -34,18 +34,6 @@ import h5py
 import time
 
 
-def get_weight_mean_std(net):
-    weight_mean_lst = []
-    weight_std_lst = []
-    for layer in net.network_lst:
-        if isinstance(layer, snn.Conv2d):
-            weight_mean_lst.append(layer.weight.mean().item())
-            weight_std_lst.append(layer.weight.std().item())
-    weight_mean = np.mean(weight_mean_lst)
-    weight_std = np.mean(weight_std_lst)
-    return weight_mean, weight_std
-
-
 def main(
     hist=None,
     pdf_output=False,
@@ -248,7 +236,7 @@ def main(
             label = label.to(DEVICE)
             # pred_pro = net(events, FINISH_STEP)
             pred_pro, _ = net(events, label, FINISH_STEP)
-            iou, prec, recall = analyzer(pred_pro, label)
+            iou, prec, recall = analyzer(pred_pro, label[FINISH_STEP - 1])
             # spike count
             spike_count_lst = spike_count_lst + net.spike_count_lst
 
@@ -274,7 +262,7 @@ def main(
             #     i,
             #     events,
             #     pred_pro,
-            #     label,
+            #     label[FINISH_STEP - 1],
             #     results,
             #     result_recall_path,
             #     pdf_output=pdf_output,
@@ -335,11 +323,12 @@ def main(
         else:
             # plt.plot(key / 43 / 54, 1, "o")
             pass
-    plt.xlabel("area")
-    plt.ylabel("recall")
-    plt.savefig(os.path.join(result_area_path, "recall.png"))
-    plt.savefig(os.path.join(result_area_path, "recall.pdf"))
+    plt.xlabel("area rate")
+    plt.ylabel("recall rate")
+    plt.savefig(os.path.join(result_area_path, "recall_rate.png"))
+    plt.savefig(os.path.join(result_area_path, "recall_rate.pdf"))
     plt.close()
+    # plt.show()
     max_recall_failed_area = (
         max_recall_failed_area / splited_width / splited_height
     )  # change pixel to rate.
@@ -355,9 +344,6 @@ def main(
     for i, spike_rate in enumerate(spike_rate_lst):
         results[f"spike_rate_{i}"] = spike_rate
 
-    # results["weight mean"] = net.get_weight_mean()
-    # print("weight mean")
-    # print(results["weight mean"])
     return results
 
 
