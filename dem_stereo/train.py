@@ -109,6 +109,8 @@ def main():
     # return
     net.power = False
     model_save_path = MODEL_PATH
+    if os.path.exists(model_save_path) == False:
+        os.makedirs(model_save_path)
     max_acc = -1
     try:
         for time_step in time_step_lst:
