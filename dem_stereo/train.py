@@ -109,8 +109,9 @@ def main():
     # return
     net.power = False
     model_save_path = MODEL_PATH
-    if os.path.exists(model_save_path) == False:
-        os.makedirs(model_save_path)
+    model_dir = os.path.dirname(model_save_path)
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
     max_acc = -1
     try:
         for time_step in time_step_lst:
