@@ -111,6 +111,6 @@ update_constant(args)
 import analysis
 
 results = analysis.main()
-
-log_experiment(vars(args), results)
+print(results)
+# log_experiment(vars(args), results)
 write_csv(vars(args), results, CSV_PATH)

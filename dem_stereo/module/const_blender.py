@@ -4,10 +4,13 @@ IMG_HEIGHT, IMG_WIDTH = 260, 346  # カメラの大きさ[pix]
 SENSOR_HEIGHT, SENSOR_WIDTH = 0.024, 0.036  # イメージセンサの大きさ [m]
 SENSOR_HEIGHT = SENSOR_WIDTH * IMG_HEIGHT / IMG_WIDTH  # センサの縦横比を維持するために必要
 CAM_X, CAM_Y, CAM_Z = 2.4, 2.4, 6  # カメラの初期位置[m,m,m]
+CAM_Z_FIN = 5.5  # カメラの最終位置[m]
 METER_PER_GRID = 0.018  # 1グリッドの大きさ[m]
 CAMERA_THETA = 39.6  # カメラの視野角[deg](これはおそらくブレンダー側が自動で計算してくれるはず。その値をここにかく。)
 DISTANCE_BETWEEN_CAMERA = 2  # 左右のカメラの間の距離[m]
-OVERLAP_LENGTH = 1 / 11 * 2  # 二つのカメラが見る範囲をどれくらい被らせるか[m](0.3m で高度1mの誤差、0.4m で高度1.5mの誤差、0.5m で高度2mの誤差、が許容できる)(誤差率10%の高度誤差を許容できるように設定)
+OVERLAP_LENGTH = (
+    1 / 11 * 2
+)  # 二つのカメラが見る範囲をどれくらい被らせるか[m](0.3m で高度1mの誤差、0.4m で高度1.5mの誤差、0.5m で高度2mの誤差、が許容できる)(誤差率10%の高度誤差を許容できるように設定)
 
 
 # path

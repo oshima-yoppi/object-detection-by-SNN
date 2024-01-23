@@ -229,6 +229,9 @@ def main(
     with torch.no_grad():
         net.eval()
         for i, (events, label) in enumerate(tqdm(iter(test_loader))):
+            # おかしなデータは除く
+            if i in [514, 37]:
+                continue
             events = events.to(DEVICE)
             label = label.to(DEVICE)
             # pred_pro = net(events, FINISH_STEP)
@@ -324,6 +327,7 @@ def main(
     plt.ylabel("recall rate")
     plt.savefig(os.path.join(result_area_path, "recall_rate.png"))
     plt.savefig(os.path.join(result_area_path, "recall_rate.pdf"))
+    plt.close()
     # plt.show()
     max_recall_failed_area = (
         max_recall_failed_area / splited_width / splited_height

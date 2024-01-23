@@ -34,6 +34,18 @@ import h5py
 import time
 
 
+def get_weight_mean_std(net):
+    weight_mean_lst = []
+    weight_std_lst = []
+    for layer in net.network_lst:
+        if isinstance(layer, snn.Conv2d):
+            weight_mean_lst.append(layer.weight.mean().item())
+            weight_std_lst.append(layer.weight.std().item())
+    weight_mean = np.mean(weight_mean_lst)
+    weight_std = np.mean(weight_std_lst)
+    return weight_mean, weight_std
+
+
 def main(
     hist=None,
     pdf_output=False,
@@ -229,6 +241,9 @@ def main(
     with torch.no_grad():
         net.eval()
         for i, (events, label) in enumerate(tqdm(iter(test_loader))):
+            # おかしなデータは除く
+            if i in [514, 37]:
+                continue
             events = events.to(DEVICE)
             label = label.to(DEVICE)
             # pred_pro = net(events, FINISH_STEP)
@@ -320,6 +335,11 @@ def main(
         else:
             # plt.plot(key / 43 / 54, 1, "o")
             pass
+    plt.xlabel("area")
+    plt.ylabel("recall")
+    plt.savefig(os.path.join(result_area_path, "recall.png"))
+    plt.savefig(os.path.join(result_area_path, "recall.pdf"))
+    plt.close()
     max_recall_failed_area = (
         max_recall_failed_area / splited_width / splited_height
     )  # change pixel to rate.
@@ -335,6 +355,9 @@ def main(
     for i, spike_rate in enumerate(spike_rate_lst):
         results[f"spike_rate_{i}"] = spike_rate
 
+    # results["weight mean"] = net.get_weight_mean()
+    # print("weight mean")
+    # print(results["weight mean"])
     return results
 
 

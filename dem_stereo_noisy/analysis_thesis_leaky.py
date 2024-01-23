@@ -23,6 +23,7 @@ data = pd.read_csv(csv_path)
 
 # 8stepは除く
 data = data[data["FINISH_STEP"] != 8]
+data = data[data["FINISH_STEP"] != 1]
 data = data.sort_values(by=["THRESHOLD", "BETA", "FINISH_STEP"])
 # finish_step_lst = [2, 4, 6, 8]
 lambda_lst = data.loc[:, "BETA"].unique()
@@ -39,7 +40,7 @@ iou_pivot_table = pd.pivot_table(
     columns="time step",
     values="IoU",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 iou_pivot_table = iou_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -61,7 +62,7 @@ precision_pivot_table = pd.pivot_table(
     columns="time step",
     values="Precision",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 precision_pivot_table = precision_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -83,7 +84,7 @@ recall_pivot_table = pd.pivot_table(
     columns="time step",
     values="Recall",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 recall_pivot_table = recall_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -105,7 +106,7 @@ fscore_pivot_table = pd.pivot_table(
     columns="time step",
     values="F-Measure",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 fscore_pivot_table = fscore_pivot_table.iloc[::-1]
 sns.heatmap(
@@ -128,7 +129,7 @@ failed_area_pivot_table = pd.pivot_table(
     columns="time step",
     values="Failed MaxArea",
     data=data,
-    aggfunc=np.mean,
+    aggfunc="mean",
 )
 failed_area_pivot_table = failed_area_pivot_table.iloc[::-1]
 # 小数点だから%表示させる
