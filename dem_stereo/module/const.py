@@ -49,7 +49,7 @@ RIGHT_IDX = 91
 LEFT_IDX = INPUT_WIDTH - RIGHT_IDX
 # INPUT_HEIGHT, INPUT_WIDTH = 65, 86
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-BATCH_SIZE = 24
+BATCH_SIZE = 36
 BATCH_SIZE_TEST = 1
 # FINISH_STEP = 8 # 8
 
