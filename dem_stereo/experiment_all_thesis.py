@@ -3,7 +3,7 @@ import itertools
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--threshold", "-t", type=float)
+parser.add_argument("--threshold", "-t", required=True, nargs="*", type=float)
 args = parser.parse_args()
 T = args.threshold
 
@@ -33,7 +33,7 @@ beta_learn_lst = [False]
 threshold_learn_lst = [False]
 beta_lst = [1]
 repeat_input_lst = [False]
-threshold_lst = [T]
+threshold_lst = T
 # time_aware_loss_lst = [False, True]
 time_aware_loss_lst = [True]
 combinations = list(

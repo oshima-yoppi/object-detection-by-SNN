@@ -3,8 +3,8 @@ import itertools
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--leaky", "-l", type=float)
-args = parser.parse_args()  
+parser.add_argument("--leaky", "-l", required=True, nargs="*", type=float)
+args = parser.parse_args()
 L = args.leaky
 
 
@@ -32,7 +32,7 @@ evnet_th_lst = [0.15]
 time_change_lst = [False]  ##############################
 beta_learn_lst = [False]
 threshold_learn_lst = [False]
-beta_lst = [L]
+beta_lst = L
 repeat_input_lst = [False]
 threshold_lst = [1]
 # time_aware_loss_lst = [False, True]
