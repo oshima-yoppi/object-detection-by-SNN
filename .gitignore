@@ -8,6 +8,7 @@
 *.pth
 *.csv
 *.zip
+*.txt
 
 easy_task/classification/dataset/*.h5
 easy_task/segmentation/dataset/*.h5
