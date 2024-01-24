@@ -29,6 +29,7 @@ from collections import defaultdict
 
 # import yaml
 import time
+import datetime
 
 
 def main():
@@ -113,6 +114,7 @@ def main():
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
     max_acc = -1
+    log_path = "log.txt"
     try:
         for time_step in time_step_lst:
             max_recall = -1
@@ -141,6 +143,9 @@ def main():
                     # Store loss history for future plotting
                     loss_log.append(loss_val.item())
                     # hist["loss"].append(loss_val.item())
+                    dt_now = datetime.datetime.now()
+                    with open(log_path, "w") as f:
+                        f.write(f"{dt_now}, {loss_val.item()}\n")
                 hist["loss"].append(np.mean(loss_log))
 
                 with torch.no_grad():
@@ -164,6 +169,11 @@ def main():
                         iou_log.append(iou)
                         precision_log.append(precision)
                         recall_log.append(recall)
+                        dt_now = datetime.datetime.now()
+                        with open(log_path, "w") as f:
+                            f.write(
+                                f"{dt_now}, {iou}, {precision}, {recall}\n"
+                            )
                     hist["iou"].append(np.mean(iou_log))
                     hist["precision"].append(np.mean(precision_log))
                     hist["recall"].append(np.mean(recall_log))
