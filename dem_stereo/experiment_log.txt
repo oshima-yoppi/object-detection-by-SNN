@@ -10042,3 +10042,105 @@ results
 	spike_rate_3: 0.18401522934436798
 	spike_rate_4: 0.3829629719257355
 -------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 2
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: False
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 0.5
+	REPEAT_INPUT: False
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 1.0
+results
+	IoU: 83.24
+	Precision: 92.45
+	Recall: 89.91
+	F-Measure: 91.16231081377495
+	threshold_0: 1.0
+	threshold_1: 1.0
+	threshold_2: 1.0
+	threshold_3: 1.0
+	threshold_4: 10.0
+	Energy per inference: 6.701911559048312e-08
+	Spike Rate: 0.11783570051193237
+	Failed MaxArea: 38.55038759689922
+	spike_rate_0: 0.022446850314736366
+	spike_rate_1: 0.11658338457345963
+	spike_rate_2: 0.10450831800699234
+	spike_rate_3: 0.03196592256426811
+	spike_rate_4: 0.2738889157772064
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 3
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: False
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 0.5
+	REPEAT_INPUT: False
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 1.0
+results
+	IoU: 84.24
+	Precision: 93.84
+	Recall: 89.72
+	F-Measure: 91.73376334713446
+	threshold_0: 1.0
+	threshold_1: 1.0
+	threshold_2: 1.0
+	threshold_3: 1.0
+	threshold_4: 10.0
+	Energy per inference: 1.6219574661135994e-07
+	Spike Rate: 0.285179078578949
+	Failed MaxArea: 36.48837209302325
+	spike_rate_0: 0.05997628718614578
+	spike_rate_1: 0.1758711338043213
+	spike_rate_2: 0.10523215681314468
+	spike_rate_3: 0.030638063326478004
+	spike_rate_4: 0.27444446086883545
+-------------
+-------------
+conditions
+	soft_reset: True
+	PARM_LEARN: False
+	FINISH_STEP: 4
+	ACCUMULATE_EVENT_MILITIME: 100
+	EVENT_COUNT: False
+	EVENT_TH: 0.15
+	TIME_CHANGE: False
+	BETA_LEARN: False
+	THRESHOLD_LEARN: False
+	BETA: 0.5
+	REPEAT_INPUT: False
+	TIME_AWARE_LOSS: True
+	THRESHOLD: 1.0
+results
+	IoU: 85.06
+	Precision: 92.03
+	Recall: 92.19
+	F-Measure: 92.10993051785907
+	threshold_0: 1.0
+	threshold_1: 1.0
+	threshold_2: 1.0
+	threshold_3: 1.0
+	threshold_4: 10.0
+	Energy per inference: 2.1430925301046955e-07
+	Spike Rate: 0.37680715322494507
+	Failed MaxArea: 36.48837209302325
+	spike_rate_0: 0.03610915318131447
+	spike_rate_1: 0.20829527080059052
+	spike_rate_2: 0.13505816459655762
+	spike_rate_3: 0.0236223042011261
+	spike_rate_4: 0.2853703796863556
+-------------
