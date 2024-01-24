@@ -11,6 +11,8 @@ if os.path.exists(csv_dir) is False:
     os.mkdir(csv_dir)
 csv_name = prefix + str(file_count).zfill(3) + ".csv"
 csv_path = os.path.join(csv_dir, csv_name)
+with open(csv_path, "w") as f:
+    f.write("")
 
 soft_reset_lst = [True]
 finish_step_lst = [2, 3, 4, 6]
@@ -24,7 +26,7 @@ evnet_th_lst = [0.15]
 time_change_lst = [False]  ##############################
 beta_learn_lst = [False]
 threshold_learn_lst = [False]
-beta_lst = [0.5]
+beta_lst = [0.75]
 repeat_input_lst = [False]
 threshold_lst = [1.0]
 # time_aware_loss_lst = [False, True]
