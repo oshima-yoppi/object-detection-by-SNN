@@ -66,7 +66,7 @@ def main(
 
     results = defaultdict(list)
     area_recall = dict()
-    for area in range(100 * 100):
+    for area in range(200 * 200):
         area_recall[area] = [0, 0]  # failed num, all num
 
     def save_train_process(path, hist):
@@ -189,13 +189,17 @@ def main(
         )
         with h5py.File(fine_label_path, "r") as f:
             fine_label = f["label_fine"][:]
+        fine_label = fine_label[FINISH_STEP - 1]
         fine_label = np.squeeze(fine_label)
         # if number ==20:
         #     print(fine_label.shape)
         # print(fine_label.shape)
         areas_lst = []
+
+        # print(fine_label.shape)
         splited_width = fine_label.shape[1] // ROUGH_PIXEL
         splited_height = fine_label.shape[0] // ROUGH_PIXEL
+        # print(splited_width, splited_height)
         # print(fine_label.shape)
         for tate in range(ROUGH_PIXEL):
             for yoko in range(ROUGH_PIXEL):
@@ -245,6 +249,7 @@ def main(
             areas_of_boulder_lst, splited_width, splited_height = get_area_boulder_lst(
                 i
             )
+            # print(splited_width, splited_height)
             for area, p, t in zip(areas_of_boulder_lst, binary_result, target):
                 if area == 242:
                     print(i)
