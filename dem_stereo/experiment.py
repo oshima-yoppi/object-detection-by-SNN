@@ -66,7 +66,7 @@ def write_csv(constants, results, csv_file):
     #     writer.writerow(columns)
     #     writer.writerow(values)
     # CSVファイルがからの場合のみカラム名を書き込む
-    if  os.path.getsize(csv_file) == 0:
+    if os.path.getsize(csv_file) == 0:
         with open(csv_file, "a", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(columns)
@@ -100,14 +100,17 @@ CSV_PATH = args.CSV_PATH
 delattr(args, "CSV_PATH")
 update_constant(args)
 
-import train
+# import train
 
-hist = train.main()
+# hist = train.main()
+
+# import analysis
+
+# results = analysis.main(hist=hist)
+
 
 import analysis
 
-results = analysis.main(hist=hist)
-
-
+results = analysis.main(hist=None)
 log_experiment(vars(args), results)
 write_csv(vars(args), results, CSV_PATH)
