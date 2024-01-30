@@ -250,19 +250,33 @@ def main(
                 i
             )
             # print(splited_width, splited_height)
+            bool_save_big = False
             for area, p, t in zip(areas_of_boulder_lst, binary_result, target):
-                if area == 242:
+                if area == 862:
                     print(i)
                 if t == 1:
                     area_recall[area][1] += 1
                     if p == 1:
                         area_recall[area][0] += 1
+                if t == 1 and p == 0 and area / splited_width / splited_height > 0.2:
+                    bool_save_big = True
             results["IoU"].append(iou)
             results["Precision"].append(prec)
             results["Recall"].append(recall)
             # print(iou, prec, recall)
             spikes_lst.append(net.spike_count)
             # s = time.time()
+            if bool_save_big:
+                print(f"failed big area!!!! {i=}")
+                save_img(
+                    i,
+                    events,
+                    pred_pro,
+                    label[FINISH_STEP - 1],
+                    results,
+                    result_recall_path,
+                    pdf_output=pdf_output,
+                )
             # save_img(
             #     i,
             #     events,

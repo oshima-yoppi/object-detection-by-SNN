@@ -14,7 +14,7 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=52,
+    default=57,
 )
 args = parser.parse_args()
 csv_num = args.csv_num
@@ -30,7 +30,8 @@ iou_lst = []
 recall_lst = []
 precision_lst = []
 f_measure_lst = []
-
+failed_max_area_rate_lst = []
+data["Failed MaxArea"] = data["Failed MaxArea"] * 100
 for i, timestep in enumerate(finish_step_lst):
     iou_lst.append(
         data.loc[
@@ -64,15 +65,34 @@ for i, timestep in enumerate(finish_step_lst):
             "F-Measure",
         ].values[0]
     )
+    failed_max_area_rate_lst.append(
+        data.loc[
+            (data["FINISH_STEP"] == timestep)
+            & (data["THRESHOLD"] == threshhold)
+            & (data["BETA"] == leaky),
+            "Failed MaxArea",
+        ].values[0]
+    )
 plt.figure()
 plt.plot(finish_step_lst, iou_lst, label="IoU", marker="x")
 plt.plot(finish_step_lst, recall_lst, label="Recall", marker="x")
 plt.plot(finish_step_lst, precision_lst, label="Precision", marker="x")
 plt.plot(finish_step_lst, f_measure_lst, label="F-measure", marker="x")
+# plt.plot(finish_step_lst, failed_max_area_rate_lst, label="Failed MaxArea", marker="x")
 plt.ylim(80, 100)
 plt.legend()
 plt.xlabel("time step")
 plt.ylabel("Accuracy [%]")
 plt.savefig(os.path.join(save_dir, "base_timestep.png"))
 plt.savefig(os.path.join(save_dir, "base_timestep.pdf"))
+plt.show()
+
+plt.figure()
+plt.plot(finish_step_lst, failed_max_area_rate_lst, label="Failed MaxArea", marker="x")
+plt.ylim(0, 40)
+plt.legend()
+plt.xlabel("time step")
+plt.ylabel("Failed MaxArea [%]")
+# plt.savefig(os.path.join(save_dir, "base_timestep_failed_maxarea.png"))
+# plt.savefig(os.path.join(save_dir, "base_timestep_failed_maxarea.pdf"))
 plt.show()
