@@ -13,7 +13,7 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=17,
+    default=20,
 )
 args = parser.parse_args()
 csv_num = args.csv_num

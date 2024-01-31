@@ -13,7 +13,7 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=16,
+    default=21,
 )
 args = parser.parse_args()
 csv_num = args.csv_num
@@ -29,8 +29,8 @@ SAVE_DIR = "result_thesis"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 # 8stepは除く
-data = data[data["FINISH_STEP"] != 8]
-data = data[data["THRESHOLD"] != 5.0]
+# data = data[data["FINISH_STEP"] != 8]
+# data = data[data["THRESHOLD"] != 5.0]
 data = data.rename(columns={"FINISH_STEP": "time step"})
 data = data.rename(columns={"THRESHOLD": "Threshold"})
 iou_pivot_table = pd.pivot_table(
