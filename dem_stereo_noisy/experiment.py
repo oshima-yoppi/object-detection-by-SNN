@@ -65,8 +65,8 @@ def write_csv(constants, results, csv_file):
     #     # if check_csv_file(csv_file) == False:
     #     writer.writerow(columns)
     #     writer.writerow(values)
-    # CSVファイルが存在しない場合のみカラム名を書き込む
-    if not os.path.isfile(csv_file):
+    # CSVファイルがからの場合のみカラム名を書き込む
+    if os.path.getsize(csv_file) == 0:
         with open(csv_file, "a", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(columns)
