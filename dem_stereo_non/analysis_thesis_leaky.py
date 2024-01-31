@@ -13,7 +13,7 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=11,
+    default=9,
 )
 args = parser.parse_args()
 csv_num = args.csv_num
@@ -22,7 +22,7 @@ csv_path = f"result_experiment/experiment_{csv_num:03}.csv"
 data = pd.read_csv(csv_path)
 
 # 8stepは除く
-# data = data[data["FINISH_STEP"] != 8]
+data = data[data["FINISH_STEP"] != 8]
 data = data.sort_values(by=["THRESHOLD", "BETA", "FINISH_STEP"])
 # finish_step_lst = [2, 4, 6, 8]
 lambda_lst = data.loc[:, "BETA"].unique()
