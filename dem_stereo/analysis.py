@@ -183,6 +183,100 @@ def main(
 
         return
 
+    def save_img_thesis(
+        number, events, pred_pro, label, results, result_recall_path, pdf_output
+    ):
+        # label = label.reshape((pixel, pixel)).to('cpu')
+        # print(pred_pro.shape)
+        # number_str = str(number).zfill(5)
+        plt.figure(figsize=(12, 3))
+        plt.subplot(141)
+
+        line_color = (150, 150, 0)
+        number = str(number).zfill(5)
+        video_filename = f"{number}.avi"
+        center_video_path = os.path.join(VIDEO_CENTER_PATH, video_filename)
+        right_video_path = os.path.join(VIDEO_RIGHT_PATH, video_filename)
+        left_video_path = os.path.join(VIDEO_LEFT_PATH, video_filename)
+        center_first_frame = view.get_first_frame(center_video_path)
+
+        center_first_frame = view.draw_edge_of_areas(
+            center_first_frame, line_color=line_color
+        )
+        # ax1.imshow(center_first_frame)
+        right_first_frame = view.get_first_frame(right_video_path)
+        left_first_frame = view.get_first_frame(left_video_path)
+        right_first_frame = right_first_frame[:, RIGHT_IDX * 2 :, :]
+        left_first_frame = left_first_frame[:, : LEFT_IDX * 2, :]
+        # plt.subplot(121)
+        # plt.imshow(right_first_frame)
+        # plt.subplot(122)
+        # plt.imshow(left_first_frame)
+        # plt.show()
+        concated_frame = np.concatenate((right_first_frame, left_first_frame), axis=1)
+        concated_frame = view.draw_edge_of_areas(concated_frame, line_color=line_color)
+        plt.imshow(concated_frame)
+        plt.title("DEM")
+
+        first_events = view.get_first_events(events)
+        first_events = view.draw_edge_of_areas(first_events, line_color=line_color)
+        plt.subplot(142)
+        plt.title("Event based Camera")
+        plt.imshow(first_events)
+
+        label = (
+            label.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
+        )
+        plt.subplot(143)
+        plt.title("label")
+        plt.imshow(label)
+        # 目盛り非表示
+        plt.tick_params(labelbottom=False, labelleft=False, labelright=False)
+
+        pred_pro_ = (
+            pred_pro[0]
+            .reshape((ROUGH_PIXEL, ROUGH_PIXEL))
+            .to("cpu")
+            .detach()
+            .numpy()
+            .copy()
+        )
+        # pred_pro_max = np.max(pred_pro_)
+        # pred_pro_max_rounded = np.round(pred_pro_max, 2)
+        # pred_pro_min = np.min(pred_pro_)
+        # pred_pro_min_rounded = round(pred_pro_min, 2)
+        # ax5.set_title(f"pred_pro")
+        # ax5.imshow(pred_pro_, vmin=0, vmax=1)
+
+        pred = torch.where(pred_pro[0] > CORRECT_RATE, 1, 0)
+        pred = (
+            pred.reshape((ROUGH_PIXEL, ROUGH_PIXEL)).to("cpu").detach().numpy().copy()
+        )
+        plt.subplot(144)
+        plt.title("prediction")
+        plt.imshow(pred, vmin=0, vmax=1)
+        # 目盛り非表示
+        plt.tick_params(labelbottom=False, labelleft=False, labelright=False)
+
+        # fig.suptitle(f"No.{number} ModelName:{MODEL_NAME}")
+        # plt.tight_layout()
+        # plt.show()
+        # exit()
+        img_path = os.path.join(RESULT_PATH, f"{str(number).zfill(5)}.png")
+        plt.savefig(img_path)
+
+        if results["Recall"][-1] <= 0.9999:
+            img_path = os.path.join(result_recall_path, f"{str(number).zfill(5)}.png")
+            plt.savefig(img_path)
+
+        if pdf_output:
+            img_path = os.path.join(RESULT_PATH, f"{str(number).zfill(5)}.pdf")
+            plt.savefig(img_path)
+        # plt.show()
+        plt.close()
+
+        return
+
     def get_area_boulder_lst(number):
         fine_label_path = os.path.join(
             PROCESSED_EVENT_DATASET_PATH, f"{str(number).zfill(5)}.h5"
@@ -277,6 +371,16 @@ def main(
                     result_recall_path,
                     pdf_output=pdf_output,
                 )
+            save_img_thesis(
+                i,
+                events,
+                pred_pro,
+                label[FINISH_STEP - 1],
+                results,
+                result_recall_path,
+                pdf_output=True,
+            )
+
             # save_img(
             #     i,
             #     events,
@@ -344,6 +448,7 @@ def main(
             pass
     plt.xlabel("area rate")
     plt.ylabel("recall rate")
+    plt.xlim(0, 1)
     plt.savefig(os.path.join(result_area_path, "recall_rate.png"))
     plt.savefig(os.path.join(result_area_path, "recall_rate.pdf"))
     plt.close()
@@ -366,6 +471,6 @@ def main(
     return results
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  #
     results = main(pdf_output=False)
     print(results)
