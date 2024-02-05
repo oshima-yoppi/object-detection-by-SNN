@@ -104,11 +104,11 @@ import train
 
 hist = train.main()
 
-import analysis
+# import analysis
 
-# results = analysis.main(hist=None)
-results = analysis.main(hist=hist)
+# # results = analysis.main(hist=None)
+# results = analysis.main(hist=hist)
 
 
-log_experiment(vars(args), results)
-write_csv(vars(args), results, CSV_PATH)
+# log_experiment(vars(args), results)
+# write_csv(vars(args), results, CSV_PATH)
