@@ -121,6 +121,31 @@ plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.png"))
 plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_fmeasure.pdf"))
 plt.show()
 plt.close()
+
+failed_area_pivot_table = pd.pivot_table(
+    index="Leaky λ",
+    columns="time step",
+    values="Failed MaxArea",
+    data=data,
+    aggfunc="mean",
+)
+failed_area_pivot_table = failed_area_pivot_table.iloc[::-1]
+# 小数点だから%表示させる
+failed_area_pivot_table = failed_area_pivot_table * 100
+# print(failed_area_pivot_table)
+sns.heatmap(
+    failed_area_pivot_table,
+    cmap="YlGn",
+    annot=True,
+    fmt=".1f",
+    cbar_kws={"label": "Failed MaxArea"},
+    vmin=0,
+    vmax=100,
+)
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_failed_area.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_failed_area.pdf"))
+plt.show()
+plt.close()
 # %%
 # 発火率の関係 when time step = 6
 # for i in range(4):

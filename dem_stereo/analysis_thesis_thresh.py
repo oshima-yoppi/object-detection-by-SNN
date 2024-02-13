@@ -13,7 +13,7 @@ parser.add_argument(
     "--csv_num",
     "-n",
     type=int,
-    default=55,
+    default=57,
 )
 args = parser.parse_args()
 csv_num = args.csv_num
@@ -138,8 +138,8 @@ sns.heatmap(
     vmin=0,
     vmax=100,
 )
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_failed_area.png"))
-plt.savefig(os.path.join(SAVE_DIR, f"leaky_time_failed_area.pdf"))
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_failed_area.png"))
+plt.savefig(os.path.join(SAVE_DIR, f"thresh_time_failed_area.pdf"))
 plt.show()
 plt.close()
 # # %%

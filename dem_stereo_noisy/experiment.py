@@ -100,14 +100,15 @@ CSV_PATH = args.CSV_PATH
 delattr(args, "CSV_PATH")
 update_constant(args)
 
+
 import train
 
 hist = train.main()
 
 # import analysis
 
-# # results = analysis.main(hist=None)
-# results = analysis.main(hist=hist)
+# results = analysis.main(hist=None)
+# # results = analysis.main(hist=hist)
 
 
 # log_experiment(vars(args), results)

@@ -28,7 +28,7 @@ if __name__ == "__main__":
             shutil.rmtree(path)
         os.makedirs(path)
 
-    data_num = 10
+    data_num = 3000
     label_path = LABEL_PATH
 
     for file_num in tqdm(range(data_num)):
